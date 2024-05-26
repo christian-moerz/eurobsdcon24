@@ -1,0 +1,19 @@
+# dhcpd.conf
+#
+# Sample configuration file for ISC dhcpd
+#
+
+# option definitions common to all supported networks...
+option domain-name "bsd";
+option domain-name-servers 8.8.8.8;
+
+option subnet-mask 255.255.255.0;
+default-lease-time 600;
+max-lease-time 7200;
+
+subnet 10.193.167.0 netmask 255.255.255.0 {
+  range 10.193.167.2 10.193.167.100;
+  option broadcast-address 10.193.167.255;
+  option routers 10.193.167.1;
+}
+
