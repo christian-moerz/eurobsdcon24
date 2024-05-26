@@ -1,6 +1,6 @@
 #!/bin/sh
 
 # Install bhyve firmware files
-pkg install -y uefi-edk2-bhyve-csm bhyve-firmware
+pkg install -y edk2-bhyve bhyve-firmware
 
 
