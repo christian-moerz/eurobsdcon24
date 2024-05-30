@@ -4,6 +4,7 @@ set -x
 
 NAME=linux
 DISK=${NAME}
+IP=10.10.10.38
 
 # check for bridge
 ifconfig vmswitch >> /dev/null
@@ -47,18 +48,20 @@ TAP=$(ifconfig tap create)
 # Start up a bhyve virtual machine with a local network interface
 # ahci-cd is now removed, because we want to boot the installed system
 bhyve \
-	-H \
-	-c 2 \
-	-D \
-	-l com1,/dev/nmdm${NAME}0A \
-	-l bootrom,/usr/local/share/uefi-firmware/BHYVE_UEFI_CODE.fd,/labs/${DISK}/vars.fd \
-	-m 2G \
-	-s 0,hostbridge \
-	-s 2,nvme,/labs/${DISK}/disk.img \
-	-s 3,lpc \
-	-s 4,virtio-net,${TAP},mac=00:00:00:ff:ff:02 \
-	-s 5,ahci-cd,/labs/debian.iso \
-	${NAME} &
+    -AHP \
+    -c 2 \
+    -D \
+    -l com1,/dev/nmdm${NAME}0A \
+    -l bootrom,/usr/local/share/uefi-firmware/BHYVE_UEFI_CODE.fd,/labs/${DISK}/vars.fd \
+    -m 2G \
+    -p 0:0 -p 1:1 \
+    -s 0,hostbridge \
+    -s 2,nvme,/labs/${DISK}/disk.img \
+    -s 3,lpc \
+    -s 4,virtio-net,${TAP},mac=00:00:00:ff:ff:02 \
+    -s 5,fbuf,tcp=${IP}:5900,w=1600,h=900,password=secret,wait \
+    -s 6,ahci-cd,/labs/debian.iso \
+    ${NAME} &
 
 PID=$!
 

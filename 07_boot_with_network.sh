@@ -16,6 +16,7 @@ bhyve \
 	-c 2 \
 	-D \
 	-l com1,/dev/nmdmfreebsd-vm0A \
+	-p 0:0 -p 1:1 \
 	-l bootrom,/usr/local/share/uefi-firmware/BHYVE_UEFI.fd \
 	-m 2G \
 	-s 0,hostbridge \
