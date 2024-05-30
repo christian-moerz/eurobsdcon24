@@ -1,5 +1,7 @@
 #!/bin/sh
 
+zfs set mountpoint=/labs zroot/labjails
+
 # Get current DNS server from resolv.conf
 DNS=$(cat /etc/resolv.conf | grep nameserver | head -1 | awk '{print $2}')
 
