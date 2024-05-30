@@ -1,0 +1,15 @@
+exec.prestart = "ZPATH/mk-epair.sh -n ${name}0 -N vtnet0 -g vm-out -G vm-if";
+exec.prestart += "ifconfig ${name}0 inet ${jailip} netmask ${jailnet}";
+exec.prestart += "cp /etc/resolv.conf ZPATH/${name}/etc";
+exec.prestart += "sysctl net.inet.ip.forwarding=1";
+
+exec.start = "/bin/sh /etc/rc";
+
+exec.stop = "/bin/sh /etc/rc.shutdown";
+
+exec.poststop = "ifconfig ${name}0 destroy";
+exec.poststop += "sysctl net.inet.ip.forwarding=0";
+
+path = "ZPATH/${name}";
+securelevel = 3;
+vnet.interface = "vtnet0";
