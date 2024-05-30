@@ -4,11 +4,12 @@
 
 ZPOOL=zroot
 ZVOL=lab
+ZSTOREVOL=labdisk
 JAILNAME=lab
 ZPATH=/lab2
-IP=10.10.10.42
+IP=10.10.10.41
 SUBNET=255.255.255.252
-JAILIP=10.10.10.43
+JAILIP=10.10.10.42
 
 BASE=http://ftp.freebsd.org/pub/FreeBSD/releases/amd64/amd64/14.0-RELEASE/base.txz
 KERNEL=http://ftp.freebsd.org/pub/FreeBSD/releases/amd64/amd64/14.0-RELEASE/kernel.txz
@@ -22,6 +23,9 @@ zfs create ${ZPOOL}/${ZVOL}
 zfs set mountpoint=${ZPATH} ${ZPOOL}/${ZVOL}
 # set up volume for base jail
 zfs create ${ZPOOL}/${ZVOL}/${JAILNAME}
+# delegate management to jail
+zfs create ${ZPOOL}/${ZSTOREVOL}
+zfs set jailed=on ${ZPOOL}/${ZSTOREVOL}
 
 ETC=/etc/jail.conf.d/${JAILNAME}.conf
 cp jail.conf ${ETC}
@@ -46,13 +50,15 @@ cp /etc/resolv.conf ${ZPATH}/${JAILNAME}/etc
 RC=${ZPATH}/${JAILNAME}/etc/rc.conf
 sysrc -f ${RC} ifconfig_vtnet0="inet ${JAILIP} netmask ${SUBNET}"
 sysrc -f ${RC} defaultrouter="${IP}"
+sysrc -f ${RC} sendmail_eanble=NONE
 
 sed -i '' "s@JAILNAME@${JAILNAME}@g" ${ETC}
 sed -i '' "s@IP@${IP}@g" ${ETC}
 sed -i '' "s@SUBNET@${SUBNET}@g" ${ETC}
-sed -i '' "s@ZROOT@${ZROOT}@g" ${ETC}
+sed -i '' "s@ZPOOL@${ZPOOL}@g" ${ETC}
 sed -i '' "s@ZVOL@${ZVOL}@g" ${ETC}
 sed -i '' "s@ZPATH@${ZPATH}@g" ${ETC}
+sed -i '' "s@ZSTOREVOL@${ZSTOREVOL}@g" ${ETC}
 
 if [ -e /etc/devfs.rules ]; then
     cp /etc/devfs.rules ${ZPATH}/devfs.rules.bak
@@ -70,3 +76,15 @@ sed -i '' "s@ZPATH@${ZPATH}@g" ${FSTAB}
 sed -i '' "s@MOUNTPATH@${PWD}@g" ${FSTAB}
 sed -i '' "s@JAILNAME@${JAILNAME}@g" ${FSTAB}
 
+# transfer base and kernel to jail as well
+cp ${ZPATH}/base.txz ${ZPATH}/${JAILNAME}/root
+cp ${ZPATH}/kernel.txz ${ZPATH}/${JAILNAME}/root
+
+# store information into config.sh
+cat > config.sh <<EOF
+ZPOOL=${ZPOOL}
+ZSTOREVOL=${ZSTOREVOL}
+ZVOL=${ZVOL}
+JAILNAME=${JAILNAME}
+ZPATH=${ZPATH}
+EOF

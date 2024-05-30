@@ -4,10 +4,14 @@
 
 ################################################################################
 
-ZPOOL=zroot
-ZVOL=lab
-JAILNAME=lab
-ZPATH=/lab2
+#ZPOOL=zroot
+#ZSTOREVOL=labdisk
+#ZVOL=lab
+#JAILNAME=lab
+#ZPATH=/lab2
+
+# load from config.sh
+. ./config.sh
 
 ################################################################################
 
@@ -21,4 +25,8 @@ if [ -e ${ZPATH}/devfs.rules.bak ]; then
     service devfs restart
 fi
 
-zfs destroy -r ${ZPOOL}/${ZVOL}
+echo Destroying ${ZPOOL}/${ZVOL} and ${ZPOOL}/${ZSTOREVOL} - continue?
+read SURE
+
+zfs destroy -f -r ${ZPOOL}/${ZVOL}
+zfs destroy -f -r ${ZPOOL}/${ZSTOREVOL}

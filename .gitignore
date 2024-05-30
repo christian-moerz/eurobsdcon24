@@ -1,4 +1,5 @@
 dhcpd.conf
+config.sh
 .ssh
 freebsd-vm.conf
 *~
