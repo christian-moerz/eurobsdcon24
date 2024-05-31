@@ -3,7 +3,7 @@
 # Sets up NFS server configuration
 
 mkdir /nfs
-echo /nfs -network=10.193.167.0/24 > /etc/exports
+echo /nfs -maproot=chris -network=10.193.167.0/24 > /etc/exports
 echo 'V4: /nfs' >> /etc/exports
 
 sysrc nfs_server_enable=YES
@@ -12,8 +12,11 @@ sysrc rpcbind_enable=YES
 sysrc mountd_enable=YES
 service nfsd start
 
+echo Downloading core files - if this breaks, check proxy settings!
+
 # set up root
-mkdir /nfs/vm01
+mkdir -p /nfs/vm01
+chown -R chris /nfs
 if [ ! -e base.txz ]; then
 fetch http://ftp.freebsd.org/pub/FreeBSD/releases/amd64/amd64/14.0-RELEASE/base.txz
 fetch http://ftp.freebsd.org/pub/FreeBSD/releases/amd64/amd64/14.0-RELEASE/kernel.txz
@@ -27,3 +30,17 @@ sysrc -f ${RC} ifconfig_vtnet0="UP DHCP"
 sysrc -f ${RC} sshd_enable=YES
 sysrc -f ${RC} sendmail_enable=NONE
 
+################################################################################
+
+# Set up tftp server for pxe boot
+
+mkdir -p /var/tftpboot
+ln -s /var/tftpboot /tftpboot
+# enable tftp in inetd
+sed -i '' 's@#tftp@tftp@g' /etc/inetd.conf
+service inetd enable
+service inetd start
+
+# copy pxeboot to tftp
+cp /boot/pxeboot /tftpboot
+chmod 444 /tftpboot/pxeboot

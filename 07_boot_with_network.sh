@@ -2,6 +2,18 @@
 
 set -x
 
+# source configuration we started
+if [ -e config.sh ]; then
+    . ./config.sh
+fi
+
+SWITCHIP=${SWITCHIP:=10.193.167.1}
+SUBNET=${SUBNET:=255.255.255.0}
+DOMAINNAME=${DOMAINNAME:=bsd}
+NETWORK=${NETWORK:=10.193.167.0}
+BROADCAST=${BROADCAST:=10.193.167.255}
+SWITCHNAME=${SWITCHNAME:=vmbridge}
+
 # create a new vm - in a jail, we need to do this manually
 bhyvectl --create --vm=freebsd-vm
 
@@ -29,7 +41,7 @@ PID=$!
 
 # tap10001 was created now
 ifconfig tap10001 name vm0
-ifconfig vmswitch addm vm0
+ifconfig ${SWITCHNAME} addm vm0
 
 wait ${PID}
 

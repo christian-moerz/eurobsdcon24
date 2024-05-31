@@ -2,6 +2,8 @@
 
 ################################################################################
 
+# This is run in the host environment to set up the lab
+
 ZPOOL=zroot
 ZVOL=lab
 ZSTOREVOL=labdisk

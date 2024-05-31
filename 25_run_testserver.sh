@@ -2,11 +2,19 @@
 
 set -x
 
+if [ -e config.sh ]; then
+	. ./config.sh
+fi
+ZPATH=${ZPATH:=/lab}
+ZPOOL=${ZPOOL:=zroot}
+ZSTOREVOL=${ZSTOREVOL:=labjails}
+SWITCHNAME=${SWITCHNAME:=vmswitch}
+
 # create a zfs volume if it does not exist
 mount | grep freebsd-client > /dev/null
-if [ ! -e /labs/freebsd-client ]; then
-	zfs create zroot/labjails/freebsd-client
-	zfs mount zroot/labjails/freebsd-client
+if [ ! -e ${ZPATH}s/freebsd-client ]; then
+	zfs create ${ZPOOL}/${ZSTOREVOL}/freebsd-client
+	zfs mount ${ZPOOL}/${ZSTOREVOL}/freebsd-client
 fi
 
 # create a new vm - in a jail, we need to do this manually
@@ -26,7 +34,7 @@ bhyve \
 	-l bootrom,/usr/local/share/uefi-firmware/BHYVE_UEFI.fd \
 	-m 2G \
 	-s 0,hostbridge \
-	-s 2,nvme,/labs/freebsd-client/disk.img \
+	-s 2,nvme,${ZPATH}/freebsd-client/disk.img \
 	-s 3,lpc \
 	-s 4,virtio-net,${TAP},mac=00:00:00:ff:ff:03 \
 	freebsd-client &
@@ -35,7 +43,7 @@ PID=$!
 
 # tap10001 was created now
 ifconfig ${TAP} name client0
-ifconfig vmswitch addm client0
+ifconfig ${SWITCHNAME} addm client0
 
 wait ${PID}
 

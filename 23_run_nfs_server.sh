@@ -10,31 +10,31 @@ ZPOOL=${ZPOOL:=zroot}
 ZSTOREVOL=${ZSTOREVOL:=labjails}
 SWITCHNAME=${SWITCHNAME:=vmswitch}
 
-ifconfig ${SWITCHNAME} > /dev/null 2>&1
+USERNAME=chris
 
-if [ "0" != "$?" ]; then
-    # run switch setup
-    ./06_setup_vmbridge.sh
+# Generate a ssh keypair
+if [ ! -e .ssh/id_ecdsa ]; then
+    mkdir .ssh
+    ssh-keygen -f .ssh/id_ecdsa -t ecdsa
 fi
 
-
-# remove 10.193.167.2 from dhcp range
-# because we use that as static ip for
-# our nfs server
-
-sed -i '' 's@range 10.193.167.2 10.193.167.100;@range 10.193.167.3 10.193.167.100;@' /usr/local/etc/dhcpd.conf
-service dhcpd enable
-service dhcpd restart
-
-# create a zfs volume if it does not exist
-mount | grep freebsd-nfs > /dev/null
-if [ ! -e ${ZPATH}/freebsd-nfs ]; then
-	zfs create ${ZPOOL}/${ZSTOREVOL}/freebsd-nfs
-	zfs mount ${ZPOOL}/${ZSTOREVOL}/freebsd-nfs
+JAILED=$(sysctl security.jail.jailed | awk -F: '{print $2}')
+JAILED=$(echo ${JAILED})
+echo "Jailed: [${JAILED}]"
+if [ "${JAILED}" != "1" ]; then
+    # mount the disk and place it into ${USER} user directory
+    # this will not work, if we are running inside a jail!
+    DISKIMG=$(mdconfig -t vnode -f ${ZPATH}/freebsd-nfs/disk.img)
+    ls /dev/md*
+    mount /dev/${DISKIMG}p2 /mnt
+    mkdir /mnt/home/${USER}/.ssh
+    cp .ssh/id_ecdsa.pub /mnt/home/${USER}s/.ssh/authorized_keys
+    chown -R 1001:1001 /mnt/home/${USER}/.ssh
+    chmod 750 /mnt/home/${USER}/.ssh
+    chmod 600 /mnt/home/${USER}/.ssh/authorized_keys
+    umount /mnt
+    mdconfig -d -u ${DISKIMG}
 fi
-
-# Set up a disk for a virtual machine setup
-truncate -s 20G ${ZPATH}/freebsd-nfs/disk.img
 
 # create a new vm - in a jail, we need to do this manually
 bhyvectl --create --vm=freebsd-nfs
@@ -56,12 +56,11 @@ bhyve \
 	-s 2,nvme,${ZPATH}/freebsd-nfs/disk.img \
 	-s 3,lpc \
 	-s 4,virtio-net,${TAP},mac=00:00:00:ff:ff:02 \
-	-s 5,ahci-cd,${ZPATH}/freebsd.iso \
 	freebsd-nfs &
 
 PID=$!
 
-# tap10001 was created now
+# tap0 was created for nfs
 ifconfig ${TAP} name nfs0
 ifconfig ${SWITCHNAME} addm nfs0
 

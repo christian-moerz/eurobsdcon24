@@ -2,11 +2,13 @@
 
 ################################################################################
 
-ZPOOL=zroot
-ZSTOREVOL=labdisk
+if [ -e config.sh ]; then
+	. ./config.sh
+fi
 
-# this ZPATH is inside the base jail!
-ZPATH=/lab
+ZPATH=${ZPATH:=/lab}
+ZPOOL=${ZPOOL:=zroot}
+ZSTOREVOL=${ZSTOREVOL:=labjails}
 
 ################################################################################
 
@@ -14,10 +16,12 @@ ZPATH=/lab
 zfs set mountpoint=${ZPATH} ${ZPOOL}/${ZSTOREVOL}
 
 # install into scripts into lab environment
-mv /root/base.txz ${ZPATH}/
-mv /root/kernel.txz ${ZPATH}/
-cp mk-epair.sh ${ZPATH}/
-chmod 755 ${ZPATH}/mk-epair.sh
+if [ -e /root/base.txz ]; then
+    mv /root/base.txz ${ZPATH}/
+    mv /root/kernel.txz ${ZPATH}/
+    cp mk-epair.sh ${ZPATH}/
+    chmod 755 ${ZPATH}/mk-epair.sh
+fi
 
 # write configuration into config file
 cat >> config.sh <<EOF

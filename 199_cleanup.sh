@@ -1,6 +1,7 @@
 #!/bin/sh
 
 # Clean up and remove jail and work scripts
+# This script is run in the host environment
 
 ################################################################################
 
