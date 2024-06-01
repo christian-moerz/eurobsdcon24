@@ -127,7 +127,7 @@ EOF
 # add fstab mount points
 cat > ${ROOT}/etc/fstab <<EOF
 # Root partition definition - completed by boot process
-/dev/gpt/root	     /		ufs	rw	0	1
+/dev/gpt/root	     /		ufs	ro	0	1
 /dev/gpt/var	     /var	ufs	rw	0	2
 /var/etc	     /etc	nullfs	rw	0	0
 
@@ -147,7 +147,8 @@ tar -C ${ROOT}/etc -cf - . | tar -C ${ROOT}/var/etc -xf -
 RC=${ROOT}/var/etc/rc.conf
 
 echo sendmail_enable=NONE >> ${RC}
-echo securelevel=3 >> ${RC}
+echo kern_securelevel=3 >> ${RC}
+echo 'kern_securelevel_enable="YES"' >> ${RC}
 echo clear_tmp_enable="YES" >> ${RC}
 echo 'syslogd_flags="-ss"' >> ${RC}
 echo 'hostname="baseimage"' >> ${RC}
@@ -176,7 +177,7 @@ testsvc()
         service \$1 enabled > /dev/null 2>&1
 }
 
-for SVC in \`ls /etc/rc.d\`; do
+for SVC in \`rcorder /etc/rc.d/* /usr/local/etc/rc.d/*\`; do
     if testsvc \${SVC}; then
         service \${SVC} restart
     fi
