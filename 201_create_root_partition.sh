@@ -174,12 +174,12 @@ done
 
 testsvc()
 {
-        service \$1 enabled > /dev/null 2>&1
+	\$1 enabled > /dev/null 2>&1
 }
 
 for SVC in \`rcorder /etc/rc.d/* /usr/local/etc/rc.d/*\`; do
     if testsvc \${SVC}; then
-        service \${SVC} restart
+        \${SVC} restart
     fi
 done
 EOF
