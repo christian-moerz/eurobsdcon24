@@ -17,6 +17,7 @@ fi
 if [ -e disk.img_root.img ]; then
     mv disk.img_root.img ${ZPATH}/freebsd-${VMNAME}/disk.img_root.img
     mv disk.img_rw.img ${ZPATH}/freebsd-${VMNAME}/disk.img_rw.img
+    mv disk.img_uefi.img ${ZPATH}/freebsd-${VMNAME}/disk.img_uefi.img
 fi
 
 # create a new vm - in a jail, we need to do this manually

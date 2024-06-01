@@ -28,7 +28,7 @@ rm -f ${DISKNAME}_rw.img
 rm -f ${DISKNAME}_uefi.img
 
 # create image file
-truncate -s 100m ${DISKNAME}_uefi.img
+truncate -s 1g ${DISKNAME}_uefi.img
 truncate -s 10g ${DISKNAME}_root.img
 truncate -s ${DISKSIZE} ${DISKNAME}_rw.img
 
@@ -52,23 +52,20 @@ gpart add -t freebsd -s 2G -l tmp ${MDRW}
 gpart add -t freebsd -s 8G -l var ${MDRW}
 gpart add -t freebsd -l usr_local ${MDRW}
 
-# Set up UEFI disk
-gpart create -s gpt ${MDUEFI}
-gpart add -t efi -l efi ${MDUEFI}
-
 echo Installing bootcode...
 gpart bootcode -p /boot/gptboot -i 1 ${MD}
-gpart bootcode -p /boot/gptboot -i 1 ${MDUEFI}
 
 gpart show ${MDUEFI}
-echo About to format /dev/${MDUEFI}p1
+echo About to format /dev/${MDUEFI}
 read GO
 
-newfs_msdos /dev/${MDUEFI}p1
-mount /dev/${MDUEFI}p1 /mnt
+newfs /dev/${MDUEFI}
+mount /dev/${MDUEFI} /mnt
 
 mkdir -p /mnt/efi/boot
 cp /boot/loader.efi /mnt/efi/boot/bootx64.efi
+tar -C /mnt -xf ${ZPATH}/kernel.txz
+tar -C /mnt -xf ${ZPATH}/base.txz boot/
 
 umount /mnt
 
@@ -130,33 +127,22 @@ EOF
 # add fstab mount points
 cat > ${ROOT}/etc/fstab <<EOF
 # Root partition definition - completed by boot process
-/dev/gpt/root	     /		ufs	rw	0	0
+/dev/gpt/root	     /		ufs	rw	0	1
+/dev/gpt/var	     /var	ufs	rw	0	2
+/var/etc	     /etc	nullfs	rw	0	0
 
 /dev/gpt/boot	     /boot/efi	msdos	rw	0	0
 
-/dev/gpt/home	     /home	ufs	rw	0	0
-/dev/gpt/tmp	     /tmp	ufs	rw	0	0
-/dev/gpt/var	     /var	ufs	rw	0	0
-/dev/gpt/usr_local   /usr/local	ufs	rw	0	0
+/dev/gpt/home	     /home	ufs	rw	0	4
+/dev/gpt/tmp	     /tmp	ufs	rw	0	4
+/dev/gpt/usr_local   /usr/local	ufs	rw	0	4
 
 /dev/gpt/swap	     none	swap	sw	0	0
 EOF
 
-# Fix rc.conf
+# transfer /etc to /var/etc
 mkdir -p ${ROOT}/var/etc
-ln -s /var/etc/rc.conf ${ROOT}/etc/rc.conf
-# Fix resolv.conf
-rm -f ${ROOT}/etc/resolv.conf
-ln -s /var/etc/resolv.conf ${ROOT}/etc/resolv.conf
-# Fix user and group db and passwords
-# Don't do this if you want to prevent anyone from
-# being able to add users or groups
-mv ${ROOT}/etc/master.passwd ${ROOT}/var/etc/
-mv ${ROOT}/etc/passwd ${ROOT}/var/etc
-mv ${ROOT}/etc/group ${ROOT}/var/etc
-ln -s /var/etc/master.passwd ${ROOT}/etc/master.passwd
-ln -s /var/etc/passwd ${ROOT}/etc/passwd
-ln -s /var/etc/group ${ROOT}/etc/group
+tar -C ${ROOT}/etc -cf - . | tar -C ${ROOT}/var/etc -xf -
 
 RC=${ROOT}/var/etc/rc.conf
 
@@ -177,15 +163,24 @@ kern.randompid=1
 EOF
 
 # need a helper script to fix late rc.conf loading
-cat >> ${ROOT}/etc/rc.local <<EOF
+cat >> ${ROOT}/var/etc/rc.local <<EOF
 #!/bin/sh
-service hostname restart
-service securelevel onestart
-service syslogd restart
-service sysctl restart
-service cleartmp start > /dev/null 2>&1
-service sendmail stop > /dev/null 2>&1
-service sendmail start > /dev/null 2>&1
+ANYWAY="hostname"
+
+for SVC in \${ANYWAY}; do
+    service \${SVC} restart
+done
+
+testsvc()
+{
+        service \$1 enabled > /dev/null 2>&1
+}
+
+for SVC in \`ls /etc/rc.d\`; do
+    if testsvc \${SVC}; then
+        service \${SVC} restart
+    fi
+done
 EOF
 
 umount ${ROOT}/usr/local

@@ -9,7 +9,7 @@ ZPATH=${ZPATH:=/lab}
 ZPOOL=${ZPOOL:=zroot}
 ZSTOREVOL=${ZSTOREVOL:=labjails}
 SWITCHNAME=${SWITCHNAME:=vmswitch}
-VMNAME=ro
+VMNAME=ro2
 
 if [ ! -e ${ZPATH}/freebsd-${VMNAME} ]; then
     zfs create ${ZPOOL}/${ZSTOREVOL}/freebsd-${VMNAME}
