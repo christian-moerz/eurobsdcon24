@@ -1,4 +1,9 @@
 dhcpd.conf
+*.dmp
+\#*
+*.dump
+pxe
+*.img
 config.sh
 .ssh
 freebsd-vm.conf

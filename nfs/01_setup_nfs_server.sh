@@ -3,7 +3,7 @@
 # Sets up NFS server configuration
 
 mkdir /nfs
-echo /nfs -maproot=chris -network=10.193.167.0/24 > /etc/exports
+echo /nfs /nfs/vm01 -maproot=chris -network=10.193.167.0/24 > /etc/exports
 echo 'V4: /nfs' >> /etc/exports
 
 sysrc nfs_server_enable=YES
@@ -44,3 +44,15 @@ service inetd start
 # copy pxeboot to tftp
 cp /boot/pxeboot /tftpboot
 chmod 444 /tftpboot/pxeboot
+
+################################################################################
+
+# Fix pxeboot loader size
+cd /usr/src
+pkg install -y git
+git clone --depth 1 -b releng/14.0 https://github.com/freebsd/freebsd-src /usr/src
+cd /usr/src/stand
+make WITHOUT_LOADER_ZFS=YES clean
+make WITHOUT_LOADER_ZFS=YES all
+make WITHOUT_LOADER_ZFS=YES install DESTDIR=/nfs/vm01
+
