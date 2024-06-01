@@ -152,6 +152,7 @@ echo 'kern_securelevel_enable="YES"' >> ${RC}
 echo clear_tmp_enable="YES" >> ${RC}
 echo 'syslogd_flags="-ss"' >> ${RC}
 echo 'hostname="baseimage"' >> ${RC}
+echo 'ifconfig_vtnet0="UP DHCP"' >> ${RC}
 
 # set some basic security sysctls
 cat >> ${ROOT}/etc/sysctl.conf <<EOF
