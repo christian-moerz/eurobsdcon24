@@ -113,6 +113,9 @@ add path 'pci/*' unhide
 # necessary for vm-bhyve
 add path 'zvol' unhide
 add path 'zvol/zroot' unhide
+add path 'zvol/zroot/labdisk' unhide
+add path 'zvol/zroot/labdisk/*' unhide
+add path 'zvol/zroot/labdisk/*/*' unhide
 add path 'zvol/zroot/labjails' unhide
 add path 'zvol/zroot/labjails/*' unhide
 add path 'zvol/zroot/labjails/*/*' unhide

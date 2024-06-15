@@ -25,5 +25,6 @@ ifconfig ${SWITCHNAME} destroy
 sysrc -x ifconfig_bridge0
 sysrc -x create_args_bridge0
 sysrc cloned_interfaces-="${SWITCHNAME}"
+sysrc cloned_interfaces-="bridge0"
 rm /usr/local/etc/dhcpd.conf
 

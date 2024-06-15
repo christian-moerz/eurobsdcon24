@@ -5,6 +5,14 @@
 
 set -x
 
+MYJID=$(sysctl security.jail.jailed | awk -F: '{print $2}')
+MYJID=$(echo ${MYJID})
+
+if [ "0" == "${MYJID}" ]; then
+    echo Running outside. Watch out.
+    exit 1
+fi
+
 if [ -e config.sh ]; then
 	. ./config.sh
 fi
@@ -18,6 +26,9 @@ ZPATH=${ZPATH}
 ZPOOL=${ZPOOL}
 ZSTOREVOL=${ZSTOREVOL}
 EOF
+
+cat config.sh | sort | uniq > config.sh.tmp
+mv config.sh.tmp config.sh
 
 zfs set mountpoint=${ZPATH} ${ZPOOL}/${ZSTOREVOL}
 zfs mount ${ZPOOL}/${ZSTOREVOL}
