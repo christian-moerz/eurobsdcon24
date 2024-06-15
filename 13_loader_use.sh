@@ -1,11 +1,22 @@
 #!/bin/sh
 
+set -x
+
+if [ -e config.sh ]; then
+        . ./config.sh
+fi
+
+# make sure we have a kernel for use by bhyveload
+if [ ! -e /boot/kernel/kernel ]; then
+    tar -C / -xvf ${ZPATH}/kernel.txz
+fi
+
 # create a new vm - in a jail, we need to do this manually
 bhyvectl --create --vm=freebsd-vm
 
 # We create a tap with prefix tap10001 because that is
 # passed through to our machine via devfs
-ifconfig tap10001 create
+TAP=$(ifconfig tap create)
 
 # Start up a bhyve virtual machine with a local network interface
 # ahci-cd is now removed, because we want to boot the installed system
@@ -21,15 +32,15 @@ bhyve \
 	-l com1,/dev/nmdmfreebsd-vm0A \
 	-m 2G \
 	-s 0,hostbridge \
-	-s 2,nvme,/labs/freebsd-vm/disk.img \
+	-s 2,nvme,${ZPATH}/freebsd-vm/disk.img \
 	-s 3,lpc \
-	-s 4,virtio-net,tap10001,mac=00:00:00:ff:ff:02 \
+	-s 4,virtio-net,${TAP},mac=00:00:00:ff:ff:02 \
 	freebsd-vm &
 
 PID=$!
 
 # tap10001 was created now
-ifconfig tap10001 name vm0
+ifconfig ${TAP} name vm0
 ifconfig vmswitch addm vm0
 
 wait ${PID}
