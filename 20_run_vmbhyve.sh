@@ -1,17 +1,23 @@
 #!/bin/sh
 
+set -x
+
+if [ -e config.sh ]; then
+        . ./config.sh
+fi
+
 # Use vm-bhyve for network setup
 # set up switch
-vm switch create vmswitch -a 10.193.167.0.1/24
+vm switch create ${SWITCHNAME} -a ${SWITCHIP}/${SUBNET}
 
 # NAT is not supported
 # vm switch nat vmswitch on
 
 # Link the freebsd.iso in the .iso directory
-ln -s /labs/freebsd.iso /labs/.iso/freebsd.iso
+ln -s ${ZPATH}/freebsd.iso ${ZPATH}/.iso/freebsd.iso
 
 # Copy the template file to template dir
-cp vm-bhyve.template /labs/.templates/freebsd.conf
+cp vm-bhyve.template ${ZPATH}/.templates/freebsd.conf
 
 # create vm
 vm create -t freebsd -s 20G -m 2G -c 2 freebsd
@@ -20,6 +26,7 @@ vm create -t freebsd -s 20G -m 2G -c 2 freebsd
 # look into /labs/<vmname>/<vmname>.log
 # we might be missing the bridge now after a reboot
 # run to fix:
+service vm enable
 /usr/local/etc/rc.d/vm start
 
 # install freebsd
