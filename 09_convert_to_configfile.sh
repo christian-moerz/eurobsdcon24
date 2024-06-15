@@ -2,6 +2,11 @@
 
 set -x
 
+# source configuration we started
+if [ -e config.sh ]; then
+    . ./config.sh
+fi
+
 # Start up a bhyve virtual machine with a local network interface
 # ahci-cd is now removed, because we want to boot the installed system
 bhyve \
@@ -12,9 +17,8 @@ bhyve \
 	-l bootrom,/usr/local/share/uefi-firmware/BHYVE_UEFI.fd \
 	-m 2G \
 	-s 0,hostbridge \
-	-s 2,nvme,/labs/freebsd-vm/disk.img \
+	-s 2,nvme,${ZPATH}/freebsd-vm/disk.img \
 	-s 3,lpc \
-	-s 4,virtio-net,tap10001,mac=00:00:00:ff:ff:02 \
 	-o config.dump=1 \
 	freebsd-vm > freebsd-vm.conf
 

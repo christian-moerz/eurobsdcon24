@@ -8,7 +8,7 @@ fi
 
 ZPATH=${ZPATH:=/lab}
 ZPOOL=${ZPOOL:=zroot}
-ZSTOREVOL=${ZSTOREVOL:=labjails}
+ZSTOREVOL=${ZSTOREVOL:=labdisk}
 
 # create a zfs volume if it does not exist
 mount | grep freebsd-vm > /dev/null

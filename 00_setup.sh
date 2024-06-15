@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# Initial download and setup script for bhyve 100 class
+# We are working jail "lab" with this.
+
 set -x
 
 if [ -e config.sh ]; then
@@ -8,7 +11,13 @@ fi
 
 ZPATH=${ZPATH:=/lab}
 ZPOOL=${ZPOOL:=zroot}
-ZSTOREVOL=${ZSTOREVOL:=labjails}
+ZSTOREVOL=${ZSTOREVOL:=labdisk}
+
+cat >> config.sh <<EOF
+ZPATH=${ZPATH}
+ZPOOL=${ZPOOL}
+ZSTOREVOL=${ZSTOREVOL}
+EOF
 
 zfs set mountpoint=${ZPATH} ${ZPOOL}/${ZSTOREVOL}
 zfs mount ${ZPOOL}/${ZSTOREVOL}

@@ -1,5 +1,15 @@
 #!/bin/sh
 
+set -x
+
+if [ -e config.sh ]; then
+        . ./config.sh
+fi
+
+ZPATH=${ZPATH:=/lab}
+ZPOOL=${ZPOOL:=zroot}
+ZSTOREVOL=${ZSTOREVOL:=labdisk}
+
 # create a new vm - in a jail, we need to do this manually
 bhyvectl --create --vm=freebsd-vm
 
@@ -11,8 +21,8 @@ bhyve \
 	-l bootrom,/usr/local/share/uefi-firmware/BHYVE_UEFI.fd \
 	-m 2G \
 	-s 0,hostbridge \
-	-s 1,ahci-cd,/labs/freebsd.iso \
-	-s 2,nvme,/labs/freebsd-vm/disk.img \
+	-s 1,ahci-cd,${ZPATH}/freebsd.iso \
+	-s 2,nvme,${ZPATH}/freebsd-vm/disk.img \
 	-s 3,lpc \
 	freebsd-vm
 

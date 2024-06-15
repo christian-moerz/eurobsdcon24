@@ -7,18 +7,18 @@ bhyvectl --create --vm=freebsd-vm
 
 # We create a tap with prefix tap10001 because that is
 # passed through to our machine via devfs
-ifconfig tap10001 create
+TAP=$(ifconfig tap create)
 
 # Start up a bhyve virtual machine with a local network interface
 # ahci-cd is now removed, because we want to boot the installed system
 bhyve \
-	-k freebsd-vm.conf \
-	freebsd-vm &
+    -k freebsd-vm.conf \
+    -s 4,virtio-net,${TAP},mac=00:00:00:ff:ff:02 \
+    freebsd-vm &
 
 PID=$!
 
-# tap10001 was created now
-ifconfig tap10001 name vm0
+ifconfig ${TAP} name vm0
 ifconfig vmswitch addm vm0
 
 wait ${PID}

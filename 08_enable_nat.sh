@@ -1,9 +1,12 @@
 #!/bin/sh
 
+set -x
+
 # source configuration we started
 if [ -e config.sh ]; then
     . ./config.sh
 fi
+
 SWITCHNAME=${SWITCHNAME:=vmswitch}
 
 # Install NAT ruleset and enable firewall
