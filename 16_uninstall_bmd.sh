@@ -17,3 +17,5 @@ zfs destroy ${ZPOOL}/${ZSTOREVOL}/vms
 
 # remove bridge
 ./14_cleanup_for_pkgmgrs.sh
+
+sysrc -x bmd_enable

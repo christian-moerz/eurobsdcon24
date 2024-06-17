@@ -15,9 +15,8 @@ BROADCAST=${BROADCAST:=10.193.167.255}
 SWITCHNAME=${SWITCHNAME:=vmswitch}
 
 # clean up for vm managers
-service stop isc-dhcpd
+service isc-dhcpd stop
 
-#pkg remove -y dhcpd
 pkg remove -y isc-dhcp44-server
 sysrc -x dhcpd_enable
 
