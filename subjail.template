@@ -1,0 +1,19 @@
+exec.prestart = "ZPATH/mk-epair.sh -n ${name}0 -N bhyve0 -g vm-out -G vm-if";
+exec.prestart += "/sbin/ifconfig ${name}0 up";
+exec.prestart += "/sbin/ifconfig SWITCHNAME addm ${name}0";
+exec.prestart += "cp /etc/resolv.conf ZPATH/${name}/etc";
+exec.prestart += "mount_nullfs ZPATH/freebsd.iso ZPATH/${name}/iso/freebsd.iso";
+
+# for some unknown reason, if setup does not work
+# in sub jail
+exec.start = "/sbin/ifconfig bhyve0 up";
+exec.start += "/sbin/dhclient bhyve0";
+exec.start += "/bin/sh /etc/rc";
+
+exec.stop = "/bin/sh /etc/rc.shutdown";
+
+exec.poststop = "ifconfig ${name}0 destroy";
+
+path = "ZPATH/${name}";
+securelevel = 3;
+vnet.interface = "bhyve0";

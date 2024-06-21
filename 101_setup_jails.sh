@@ -20,13 +20,15 @@ PWD=$(pwd)
 
 ################################################################################
 
+. ./utils.sh
+
 # set up zfs volume
-zfs create ${ZPOOL}/${ZVOL}
+ensure_zfs ${ZPOOL}/${ZVOL}
 zfs set mountpoint=${ZPATH} ${ZPOOL}/${ZVOL}
 # set up volume for base jail
-zfs create ${ZPOOL}/${ZVOL}/${JAILNAME}
+ensure_zfs ${ZPOOL}/${ZVOL}/${JAILNAME}
 # delegate management to jail
-zfs create ${ZPOOL}/${ZSTOREVOL}
+ensure_zfs ${ZPOOL}/${ZSTOREVOL}
 zfs set jailed=on ${ZPOOL}/${ZSTOREVOL}
 
 ETC=/etc/jail.conf.d/${JAILNAME}.conf
@@ -47,13 +49,21 @@ if [ ! -e ${ZPATH}/${JAILNAME}/bin ]; then
 fi
 mkdir -p ${ZPATH}/${JAILNAME}/root/eurobsdcon
 
-# install resolv.conf
+# set up rc.local to ensure zfs mounting
+# inside main jail
+cat >> ${ZPATH}/${JAILNAME}/etc/rc.local <<EOF
+#!/bin/sh
+zfs mount -a
+EOF
+chmod 755 ${ZPATH}/${JAILNAME}/etc/rc.local
+
+# install resolv.conf into main jail
 cp /etc/resolv.conf ${ZPATH}/${JAILNAME}/etc
 RC=${ZPATH}/${JAILNAME}/etc/rc.conf
-# set jail network config
+# set main jail network config
 sysrc -f ${RC} ifconfig_vtnet0="inet ${JAILIP} netmask ${SUBNET}"
 sysrc -f ${RC} defaultrouter="${IP}"
-# disable sendmail in jail
+# disable sendmail in main jail
 sysrc -f ${RC} sendmail_eanble=NONE
 
 # replace variables in jail.conf for main jail
