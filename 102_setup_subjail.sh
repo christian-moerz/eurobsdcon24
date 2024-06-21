@@ -2,13 +2,16 @@
 
 ################################################################################
 
+# sets up a sub jail
+# this is run in the main jail
+
 if [ -e config.sh ]; then
 	. ./config.sh
 fi
 
-ZPATH=${ZPATH:=/lab}
+ZPATH=${ZPATH:=/lab2}
 ZPOOL=${ZPOOL:=zroot}
-ZSTOREVOL=${ZSTOREVOL:=labjails}
+ZSTOREVOL=${ZSTOREVOL:=labdisk}
 
 ################################################################################
 

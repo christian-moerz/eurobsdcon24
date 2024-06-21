@@ -50,10 +50,13 @@ mkdir -p ${ZPATH}/${JAILNAME}/root/eurobsdcon
 # install resolv.conf
 cp /etc/resolv.conf ${ZPATH}/${JAILNAME}/etc
 RC=${ZPATH}/${JAILNAME}/etc/rc.conf
+# set jail network config
 sysrc -f ${RC} ifconfig_vtnet0="inet ${JAILIP} netmask ${SUBNET}"
 sysrc -f ${RC} defaultrouter="${IP}"
+# disable sendmail in jail
 sysrc -f ${RC} sendmail_eanble=NONE
 
+# replace variables in jail.conf for main jail
 sed -i '' "s@JAILNAME@${JAILNAME}@g" ${ETC}
 sed -i '' "s@IP@${IP}@g" ${ETC}
 sed -i '' "s@SUBNET@${SUBNET}@g" ${ETC}
@@ -62,16 +65,22 @@ sed -i '' "s@ZVOL@${ZVOL}@g" ${ETC}
 sed -i '' "s@ZPATH@${ZPATH}@g" ${ETC}
 sed -i '' "s@ZSTOREVOL@${ZSTOREVOL}@g" ${ETC}
 
+# install devfs rules for jails, which allows
+# use of vmm
 if [ -e /etc/devfs.rules ]; then
     cp /etc/devfs.rules ${ZPATH}/devfs.rules.bak
 fi
 cp devfs.rules /etc/devfs.rules
 service devfs restart
 
+# copy mk-epair into jail, because we will use
+# that for sub jail setup
 cp mk-epair.sh ${ZPATH}
+# install jail template file
 cp jail.template /etc/jail.conf.d/${JAILNAME}.template
 sed -i '' "s@ZPATH@${ZPATH}@g" /etc/jail.conf.d/${JAILNAME}.template
 
+# add fstab file for our main jail
 FSTAB=${ZPATH}/${JAILNAME}.fstab
 cp fstab ${FSTAB}
 sed -i '' "s@ZPATH@${ZPATH}@g" ${FSTAB}
@@ -90,3 +99,7 @@ ZVOL=${ZVOL}
 JAILNAME=${JAILNAME}
 ZPATH=${ZPATH}
 EOF
+
+# we enable resource accounting in kernel
+# changing this requires a reboot
+echo "kern.racct.enable=1" >> /boot/loader.conf
