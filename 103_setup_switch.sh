@@ -1,4 +1,4 @@
-#!/bin/sh
+o#!/bin/sh
 
 # prepares network environment in main jail
 # sets up a routed switch network
@@ -11,6 +11,8 @@ set -x
 if [ -e config.sh ]; then
     . ./config.sh
 fi
+
+. ./utils.sh
 
 # network configuration for our lab environment
 # with sub jails and vms going in there
@@ -104,3 +106,30 @@ ifconfig bridge0 name ${SWITCHNAME}
 # start the dhcp server
 service isc-dhcpd start
 
+pkg install -y ipcalc
+
+SUBMASK=$(ipcalc -nb ${NETWORK}/${SUBNET} | grep Netmask | awk -F= '{ print $2}')
+SUBMASK=$(echo ${SUBMASK})
+
+# enable a NAT firewall via pf
+# that allows outbound traffic from our sub jails
+cat > /etc/pf.conf <<EOF
+extif="vtnet0"
+switch="${SWITCHNAME}"
+
+table <jailaddrs> { ${NETWORK}/${SUBMASK} }
+
+nat on \$extif from <jailaddrs> to any -> (\$extif)
+
+pass in on \$switch from <jailaddrs> to ! ${NETWORK}/${SUBMASK} tag jail_out
+pass on \$extif from <jailaddrs> to ! ${NETWORK}/${SUBMASK} tagged jail_out
+EOF
+
+service pf enable
+service pf start
+
+# enable IP forwarding
+echo net.inet.ip.forwarding=1 >> /etc/sysctl.conf
+service sysctl restart
+
+clean_config

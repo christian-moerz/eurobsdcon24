@@ -1,4 +1,6 @@
 dhcpd.conf
+*.txz
+*.iso
 *.dmp
 \#*
 *.dump

@@ -12,6 +12,8 @@ fi
 
 . ./utils.sh
 
+ensure_jailed
+
 ZPATH=${ZPATH:=/lab2}
 ZPOOL=${ZPOOL:=zroot}
 ZSTOREVOL=${ZSTOREVOL:=labdisk}
@@ -22,13 +24,13 @@ ZSTOREVOL=${ZSTOREVOL:=labdisk}
 # zfs set mountpoint=${ZPATH} ${ZPOOL}/${ZSTOREVOL}
 ensure_zfs_mountpoint ${ZPATH} ${ZPOOL}/${ZSTOREVOL}
 
+mkdir -p ${ZPATH}/iso
+
 # install scripts and binaries into lab environment
-if [ -e /root/base.txz ]; then
-    mv /root/base.txz ${ZPATH}/
-    mv /root/kernel.txz ${ZPATH}/
-    cp mk-epair.sh ${ZPATH}/
-    chmod 755 ${ZPATH}/mk-epair.sh
-fi
+ensure_core_download base.txz ${BASE}
+ensure_core_download kernel.txz ${KERNEL}
+ensure_core_download iso/freebsd.iso ${ISO}
+install -m 755 mk-epair.sh ${ZPATH}
 
 # install subjail template
 TEMPLATE=/etc/jail.conf.d/jail.template
@@ -43,6 +45,21 @@ ZPOOL=${ZPOOL}
 ZSTOREVOL=${ZSTOREVOL}
 ZPATH=${ZPATH}
 EOF
+
+# install bhyve cleanup script
+mkdir -p /usr/local/bin
+cat >> /usr/local/bin/bhyveclean <<EOF
+#!/bin/sh
+
+if [ -e /dev/vmm/\$1 ]; then
+   bhyvectl --destroy --vm=\$1
+fi
+EOF
+chmod 755 /usr/local/bin/bhyveclean
+
+# re-install pkg so we have a pkg package for
+# later use in subjail
+pkg install -y -f pkg
 
 # make sure we only keep variables once
 # instead of repeating them
