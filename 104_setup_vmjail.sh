@@ -170,6 +170,7 @@ cat > ${ZPATH}/${JAILNAME}/usr/local/etc/rc.d/bhyve <<EOF
 # PROVIDE: bhyve
 # REQUIRE: DAEMON
 # BEFORE: login
+# KEYWORD: shutdown
 
 . /etc/rc.subr
 
@@ -187,9 +188,14 @@ vm_start()
 
 vm_stop()
 {
-	pid=\$(cat \${pidfile})
-	pkill -TERM bhyve
-	kill -TERM \${pid}
+        pid=\$(ps ax | grep ${JAILNAME} | grep -v grep|awk '{print \$1}')
+        echo -n "Shutting down... \${pid} "
+        kill -TERM \${pid}
+        while do_kill \${pid}; do
+                echo -n '.'
+                sleep 1
+        done
+        echo " done."
 }
 
 load_rc_config $name
