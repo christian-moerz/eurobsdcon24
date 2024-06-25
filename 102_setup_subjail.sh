@@ -59,7 +59,7 @@ chmod 755 /usr/local/bin/bhyveclean
 
 # re-install pkg so we have a pkg package for
 # later use in subjail
-pkg install -y -f pkg
+pkg install -y -f pkg git
 
 # make sure we only keep variables once
 # instead of repeating them
@@ -67,3 +67,7 @@ clean_config
 
 # enable jail startup
 sysrc jail_enable=YES
+
+cd /usr/src
+git clone -b releng/14.0 --depth 1 https://github.com/freebsd/freebsd-src /usr/src
+

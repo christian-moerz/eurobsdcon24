@@ -25,6 +25,8 @@ fi
 
 # ensure creation of jail zfs volume
 ensure_zfs "${ZPOOL}/${ZSTOREVOL}/${JAILNAME}"
+# use caching in guest instead of host
+zfs set primarycache=metadata ${ZPOOL}/${ZSTOREVOL}/${JAILNAME}
 
 # extract base into new volume
 if [ ! -e ${ZPATH}/${JAILNAME}/bin ]; then
@@ -144,7 +146,8 @@ ifconfig bridge0 addm \${TAP}
 
 while [ "0" == "\${RESULT}" ]; do
       bhyvectl --create --vm=${JAILNAME}
-      /usr/sbin/bhyve \\
+      /usr/bin/cpuset -l 1-8 \\
+            /usr/sbin/bhyve \\
       		      -H -c 2 -D -l com1,stdio \\
 		      -l bootrom,/usr/local/share/uefi-firmware/BHYVE_UEFI.fd \\
 		      -m 2G \\
@@ -186,6 +189,11 @@ vm_start()
 /usr/local/bin/tmux new-session -d -s bhyve "/usr/local/bin/bhyvestart"
 }
 
+do_kill()
+{
+	kill -0 $1 > /dev/null 2>&1
+}
+
 vm_stop()
 {
         pid=\$(ps ax | grep ${JAILNAME} | grep -v grep|awk '{print \$1}')
@@ -213,3 +221,6 @@ service jail onestart ${JAILNAME}
 
 # add jail to activation list
 sysrc jail_list+="${JAILNAME}"
+
+# use the following command in host to check resource usage
+# rctl -h -u jail:lab.<jailname>
