@@ -108,7 +108,7 @@ cat > /etc/pf.conf <<EOF
 extif="vtnet0"
 switch="${SWITCHNAME}"
 
-table <jailaddrs> { ${NETWORK}/${SUBMASK} }
+table <jailaddrs> { ${NETWORK}/${SUBMASK} ${ROUTENET}.0/24 }
 
 nat on \$extif from <jailaddrs> to any -> (\$extif)
 

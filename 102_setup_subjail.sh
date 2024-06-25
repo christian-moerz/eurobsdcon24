@@ -43,6 +43,11 @@ cp subjail_routed.template ${TEMPLATE_ROUTED}
 sed -i '' "s@ZPATH@${ZPATH}@g" ${TEMPLATE}
 sed -i '' "s@ZPATH@${ZPATH}@g" ${TEMPLATE_ROUTED}
 
+# make sure we are not overwriting ROUTED twice
+if [ -e config.sh ]; then
+    sed -i '' '/ROUTED=/d' config.sh
+fi
+
 # write configuration into config file
 cat >> config.sh <<EOF
 ZPOOL=${ZPOOL}
