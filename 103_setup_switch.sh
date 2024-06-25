@@ -84,6 +84,8 @@ subnet ${NETWORK} netmask ${SUBNET} {
 }
 
 EOF
+# create an "bridged" copy for any routed additions later on
+cp /usr/local/etc/dhcpd.conf /usr/local/etc/dhcpd.conf.bridged
 
 # do ad hoc bridge creation so we do not
 # need to restart the jail

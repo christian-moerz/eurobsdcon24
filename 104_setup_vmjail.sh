@@ -98,15 +98,15 @@ EOF
 # start the jail
 service jail onestart ${JAILNAME}
 
-mkdir -p ${ZPATH}/${JAILNAME}/var/cache/pkg
-cp /var/cache/pkg/* ${ZPATH}/${JAILNAME}/var/cache/pkg
-
+# remove any previously set proxy settings
 unset http_proxy
 unset https_proxy
 
 # install bhyve firmware
 jexec ${JAILNAME} pkg install -y edk2-bhyve tmux
 
+# for installation, we set up a tap interface
+# and connect it to the vm bridge
 TAP=$(jexec ${JAILNAME} ifconfig tap create)
 jexec ${JAILNAME} ifconfig ${TAP} ether ${VMMAC}
 jexec ${JAILNAME} ifconfig bridge0 addm ${TAP}
@@ -134,6 +134,7 @@ jexec ${JAILNAME} tmux attach-session -t bhyve
 
 jexec ${JAILNAME} bhyvectl --destroy --vm=${JAILNAME}
 
+# create bhyve start up script
 mkdir -p ${ZPATH}/${JAILNAME}/usr/local/bin
 cat > ${ZPATH}/${JAILNAME}/usr/local/bin/bhyvestart <<EOF
 #!/bin/sh
@@ -166,6 +167,7 @@ ifconfig \${TAP} destroy
 EOF
 chmod 755 ${ZPATH}/${JAILNAME}/usr/local/bin/bhyvestart
 
+# create bhyve rc.d script
 mkdir -p ${ZPATH}/${JAILNAME}/usr/local/etc/rc.d
 cat > ${ZPATH}/${JAILNAME}/usr/local/etc/rc.d/bhyve <<EOF
 #!/bin/sh
@@ -214,6 +216,7 @@ chmod 755 ${ZPATH}/${JAILNAME}/usr/local/etc/rc.d/bhyve
 # stop jail
 service jail onestop ${JAILNAME}
 
+# enable bhyve rc.d script
 sysrc -f ${ETC} bhyve_enable=YES
 
 # restart with rc.local startup
