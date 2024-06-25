@@ -39,6 +39,9 @@ fi
 # reboot afterwards to disable
 sed -i '' '/kern\.racct\.enable=1/d' /boot/loader.conf
 
+# finally, we clean up config.sh and config.net
+rm -f config.sh config.net
+
 echo Destroying ${ZPOOL}/${ZVOL} and ${ZPOOL}/${ZSTOREVOL} - continue?
 read SURE
 

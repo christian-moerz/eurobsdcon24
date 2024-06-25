@@ -47,6 +47,12 @@ for NUM in 1 2 3 4; do
     VMMAC="${VMMAC}:${PAIRDATA}"
 done
 
+# get the first address from config.net
+ROUTED=$(head -1 config.net)
+
+# then we remove that entry from config.net
+sed -i '' '1d' config.net
+
 HOSTIP=${ROUTENET}.${ROUTED}
 GUESTIP_TUPLET=$((ROUTED+1))
 GUESTIP=${ROUTENET}.${GUESTIP_TUPLET}
@@ -54,7 +60,6 @@ GUESTIP=${ROUTENET}.${GUESTIP_TUPLET}
 # then updated config.sh
 NEXTIP=$((ROUTED+8))
 sed -i '' "/ROUTED=${ROUTED}/d" config.sh
-echo "ROUTED=${NEXTIP}" >> config.sh
 
 # create a jail.conf.d file for this jail
 cat > /etc/jail.conf.d/${JAILNAME}.conf <<EOF
@@ -121,6 +126,9 @@ cat > ${ZPATH}/${JAILNAME}.fstab <<EOF
 ${ZPATH}/iso    ${ZPATH}/${JAILNAME}/iso nullfs ro 0 0
 EOF
 
+# install resolv.conf
+cp /etc/resolv.conf ${ZPATH}/${JAILNAME}/etc
+
 # start the jail
 service jail onestart ${JAILNAME}
 
@@ -130,3 +138,6 @@ unset https_proxy
 
 # install bhyve firmware
 jexec ${JAILNAME} pkg install -y edk2-bhyve tmux
+
+service jail onestop ${JAILNAME}
+

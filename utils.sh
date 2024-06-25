@@ -73,3 +73,10 @@ ensure_core_download()
     ensure_download ${ZPATH}/$1 $2
 }
 
+ensure_newjail()
+{
+    if [ -e /etc/jail.conf.d/$1.conf ]; then
+	echo Jail $1 already exists.
+	exit 1
+    fi
+}

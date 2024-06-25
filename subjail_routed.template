@@ -1,6 +1,8 @@
 exec.prestart = "/usr/local/bin/bhyveclean ${name}";
 exec.prestart += "ZPATH/mk-epair.sh -n ${name}0 -N bhyve0 -g vm-out -G vm-if -e ${mac} -E ${imac}";
 exec.prestart += "/sbin/ifconfig ${name}0 inet ${hostip} netmask 255.255.255.248 up";
+exec.prestart += "/bin/sleep 1";
+exec.prestart += "/usr/sbin/service isc-dhcpd restart";
 exec.prestart += "cp /etc/resolv.conf ZPATH/${name}/etc";
 
 # for some unknown reason, if setup does not work

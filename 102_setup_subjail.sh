@@ -43,19 +43,21 @@ cp subjail_routed.template ${TEMPLATE_ROUTED}
 sed -i '' "s@ZPATH@${ZPATH}@g" ${TEMPLATE}
 sed -i '' "s@ZPATH@${ZPATH}@g" ${TEMPLATE_ROUTED}
 
-# make sure we are not overwriting ROUTED twice
-if [ -e config.sh ]; then
-    sed -i '' '/ROUTED=/d' config.sh
-fi
-
 # write configuration into config file
 cat >> config.sh <<EOF
 ZPOOL=${ZPOOL}
 ZSTOREVOL=${ZSTOREVOL}
 ZPATH=${ZPATH}
-ROUTED=1
 ROUTENET=${ROUTENET}
 EOF
+
+# create a list of routed IPs we can use
+rm -f config.net
+ROUTED=1
+while [ "${ROUTED}" -lt 255 ]; do
+      echo ${ROUTED} >> config.net
+      ROUTED=$((ROUTED+8))
+done
 
 # install bhyve cleanup script
 mkdir -p /usr/local/bin
@@ -79,18 +81,20 @@ clean_config
 # enable jail startup
 sysrc jail_enable=YES
 
-cd /usr/src
-git clone -b releng/14.0 --depth 1 https://github.com/freebsd/freebsd-src /usr/src
+if [ ! -e ${ZPATH}/iso/quick.iso ]; then
 
-# Prepare a quick setup media
-mkdir -p ${ZPATH}/iso/setup
-tar -C ${ZPATH}/iso/setup -xvf ${ZPATH}/iso/freebsd.iso
+    cd /usr/src
+    git clone -b releng/14.0 --depth 1 https://github.com/freebsd/freebsd-src /usr/src
+    
+    # Prepare a quick setup media
+    mkdir -p ${ZPATH}/iso/setup
+    tar -C ${ZPATH}/iso/setup -xvf ${ZPATH}/iso/freebsd.iso
 
-# write an installer config
-cat >> ${ZPATH}/iso/setup/etc/installerconfig <<EOF
-PARTITIONS=DEFAULT
-DISTRIBUTIONS="kernel.txz base.txz"
-export nonInteractive="YES"
+    # write an installer config
+    cat >> ${ZPATH}/iso/setup/etc/installerconfig <<EOF
+PARTITIONS=DEFAULT				  
+DISTRIBUTIONS="kernel.txz base.txz"		  
+export nonInteractive="YES"			  
 
 #!/bin/sh
 sysrc ifconfig_DEFAULT=DHCP
@@ -106,12 +110,13 @@ kern.randompid=1
 DOT
 EOF
 
-# finally, package up as iso again
-sh /usr/src/release/amd64/mkisoimages.sh -b '13_0_RELEASE_AMD64_CD' ${ZPATH}/iso/quick.iso ${ZPATH}/iso/setup
-
-# clean up again
-rm -fr ${ZPATH}/iso/setup
-
+    # finally, package up as iso again
+    sh /usr/src/release/amd64/mkisoimages.sh -b '13_0_RELEASE_AMD64_CD' ${ZPATH}/iso/quick.iso ${ZPATH}/iso/setup
+    
+    # clean up again
+    rm -fr ${ZPATH}/iso/setup
+fi
+    
 # setup a script that connects to a bhyve jail later
 cat >> /usr/local/bin/connect <<EOF
 #!/bin/sh
