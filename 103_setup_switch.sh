@@ -83,17 +83,6 @@ subnet ${NETWORK} netmask ${SUBNET} {
        option routers ${SWITCHIP};
 }
 
-group diskless {
-    next-server 10.193.167.2;
-    filename "pxeboot";
-    option root-path "10.193.167.2:/nfs/vm01/";
-
-    host client {
-	hardware ethernet 00:00:00:ff:ff:03;
-	fixed-address 10.193.167.3;
-    }
-}
-
 EOF
 
 # do ad hoc bridge creation so we do not

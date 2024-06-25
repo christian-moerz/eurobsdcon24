@@ -124,7 +124,7 @@ jexec ${JAILNAME} tmux new-session -d -s bhyve "bhyve \
       -l bootrom,/usr/local/share/uefi-firmware/BHYVE_UEFI.fd \
       -m 2G \
       -s 0,hostbridge \
-      -s 1,ahci-cd,/iso/freebsd.iso \
+      -s 1,ahci-cd,/iso/quick.iso \
       -s 2,nvme,/vm/disk.img \
       -s 3,lpc \
       -s 4,virtio-net,${TAP} \
