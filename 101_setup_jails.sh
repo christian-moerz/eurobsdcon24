@@ -117,5 +117,13 @@ EOF
 # changing this requires a reboot
 echo "kern.racct.enable=1" >> /boot/loader.conf
 
+# set up resource accounting ruleset
+cat > /etc/rctl.conf <<EOF
+jail:${JAILNAME}:pcpu:deny=50
+EOF
+
+service rctl enable
+service rctl start
+
 # start the jail
 service jail onestart ${JAILNAME}

@@ -30,3 +30,5 @@ zfs destroy -f ${ZPOOL}/${ZSTOREVOL}/${JAILNAME}
 
 rm -f /etc/jail.conf.d/${JAILNAME}.conf
 
+# remove jail from activation list
+sysrc jail_list-="${JAILNAME}"

@@ -64,3 +64,6 @@ pkg install -y -f pkg
 # make sure we only keep variables once
 # instead of repeating them
 clean_config
+
+# enable jail startup
+sysrc jail_enable=YES

@@ -144,14 +144,14 @@ ifconfig bridge0 addm \${TAP}
 
 while [ "0" == "\${RESULT}" ]; do
       bhyvectl --create --vm=${JAILNAME}
-      /usr/sbin/bhyve \
-      		      -H -c 2 -D -l com1,stdio \
-		      -l bootrom,/usr/local/share/uefi-firmware/BHYVE_UEFI.fd \
-		      -m 2G \
-		      -s 0,hostbridge \
- 		      -s 2,nvme,/vm/disk.img \
- 		      -s 3,lpc \
- 		      -s 4,virtio-net,\${TAP} \
+      /usr/sbin/bhyve \\
+      		      -H -c 2 -D -l com1,stdio \\
+		      -l bootrom,/usr/local/share/uefi-firmware/BHYVE_UEFI.fd \\
+		      -m 2G \\
+		      -s 0,hostbridge \\
+ 		      -s 2,nvme,/vm/disk.img \\
+ 		      -s 3,lpc \\
+ 		      -s 4,virtio-net,\${TAP} \\
  		      ${JAILNAME}
 
       RESULT=\$?
@@ -210,3 +210,6 @@ sysrc -f ${ETC} bhyve_enable=YES
 
 # restart with rc.local startup
 service jail onestart ${JAILNAME}
+
+# add jail to activation list
+sysrc jail_list+="${JAILNAME}"
