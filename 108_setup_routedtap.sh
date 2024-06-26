@@ -217,7 +217,7 @@ vm_start()
 
 do_kill()
 {
-	kill -0 $1 > /dev/null 2>&1
+	kill -0 \$1 > /dev/null 2>&1
 }
 
 vm_stop()

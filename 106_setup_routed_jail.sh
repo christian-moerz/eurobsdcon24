@@ -93,7 +93,7 @@ NETIP=$((ROUTED-1))
 LASTIP=$((ROUTED+6))
 BROADCAST=$((LASTIP+1))
 cat > /usr/local/etc/dhcpd/${ROUTED}.conf <<EOF
-subnet ${ROUTENET}.${NETIP} netmask 255.255.255.224 {
+subnet ${ROUTENET}.${NETIP} netmask 255.255.255.248 {
        range ${GUESTIP} ${ROUTENET}.${LASTIP};
        option broadcast-address ${ROUTENET}.${BROADCAST};
        option routers ${ROUTENET}.${ROUTED};
@@ -139,5 +139,122 @@ unset https_proxy
 # install bhyve firmware
 jexec ${JAILNAME} pkg install -y edk2-bhyve tmux
 
+# for installation, we set up a tap interface
+# and connect it to the vm bridge
+TAP=$(jexec ${JAILNAME} ifconfig tap create)
+jexec ${JAILNAME} ifconfig ${TAP} ether ${VMMAC}
+jexec ${JAILNAME} ifconfig bridge0 addm ${TAP}
+
+jexec ${JAILNAME} bhyvectl --create --vm=${JAILNAME}
+
+if [ "0" != "$?" ]; then
+    echo Bhyve failed.
+    exit 1
+fi
+
+# then start installation
+jexec ${JAILNAME} tmux new-session -d -s bhyve "bhyve \
+      -H -c 2 -D -l com1,stdio \
+      -l bootrom,/usr/local/share/uefi-firmware/BHYVE_UEFI.fd \
+      -m 2G \
+      -s 0,hostbridge \
+      -s 1,ahci-cd,/iso/quick.iso \
+      -s 2,nvme,/vm/disk.img \
+      -s 3,lpc \
+      -s 4,virtio-net,${TAP} \
+      ${JAILNAME}"
+
+jexec ${JAILNAME} tmux attach-session -t bhyve
+
+jexec ${JAILNAME} bhyvectl --destroy --vm=${JAILNAME}
+
+# create bhyve start up script
+mkdir -p ${ZPATH}/${JAILNAME}/usr/local/bin
+cat > ${ZPATH}/${JAILNAME}/usr/local/bin/bhyvestart <<EOF
+#!/bin/sh
+
+RESULT=0
+
+TAP=\$(ifconfig tap create)
+ifconfig \${TAP} ether ${VMMAC}
+ifconfig bridge0 addm \${TAP}
+
+while [ "0" == "\${RESULT}" ]; do
+      bhyvectl --create --vm=${JAILNAME}
+      /usr/bin/cpuset -l 1-8 \\
+            /usr/sbin/bhyve \\
+      		      -H -c 2 -D -l com1,stdio \\
+		      -l bootrom,/usr/local/share/uefi-firmware/BHYVE_UEFI.fd \\
+		      -m 2G \\
+		      -s 0,hostbridge \\
+ 		      -s 2,nvme,/vm/disk.img \\
+ 		      -s 3,lpc \\
+ 		      -s 4,virtio-net,\${TAP} \\
+ 		      ${JAILNAME}
+
+      RESULT=\$?
+      bhyvectl --destroy --vm=${JAILNAME}
+done
+
+ifconfig \${TAP} destroy
+
+EOF
+chmod 755 ${ZPATH}/${JAILNAME}/usr/local/bin/bhyvestart
+
+# create bhyve rc.d script
+mkdir -p ${ZPATH}/${JAILNAME}/usr/local/etc/rc.d
+cat > ${ZPATH}/${JAILNAME}/usr/local/etc/rc.d/bhyve <<EOF
+#!/bin/sh
+
+# PROVIDE: bhyve
+# REQUIRE: DAEMON
+# BEFORE: login
+# KEYWORD: shutdown
+
+. /etc/rc.subr
+
+name=bhyve
+rcvar=bhyve_enable
+
+start_cmd="vm_start"
+stop_cmd="vm_stop"
+pidfile="/var/run/\${name}.pid"
+
+vm_start()
+{
+/usr/local/bin/tmux new-session -d -s bhyve "/usr/local/bin/bhyvestart"
+}
+
+do_kill()
+{
+	kill -0 \$1 > /dev/null 2>&1
+}
+
+vm_stop()
+{
+        pid=\$(ps ax | grep ${JAILNAME} | grep -v grep|awk '{print \$1}')
+        echo -n "Shutting down... \${pid} "
+        kill -TERM \${pid}
+        while do_kill \${pid}; do
+                echo -n '.'
+                sleep 1
+        done
+        echo " done."
+}
+
+load_rc_config $name
+run_rc_command "\$1"
+EOF
+chmod 755 ${ZPATH}/${JAILNAME}/usr/local/etc/rc.d/bhyve
+
+# stop jail
 service jail onestop ${JAILNAME}
 
+# enable bhyve rc.d script
+sysrc -f ${ETC} bhyve_enable=YES
+
+# restart with rc.local startup
+service jail onestart ${JAILNAME}
+
+# add jail to activation list
+sysrc jail_list+="${JAILNAME}"

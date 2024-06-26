@@ -43,6 +43,9 @@ cp /usr/local/etc/dhcpd.conf.bridged /usr/local/etc/dhcpd.conf
 cat /usr/local/etc/dhcpd/* >> /usr/local/etc/dhcpd.conf
 service isc-dhcpd restart
 
+# make sure that the epair interface is gone too
+ifconfig ${JAILNAME}0 destroy
+
 rm -f /etc/jail.conf.d/${JAILNAME}.conf
 rm ${ZPATH}/${JAILNAME}.fstab
 
