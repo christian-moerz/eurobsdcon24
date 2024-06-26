@@ -1,0 +1,15 @@
+exec.prestart = "/usr/local/bin/bhyveclean ${name}";
+exec.prestart += "cp /etc/resolv.conf ZPATH/${name}/etc";
+
+# for some unknown reason, if setup does not work
+# in sub jail
+exec.start += "/bin/sh /etc/rc";
+
+exec.stop = "/bin/sh /etc/rc.shutdown";
+
+path = "ZPATH/${name}";
+securelevel = 3;
+
+ip4.addr = ${hostip};
+
+mount.fstab = "ZPATH/${name}.fstab";

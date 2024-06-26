@@ -1,10 +1,5 @@
 #!/bin/sh
 
-#
-# Remove a routed jail
-# and place its IP back into config.net
-#
-
 set -x
 
 if [ ! -e config.sh ]; then
@@ -29,19 +24,23 @@ fi
 
 service jail onestop ${JAILNAME}
 
-zfs destroy -f ${ZPOOL}/${ZSTOREVOL}/${JAILNAME}
-
-# get the host ip from the jail.conf file
+# read out jail ip
 HOSTIP=$(cat /etc/jail.conf.d/${JAILNAME}.conf | grep hostip | awk -F= '{print $2}' | sed 's@[";]@@g' | awk -F. '{print $4}')
-sed -i '' "1i\\
-${HOSTIP}
-" config.net
 
-# remove and rebuild dhcpd config
+# remove dhcp configuration
 rm /usr/local/etc/dhcpd/${HOSTIP}.conf
 cp /usr/local/etc/dhcpd.conf.bridged /usr/local/etc/dhcpd.conf
 cat /usr/local/etc/dhcpd/* >> /usr/local/etc/dhcpd.conf
 service isc-dhcpd restart
+
+# remove interface creation
+IFACE=$(sysrc -n jail_${JAILNAME}_iface)
+sysrc -x jail_${JAILNAME}_iface
+ifconfig ${JAILNAME}0 destroy
+sysrc -x ifconfig_${IFACE}
+sysrc cloned_interfaces-=${IFACE}
+
+zfs destroy -f ${ZPOOL}/${ZSTOREVOL}/${JAILNAME}
 
 rm -f /etc/jail.conf.d/${JAILNAME}.conf
 rm ${ZPATH}/${JAILNAME}.fstab

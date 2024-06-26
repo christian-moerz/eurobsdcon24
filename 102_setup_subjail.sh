@@ -38,10 +38,13 @@ TEMPLATE=/etc/jail.conf.d/jail.template
 cp subjail.template ${TEMPLATE}
 TEMPLATE_ROUTED=/etc/jail.conf.d/jail_routed.template
 cp subjail_routed.template ${TEMPLATE_ROUTED}
+TEMPLATE_ROUTED_TAP=/etc/jail.conf.d/jail_routed_tap.template
+cp subjail_routed_tap.template ${TEMPLATE_ROUTED_TAP}
 
 # replace variables in template
 sed -i '' "s@ZPATH@${ZPATH}@g" ${TEMPLATE}
 sed -i '' "s@ZPATH@${ZPATH}@g" ${TEMPLATE_ROUTED}
+sed -i '' "s@ZPATH@${ZPATH}@g" ${TEMPLATE_ROUTED_TAP}
 
 # write configuration into config file
 cat >> config.sh <<EOF
@@ -49,6 +52,7 @@ ZPOOL=${ZPOOL}
 ZSTOREVOL=${ZSTOREVOL}
 ZPATH=${ZPATH}
 ROUTENET=${ROUTENET}
+ROUTETAP=1000
 EOF
 
 # create a list of routed IPs we can use
@@ -118,7 +122,7 @@ EOF
 fi
     
 # setup a script that connects to a bhyve jail later
-cat >> /usr/local/bin/connect <<EOF
+cat > /usr/local/bin/connect <<EOF
 #!/bin/sh
 if [ "" == "\$1" ]; then
    echo Missing jail name.
