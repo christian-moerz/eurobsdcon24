@@ -116,6 +116,11 @@ pass in on \$switch from <jailaddrs> to ! ${NETWORK}/${SUBMASK} tag jail_out
 pass on \$extif from <jailaddrs> to ! ${NETWORK}/${SUBMASK} tagged jail_out
 EOF
 
+if [ "" == "${ROUTENET}" ]; then
+    # remove incorrect network
+    sed -i '' 's/ .0\/24//g' /etc/pf.conf
+fi
+
 service pf enable
 service pf start
 

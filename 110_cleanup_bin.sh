@@ -1,5 +1,13 @@
 #!/bin/sh
 
+if [ ! -e config.sh ]; then
+    echo Missing config.sh
+    exit 2
+fi
+
+. ./config.sh
+. ./utils.sh
+
 # clean up unnecessary binaries in bhyve jail
 CLEANUP = \
 /usr/bin/cpp \
@@ -174,7 +182,6 @@ CLEANUP = \
 /usr/bin/ldd32 \
 /usr/bin/gzcat \
 /usr/bin/sed \
-/usr/bin/logger \
 /usr/bin/c++filt \
 /usr/bin/base64 \
 /usr/bin/nview \
@@ -222,251 +229,256 @@ CLEANUP = \
 /usr/bin/dialog \
 /usr/bin/rup \
 /usr/bin/xzless \
-/usr/bin/bzegrep
-/usr/bin/captoinfo
-/usr/bin/rwall
-/usr/bin/llvm-strings
-/usr/bin/slogin
-/usr/bin/tftp
-/usr/bin/strfile
-/usr/bin/what
-/usr/bin/CC
-/usr/bin/objcopy
-/usr/bin/b64encode
-/usr/bin/time
-/usr/bin/cal
-/usr/bin/ssh-agent
-/usr/bin/bsnmpget
-/usr/bin/pkill
-/usr/bin/command
-/usr/bin/zcmp
-/usr/bin/vmstat
-/usr/bin/proccontrol
-/usr/bin/clear
-/usr/bin/csplit
-/usr/bin/leave
-/usr/bin/ztest
-/usr/bin/ucmatose
-/usr/bin/kcc
-/usr/bin/vi
-/usr/bin/vtfontcvt
-/usr/bin/readlink
-/usr/bin/clang++
-/usr/bin/awk
-/usr/bin/llvm-strip
-/usr/bin/colrm
-/usr/bin/reset
-/usr/bin/llvm-ranlib
-/usr/bin/timeout
-/usr/bin/pmcstudy
-/usr/bin/ypmatch
-/usr/bin/bthost
-/usr/bin/sort
-/usr/bin/lex
-/usr/bin/locale
-/usr/bin/lzgrep
-/usr/bin/fold
-/usr/bin/nawk
-/usr/bin/pathchk
-/usr/bin/tsort
-/usr/bin/join
-/usr/bin/keylogout
-/usr/bin/man
-/usr/bin/xzcat
-/usr/bin/iconv
-/usr/bin/chpass
-/usr/bin/tset
-/usr/bin/bzfgrep
-/usr/bin/yacc
-/usr/bin/lldb
-/usr/bin/llvm-objcopy
-/usr/bin/infotocap
-/usr/bin/ncal
-/usr/bin/ex
-/usr/bin/strings
-/usr/bin/addr2line
-/usr/bin/llvm-size
-/usr/bin/fstat
-/usr/bin/xargs
-/usr/bin/ssh
-/usr/bin/crontab
-/usr/bin/mckey
-/usr/bin/wg
-/usr/bin/penv
-/usr/bin/rping
-/usr/bin/unzip
-/usr/bin/uuencode
-/usr/bin/bsnmpwalk
-/usr/bin/fgrep
-/usr/bin/head
-/usr/bin/lock
-/usr/bin/rfcomm_sppd
-/usr/bin/cmp
-/usr/bin/unstr
-/usr/bin/locate
-/usr/bin/unexpand
-/usr/bin/iscsictl
-/usr/bin/file
-/usr/bin/xzdec
-/usr/bin/gprof
-/usr/bin/chgrp
-/usr/bin/ctlstat
-/usr/bin/bsdunzip
-/usr/bin/bsnmpset
-/usr/bin/fc
-/usr/bin/zstdcat
-/usr/bin/posixshmcontrol
-/usr/bin/ibv_devinfo
-/usr/bin/who
-/usr/bin/mkfifo
-/usr/bin/msgs
-/usr/bin/c89
-/usr/bin/rpcgen
-/usr/bin/ranlib
-/usr/bin/basename
-/usr/bin/more
-/usr/bin/bsdiff
-/usr/bin/grep
-/usr/bin/stat
-/usr/bin/beep
-/usr/bin/quota
-/usr/bin/chat
-/usr/bin/zmore
-/usr/bin/zgrep
-/usr/bin/ul
-/usr/bin/hexdump
-/usr/bin/id
-/usr/bin/nc
-/usr/bin/find
-/usr/bin/systat
-/usr/bin/unlzma
-/usr/bin/kdump
-/usr/bin/genl
-/usr/bin/chsh
-/usr/bin/xzfgrep
-/usr/bin/ctfconvert
-/usr/bin/lockf
-/usr/bin/talk
-/usr/bin/pagesize
-/usr/bin/ntpq
-/usr/bin/rot13
-/usr/bin/usbhidctl
-/usr/bin/nm
-/usr/bin/lesspipe.sh
-/usr/bin/apply
-/usr/bin/bzless
-/usr/bin/limits
-/usr/bin/wait
-/usr/bin/string2key
-/usr/bin/pwdx
-/usr/bin/lzma
-/usr/bin/printf
-/usr/bin/size
-/usr/bin/cu
-/usr/bin/killall
-/usr/bin/mkuzip
-/usr/bin/uncompress
-/usr/bin/ctfdump
-/usr/bin/xz
-/usr/bin/bmake
-/usr/bin/yppasswd
-/usr/bin/ctfmerge
-/usr/bin/openssl
-/usr/bin/kadmin
-/usr/bin/mandoc
-/usr/bin/llvm-readobj
-/usr/bin/logins
-/usr/bin/lzfgrep
-/usr/bin/rev
-/usr/bin/at
-/usr/bin/verify_krb5_conf
-/usr/bin/toe
-/usr/bin/xzgrep
-/usr/bin/backlight
-/usr/bin/sftp
-/usr/bin/seq
-/usr/bin/lzcat
-/usr/bin/units
-/usr/bin/ssh-add
-/usr/bin/cpuset
-/usr/bin/mail
-/usr/bin/od
-/usr/bin/localedef
-/usr/bin/fg
-/usr/bin/bzcat
-/usr/bin/wall
-/usr/bin/cksum
-/usr/bin/zstdless
-/usr/bin/wc
-/usr/bin/factor
-/usr/bin/pom
-/usr/bin/cpio
-/usr/bin/grdc
-/usr/bin/last
-/usr/bin/soelim
-/usr/bin/zinject
-/usr/bin/crypt
-/usr/bin/mkdep
-/usr/bin/mkesdb
-/usr/bin/ee
-/usr/bin/kf
-/usr/bin/telnet
-/usr/bin/lam
-/usr/bin/ibv_srq_pingpong
-/usr/bin/users
-/usr/bin/uniq
-/usr/bin/c++
-/usr/bin/c99
-/usr/bin/paste
-/usr/bin/tar
-/usr/bin/kyua
-/usr/bin/lzdec
-/usr/bin/hd
-/usr/bin/su
-/usr/bin/tr
-/usr/bin/script
-/usr/bin/nfsstat
-/usr/bin/ree
-/usr/bin/groups
-/usr/bin/llvm-addr2line
-/usr/bin/nex
-/usr/bin/clang
-/usr/bin/comm
-/usr/bin/rgrep
-/usr/bin/tty
-/usr/bin/llvm-objdump
-/usr/bin/cut
-/usr/bin/zegrep
-/usr/bin/newgrp
-/usr/bin/number
-/usr/bin/llvm-nm
-/usr/bin/which
-/usr/bin/lesskey
-/usr/bin/smbutil
-/usr/bin/objdump
-/usr/bin/newaliases
-/usr/bin/bsdtar
-/usr/bin/type
-/usr/bin/usbhidaction
-/usr/bin/flex++
-/usr/bin/pftp
-/usr/bin/unifdefall
-/usr/bin/calendar
-/usr/bin/du
-/usr/bin/llvm-profdata
-/usr/bin/fortune
-/usr/bin/pargs
-/usr/bin/nvi
-/usr/bin/xstr
-/usr/bin/fetch
-/usr/bin/tput
-/usr/bin/zstdegrep
-/usr/bin/nohup
-/usr/bin/enigma
-/usr/bin/chfn
-/usr/bin/rctl
-/usr/bin/rpcinfo
-/usr/bin/col
-/usr/bin/bzip2recover
-/usr/bin/getconf
+/usr/bin/bzegrep \
+/usr/bin/captoinfo \
+/usr/bin/rwall \
+/usr/bin/llvm-strings \
+/usr/bin/slogin \
+/usr/bin/tftp \
+/usr/bin/strfile \
+/usr/bin/what \
+/usr/bin/CC \
+/usr/bin/objcopy \
+/usr/bin/b64encode \
+/usr/bin/time \
+/usr/bin/cal \
+/usr/bin/ssh-agent \
+/usr/bin/bsnmpget \
+/usr/bin/pkill \
+/usr/bin/command \
+/usr/bin/zcmp \
+/usr/bin/vmstat \
+/usr/bin/proccontrol \
+/usr/bin/clear \
+/usr/bin/csplit \
+/usr/bin/leave \
+/usr/bin/ztest \
+/usr/bin/ucmatose \
+/usr/bin/kcc \
+/usr/bin/vi \
+/usr/bin/vtfontcvt \
+/usr/bin/readlink \
+/usr/bin/clang++ \
+/usr/bin/awk \
+/usr/bin/llvm-strip \
+/usr/bin/colrm \
+/usr/bin/reset \
+/usr/bin/llvm-ranlib \
+/usr/bin/timeout \
+/usr/bin/pmcstudy \
+/usr/bin/ypmatch \
+/usr/bin/bthost \
+/usr/bin/sort \
+/usr/bin/lex \
+/usr/bin/locale \
+/usr/bin/lzgrep \
+/usr/bin/fold \
+/usr/bin/nawk \
+/usr/bin/pathchk \
+/usr/bin/tsort \
+/usr/bin/join \
+/usr/bin/keylogout \
+/usr/bin/man \
+/usr/bin/xzcat \
+/usr/bin/iconv \
+/usr/bin/chpass \
+/usr/bin/tset \
+/usr/bin/bzfgrep \
+/usr/bin/yacc \
+/usr/bin/lldb \
+/usr/bin/llvm-objcopy \
+/usr/bin/infotocap \
+/usr/bin/ncal \
+/usr/bin/ex \
+/usr/bin/strings \
+/usr/bin/addr2line \
+/usr/bin/llvm-size \
+/usr/bin/fstat \
+/usr/bin/xargs \
+/usr/bin/ssh \
+/usr/bin/crontab \
+/usr/bin/mckey \
+/usr/bin/wg \
+/usr/bin/penv \
+/usr/bin/rping \
+/usr/bin/unzip \
+/usr/bin/uuencode \
+/usr/bin/bsnmpwalk \
+/usr/bin/fgrep \
+/usr/bin/lock \
+/usr/bin/rfcomm_sppd \
+/usr/bin/cmp \
+/usr/bin/unstr \
+/usr/bin/locate \
+/usr/bin/unexpand \
+/usr/bin/iscsictl \
+/usr/bin/file \
+/usr/bin/xzdec \
+/usr/bin/gprof \
+/usr/bin/chgrp \
+/usr/bin/ctlstat \
+/usr/bin/bsdunzip \
+/usr/bin/bsnmpset \
+/usr/bin/fc \
+/usr/bin/zstdcat \
+/usr/bin/posixshmcontrol \
+/usr/bin/ibv_devinfo \
+/usr/bin/who \
+/usr/bin/mkfifo \
+/usr/bin/msgs \
+/usr/bin/c89 \
+/usr/bin/rpcgen \
+/usr/bin/ranlib \
+/usr/bin/basename \
+/usr/bin/more \
+/usr/bin/bsdiff \
+/usr/bin/grep \
+/usr/bin/stat \
+/usr/bin/beep \
+/usr/bin/quota \
+/usr/bin/chat \
+/usr/bin/zmore \
+/usr/bin/zgrep \
+/usr/bin/ul \
+/usr/bin/hexdump \
+/usr/bin/id \
+/usr/bin/nc \
+/usr/bin/find \
+/usr/bin/systat \
+/usr/bin/unlzma \
+/usr/bin/kdump \
+/usr/bin/genl \
+/usr/bin/chsh \
+/usr/bin/xzfgrep \
+/usr/bin/ctfconvert \
+/usr/bin/lockf \
+/usr/bin/talk \
+/usr/bin/pagesize \
+/usr/bin/ntpq \
+/usr/bin/rot13 \
+/usr/bin/usbhidctl \
+/usr/bin/nm \
+/usr/bin/lesspipe.sh \
+/usr/bin/apply \
+/usr/bin/bzless \
+/usr/bin/limits \
+/usr/bin/wait \
+/usr/bin/string2key \
+/usr/bin/pwdx \
+/usr/bin/lzma \
+/usr/bin/size \
+/usr/bin/cu \
+/usr/bin/killall \
+/usr/bin/mkuzip \
+/usr/bin/uncompress \
+/usr/bin/ctfdump \
+/usr/bin/xz \
+/usr/bin/bmake \
+/usr/bin/yppasswd \
+/usr/bin/ctfmerge \
+/usr/bin/openssl \
+/usr/bin/kadmin \
+/usr/bin/mandoc \
+/usr/bin/llvm-readobj \
+/usr/bin/logins \
+/usr/bin/lzfgrep \
+/usr/bin/rev \
+/usr/bin/at \
+/usr/bin/verify_krb5_conf \
+/usr/bin/toe \
+/usr/bin/xzgrep \
+/usr/bin/backlight \
+/usr/bin/sftp \
+/usr/bin/lzcat \
+/usr/bin/units \
+/usr/bin/ssh-add \
+/usr/bin/mail \
+/usr/bin/od \
+/usr/bin/localedef \
+/usr/bin/fg \
+/usr/bin/bzcat \
+/usr/bin/wall \
+/usr/bin/cksum \
+/usr/bin/zstdless \
+/usr/bin/wc \
+/usr/bin/factor \
+/usr/bin/pom \
+/usr/bin/cpio \
+/usr/bin/grdc \
+/usr/bin/last \
+/usr/bin/soelim \
+/usr/bin/zinject \
+/usr/bin/mkdep \
+/usr/bin/mkesdb \
+/usr/bin/ee \
+/usr/bin/kf \
+/usr/bin/telnet \
+/usr/bin/lam \
+/usr/bin/ibv_srq_pingpong \
+/usr/bin/users \
+/usr/bin/c++ \
+/usr/bin/c99 \
+/usr/bin/tar \
+/usr/bin/kyua \
+/usr/bin/lzdec \
+/usr/bin/hd \
+/usr/bin/su \
+/usr/bin/script \
+/usr/bin/nfsstat \
+/usr/bin/ree \
+/usr/bin/groups \
+/usr/bin/llvm-addr2line \
+/usr/bin/nex \
+/usr/bin/clang \
+/usr/bin/comm \
+/usr/bin/rgrep \
+/usr/bin/tty \
+/usr/bin/llvm-objdump \
+/usr/bin/cut \
+/usr/bin/zegrep \
+/usr/bin/newgrp \
+/usr/bin/number \
+/usr/bin/llvm-nm \
+/usr/bin/lesskey \
+/usr/bin/smbutil \
+/usr/bin/objdump \
+/usr/bin/newaliases \
+/usr/bin/bsdtar \
+/usr/bin/type \
+/usr/bin/usbhidaction \
+/usr/bin/flex++ \
+/usr/bin/pftp \
+/usr/bin/unifdefall \
+/usr/bin/calendar \
+/usr/bin/du \
+/usr/bin/llvm-profdata \
+/usr/bin/fortune \
+/usr/bin/pargs \
+/usr/bin/nvi \
+/usr/bin/xstr \
+/usr/bin/fetch \
+/usr/bin/tput \
+/usr/bin/zstdegrep \
+/usr/bin/nohup \
+/usr/bin/enigma \
+/usr/bin/chfn \
+/usr/bin/rctl \
+/usr/bin/rpcinfo \
+/usr/bin/col \
+/usr/bin/bzip2recover \
+/usr/bin/getconf \
 /usr/bin/kgetcred
+
+if [ "$1" == "" ]; then
+    echo Missing jail name.
+    exit 2
+fi
+
+if [ ! -e $1 ]; then
+    echo Jail $1 not found.
+    exit 2
+fi
+
+for CLEAN in ${CLEANUP}; do
+    echo rm -f ${ZPATH}/$1${CLEAN}
+done

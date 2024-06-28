@@ -12,6 +12,8 @@ SWITCHNAME=${SWITCHNAME:=vmswitch}
 
 USERNAME=chris
 
+mkdir -p .ssh
+
 # Generate a ssh keypair
 if [ ! -e .ssh/id_ecdsa ]; then
     mkdir .ssh

@@ -22,6 +22,7 @@ fi
 # because we use that as static ip for
 # our nfs server
 
+# make sure we are not running the nfs server ip in the dynamic range
 sed -i '' 's@range 10.193.167.2 10.193.167.100;@range 10.193.167.3 10.193.167.100;@' /usr/local/etc/dhcpd.conf
 service dhcpd enable
 service dhcpd restart
@@ -44,7 +45,7 @@ bhyvectl --create --vm=freebsd-nfs
 TAP=$(ifconfig tap create)
 
 # Start up a bhyve virtual machine with a local network interface
-# ahci-cd is now removed, because we want to boot the installed system
+# add a user "chris" to be able to copy ssh key later on!
 bhyve \
 	-H \
 	-c 2 \
