@@ -6,6 +6,8 @@ mkdir /nfs
 echo /nfs /nfs/vm01 -maproot=chris -network=10.193.167.0/24 > /etc/exports
 echo 'V4: /nfs' >> /etc/exports
 
+chown chris /nfs
+
 sysrc nfs_server_enable=YES
 sysrc nfsd_enable=YES
 sysrc rpcbind_enable=YES
@@ -42,17 +44,29 @@ service inetd enable
 service inetd start
 
 # copy pxeboot to tftp
-cp /boot/pxeboot /tftpboot
+cp /boot/loader.efi /tftpboot
 chmod 444 /tftpboot/pxeboot
 
 ################################################################################
 
 # Fix pxeboot loader size
-cd /usr/src
-pkg install -y git
-git clone --depth 1 -b releng/14.0 https://github.com/freebsd/freebsd-src /usr/src
-cd /usr/src/stand
-make WITHOUT_LOADER_ZFS=YES clean
-make WITHOUT_LOADER_ZFS=YES all
-make WITHOUT_LOADER_ZFS=YES install DESTDIR=/nfs/vm01
+#cd /usr/src
+#pkg install -y git
+#git clone --depth 1 -b releng/14.0 https://github.com/freebsd/freebsd-src /usr/src
+#cd /usr/src/stand
+#make WITHOUT_LOADER_ZFS=YES clean
+#make WITHOUT_LOADER_ZFS=YES all
+#make WITHOUT_LOADER_ZFS=YES install DESTDIR=/nfs/vm01
 
+# there are some addidtional changes required
+# TODO - add a tmpfs for /tmp
+cat > /nfs/vm01/etc/fstab <<EOF
+10.193.167.2:/nfs/vm01 / nfs ro 0 0
+EOF
+
+cd /nfs/vm01
+mkdir -p conf/base
+
+# need to generate cpio mem bases for /etc and /var
+tar -c -v -f conf/base/etc.cpio.gz --format cpio --gzip etc
+tar -c -v -f conf/base/var.cpio.gz --format cpio --gzip var

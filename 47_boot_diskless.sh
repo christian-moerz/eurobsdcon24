@@ -13,11 +13,15 @@ NETWORK=${NETWORK:=10.193.167.0}
 BROADCAST=${BROADCAST:=10.193.167.255}
 SWITCHNAME=${SWITCHNAME:=vmswitch}
 
+#pkg install -y ipxe
+
 # create a new vm - in a jail, we need to do this manually
 bhyvectl --create --vm=freebsd-diskless
 
 # We create a tap
 TAP=$(ifconfig tap create)
+
+#	-s 5,ahci-cd,/usr/local/share/ipxe/ipxe.iso \
 
 # Run without local disk
 bhyve \

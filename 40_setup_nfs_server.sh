@@ -76,3 +76,22 @@ wait ${PID}
 bhyvectl --destroy --vm=freebsd-nfs
 
 ifconfig nfs0 destroy
+
+#
+# add diskless option to dhcp
+#
+mkdir -p /usr/local/etc/dhcpd
+cp /usr/local/etc/dhcpd.conf /usr/local/etc/dhcpd.base
+cat >> /usr/local/etc/dhcpd/00_diskless <<EOF
+group diskless {
+    next-server 10.193.167.2;
+    filename "pxeboot";
+    option root-path "10.193.167.2:/nfs/vm01/";
+
+    host client {
+       hardware ethernet 00:00:00:ff:ff:03;
+       fixed-address 10.193.167.3;
+    }
+}
+
+EOF
