@@ -95,3 +95,6 @@ group diskless {
 }
 
 EOF
+
+cat /usr/local/etc/dhcpd.base /usr/local/etc/dhcpd/* > /usr/local/etc/dhcpd.conf
+service isc-dhcpd restart
