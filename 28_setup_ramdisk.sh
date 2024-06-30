@@ -2,23 +2,16 @@
 
 set -x
 
+# source configuration we started
+if [ -e config.sh ]; then
+    . ./config.sh
+fi
+
 # check for bridge
 ifconfig vmswitch >> /dev/null
 
 if [ "$?" != "0" ]; then
-        # start that bridge
-        ifconfig bridge0 create
-        ifconfig bridge0 inet 10.193.167.1 netmask 255.255.255.0 name vmswitch group vm-switch up
-
-	sysrc cloned_interfaces+="bridge0"
-	sysrc ifconfig_bridge0="inet 10.193.167.1 netmask 255.255.255.0 name vmswitch group vm-switch up"
-	sysrc create_args_bridge0="ether 00:00:00:ff:ff:01"
-
-	# install dhcp server
-	pkg install -y dhcpd
-	cp dhcpd.conf /usr/local/etc
-	service dhcpd enable
-	service dhcpd start
+    ./06_setup_vmbridge.sh
 fi
 
 # create a ramdisk for backing storage
@@ -43,14 +36,14 @@ bhyve \
 	-s 2,nvme,/dev/${DISK} \
 	-s 3,lpc \
 	-s 4,virtio-net,${NET},mac=00:00:00:ff:ff:02 \
-	-s 5,ahci-cd,/labs/freebsd.iso \
+	-s 5,ahci-cd,${ZPATH}/freebsd.iso \
 	freebsd-memdisk &
 
 PID=$!
 
 # tap was created now
 ifconfig ${NET} name mem0
-ifconfig vmswitch addm mem0
+ifconfig ${SWITCHNAME} addm mem0
 
 wait ${PID}
 
