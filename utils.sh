@@ -10,11 +10,16 @@ ISO=http://ftp.freebsd.org/pub/FreeBSD/releases/amd64/amd64/ISO-IMAGES/14.0/Free
 # ensure that a zfs volume exists
 ensure_zfs()
 {
+    echo % zfs create $1
     zfs list | grep $1 > /dev/null 2>&1
     if [ "0" != "$?" ]; then
-	echo % zfs create $1
 	zfs create $1
     fi
+}
+
+ensure_zfs_metadata() {
+    echo % zfs set primarycache=metadata $1
+    zfs set primarycache=metadata $1
 }
 
 ensure_zfs_mountpoint()

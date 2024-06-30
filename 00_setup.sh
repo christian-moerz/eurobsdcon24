@@ -8,14 +8,9 @@
 
 set -x
 
-MYJID=$(sysctl -n security.jail.jailed)
-
-if [ "0" == "${MYJID}" ]; then
-    echo Running outside. Watch out.
-    exit 1
-fi
-
 . ./utils.sh
+
+ensure_jailed
 
 if [ -e config.sh ]; then
 	. ./config.sh

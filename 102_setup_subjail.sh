@@ -25,6 +25,7 @@ ROUTENET=10.191.169
 # zfs set mountpoint=${ZPATH} ${ZPOOL}/${ZSTOREVOL}
 ensure_zfs_mountpoint ${ZPATH} ${ZPOOL}/${ZSTOREVOL}
 
+echo % mkdir -p ${ZPATH}/iso
 mkdir -p ${ZPATH}/iso
 
 # install scripts and binaries into lab environment
@@ -35,11 +36,11 @@ install -m 755 mk-epair.sh ${ZPATH}
 
 # install subjail template
 TEMPLATE=/etc/jail.conf.d/jail.template
-cp subjail.template ${TEMPLATE}
+ensure_cp subjail.template ${TEMPLATE}
 TEMPLATE_ROUTED=/etc/jail.conf.d/jail_routed.template
-cp subjail_routed.template ${TEMPLATE_ROUTED}
+ensure_cp subjail_routed.template ${TEMPLATE_ROUTED}
 TEMPLATE_ROUTED_TAP=/etc/jail.conf.d/jail_routed_tap.template
-cp subjail_routed_tap.template ${TEMPLATE_ROUTED_TAP}
+ensure_cp subjail_routed_tap.template ${TEMPLATE_ROUTED_TAP}
 
 # replace variables in template
 sed -i '' "s@ZPATH@${ZPATH}@g" ${TEMPLATE}
