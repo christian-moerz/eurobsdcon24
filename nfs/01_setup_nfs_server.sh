@@ -44,7 +44,7 @@ service inetd enable
 service inetd start
 
 # copy pxeboot to tftp
-cp /boot/loader.efi /tftpboot
+cp /boot/loader.efi /tftpboot/pxeboot
 chmod 444 /tftpboot/pxeboot
 
 ################################################################################
@@ -62,6 +62,7 @@ chmod 444 /tftpboot/pxeboot
 # TODO - add a tmpfs for /tmp
 cat > /nfs/vm01/etc/fstab <<EOF
 10.193.167.2:/nfs/vm01 / nfs ro 0 0
+tmpfs /tmp tmpfs size=128M,rw 0 0
 EOF
 
 cd /nfs/vm01
@@ -70,3 +71,6 @@ mkdir -p conf/base
 # need to generate cpio mem bases for /etc and /var
 tar -c -v -f conf/base/etc.cpio.gz --format cpio --gzip etc
 tar -c -v -f conf/base/var.cpio.gz --format cpio --gzip var
+
+service mountd restart
+showmount -e
