@@ -2,6 +2,13 @@
 
 set -x
 
+# source configuration we started
+if [ -e config.sh ]; then
+    . ./config.sh
+fi
+
+. ./utils.sh
+
 NAME=linux
 DISK=${NAME}
 IP=10.10.10.38
@@ -10,33 +17,16 @@ IP=10.10.10.38
 ifconfig vmswitch >> /dev/null
 
 if [ "$?" != "0" ]; then
-        # start that bridge
-        ifconfig bridge0 create
-        ifconfig bridge0 inet 10.193.167.1 netmask 255.255.255.0 name vmswitch group vm-switch up
-
-	sysrc cloned_interfaces+="bridge0"
-	sysrc ifconfig_bridge0="inet 10.193.167.1 netmask 255.255.255.0 name vmswitch group vm-switch up"
-	sysrc create_args_bridge0="ether 00:00:00:ff:ff:01"
-
-	# install dhcp server
-	pkg install -y dhcpd
-	cp dhcpd.conf /usr/local/etc
-	service dhcpd enable
-	service dhcpd start
+    ./06_setup_vmbridge.sh
 fi
 
-# create a zfs volume if it does not exist
-mount | grep ${DISK} > /dev/null
-if [ ! -e /labs/${DISK} ]; then
-	zfs create zroot/labjails/${DISK}
-	zfs mount zroot/labjails/${DISK}
-fi
+ensure_zfs ${ZPOOL}/${ZSTOREVOL}/${DISK}
 
 # Set up a disk for a virtual machine setup
-truncate -s 20G /labs/${DISK}/disk.img
+truncate -s 20G ${ZPATH}/${DISK}/disk.img
 
 # create uefi vars file
-cp /usr/local/share/uefi-firmware/BHYVE_UEFI_VARS.fd /labs/${DISK}/vars.fd
+cp /usr/local/share/uefi-firmware/BHYVE_UEFI_VARS.fd ${ZPATH}/${DISK}/vars.fd
 
 # create a new vm - in a jail, we need to do this manually
 bhyvectl --create --vm=${NAME}
