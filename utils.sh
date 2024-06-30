@@ -10,10 +10,35 @@ ISO=http://ftp.freebsd.org/pub/FreeBSD/releases/amd64/amd64/ISO-IMAGES/14.0/Free
 # ensure that a zfs volume exists
 ensure_zfs()
 {
-    zfs list | grep $1
+    zfs list | grep $1 > /dev/null 2>&1
     if [ "0" != "$?" ]; then
+	echo % zfs create $1
 	zfs create $1
     fi
+}
+
+ensure_zfs_mountpoint()
+{
+    MPOINT=$(zfs get -H mountpoint $2 | awk '{print $3}')
+    if [ "${MPOINT}" != "$1" ]; then
+	echo % zfs set mountpoint=$1 $2
+	zfs set mountpoint=$1 $2
+    fi
+}
+
+ensure_zfs_jailed()
+{
+    JAILED=$(zfs get -H jailed $1 | awk '{print $3}')
+    if [ "${JAILED}" != "on" ]; then
+	echo % zfs set jailed=on $1
+	zfs set jailed=on $1
+    fi
+}
+
+ensure_cp()
+{
+    echo % cp $1 $2
+    cp $1 $2
 }
 
 # ensure zfs mount point is set to particular
@@ -54,8 +79,11 @@ ensure_download()
 	if [ -e ${BNAME} ]; then
 	    # if we have the file locally, we use that
 	    # instead of downloading it frmo the internet
+
+	    echo % cp ${BNAME} ${OUTPUT}
 	    cp ${BNAME} ${OUTPUT}
 	else
+	    echo % fetch -o ${OUTPUT} ${URL}
 	    fetch -o ${OUTPUT} ${URL}
 	fi
     fi
@@ -79,4 +107,10 @@ ensure_newjail()
 	echo Jail $1 already exists.
 	exit 1
     fi
+}
+
+sysrc_file()
+{
+    echo % sysrc -f $1 $2
+    sysrc -f $1 $2
 }
