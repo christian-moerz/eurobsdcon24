@@ -38,7 +38,7 @@ IPRANGE_START=${IPRANGE_START:=10.193.167.33}
 IPRANGE_STOP=${IPRANGE_STOP:=10.193.167.62}
 
 # get dns server from main jail
-DNS=$(cat /etc/resolv.conf | grep nameserver | awk '{ print $2 }')
+DNS=$(cat /etc/resolv.conf | grep nameserver | head -1 | awk '{ print $2 }')
 
 # pkg install -y dhcpd
 # Installing ISC dhcp server instead of OpenBSD one

@@ -6,6 +6,8 @@
 # this is run in the main jail
 # but does not actually create any jail yet
 
+set -x
+
 if [ -e config.sh ]; then
 	. ./config.sh
 fi
@@ -78,6 +80,11 @@ chmod 755 /usr/local/bin/bhyveclean
 # re-install pkg so we have a pkg package for
 # later use in subjail
 pkg install -y -f pkg git
+
+if [ ! -e /usr/local/bin/git ]; then
+    echo Installation for git failed.
+    exit 2
+fi
 
 # make sure we only keep variables once
 # instead of repeating them

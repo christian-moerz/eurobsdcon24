@@ -5,6 +5,8 @@ set -x
 if [ -e config.sh ]; then
 	. ./config.sh
 fi
+. ./utils.sh
+
 ZPATH=${ZPATH:=/lab}
 ZPOOL=${ZPOOL:=zroot}
 ZSTOREVOL=${ZSTOREVOL:=labjails}
@@ -15,10 +17,7 @@ USERNAME=chris
 mkdir -p .ssh
 
 # Generate a ssh keypair
-if [ ! -e .ssh/id_ecdsa ]; then
-    mkdir .ssh
-    ssh-keygen -f .ssh/id_ecdsa -t ecdsa
-fi
+generate_ssh
 
 JAILED=$(sysctl security.jail.jailed | awk -F: '{print $2}')
 JAILED=$(echo ${JAILED})

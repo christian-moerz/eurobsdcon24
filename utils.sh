@@ -119,3 +119,11 @@ sysrc_file()
     echo % sysrc -f $1 $2
     sysrc -f $1 $2
 }
+
+generate_ssh()
+{
+    if [ ! -e .ssh/id_ecdsa ]; then
+	mkdir .ssh
+	ssh-keygen -f .ssh/id_ecdsa -t ecdsa
+    fi
+}
