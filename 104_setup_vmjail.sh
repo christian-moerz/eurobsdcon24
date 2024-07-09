@@ -48,6 +48,11 @@ if [ "" == "${JAILNAME}" ]; then
     exit 2
 fi
 
+if [ -e ${ZPATH}/${JAILNAME}/vm/disk.img ]; then
+    echo ${JAILNAME} already exists. Skipping.
+    exit 0
+fi
+
 # ensure creation of jail zfs volume
 ensure_zfs "${ZPOOL}/${ZSTOREVOL}/${JAILNAME}"
 # use caching in guest instead of host

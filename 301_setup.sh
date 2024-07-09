@@ -44,14 +44,8 @@ sysrc ifconfig_DEFAULT="inet ${CONF_IP} netmask ${CONF_SUBNET}"
 sysrc sshd_enable=YES
 sysrc hostname=${CONF_HOSTNAME}
 sysrc defaultrouter=${CONF_ROUTER}
-cat >> /etc/sysctl.conf <<DOT
-security.bsd.see_other_uids=0
-security.bsd.see_other_gids=0
-security.bsd.see_jail_proc=0
-security.bsd.unprivileged_read_msgbuf=0
-security.bsd.unprivileged_proc_debug=0
-kern.randompid=1
-DOT
+
+echo nameserver ${DNS} > /etc/resolv.conf
 
 pw useradd lab -m -G wheel -s /bin/csh
 echo labpass | pw usermod lab -n lab -h 0
@@ -61,31 +55,61 @@ chown -R lab:lab /home/lab/.ssh
 chmod 700 /home/lab/.ssh
 chmod 600 /home/lab/.ssh/authorized_keys
 
+sysrc -f /etc/sysctl.conf security.bsd.see_other_uids=0
+sysrc -f /etc/sysctl.conf security.bsd.see_other_gids=0
+sysrc -f /etc/sysctl.conf security.bsd.see_jail_proc=0
+sysrc -f /etc/sysctl.conf security.bsd.unprivileged_read_msgbuf=0
+sysrc -f /etc/sysctl.conf security.bsd.unprivileged_proc_debug=0
+sysrc -f /etc/sysctl.conf kern.randompid=1
+
+cat <<AOT > /etc/rc.local
+#!/bin/sh
+pkg info | grep doas > /dev/null 2>&1
+if [ "0" != "\$?" ]; then
+   pkg install -y doas
+fi
+AOT
+
+chmod 755 /etc/rc.local
+mkdir -p /usr/local/etc
+
+cat > /usr/local/etc/doas.conf <<BOT
+permit lab nopass
+BOT
+
 EOF
 }
 
 gen_media()
 {
-    mkdir -p ${ZPATH}/iso/setup
-    tar -C ${ZPATH}/iso/setup -xf ${ZPATH}/iso/freebsd.iso
-    write_installerconfig
-    # finally, package up as iso again
-    sh /usr/src/release/amd64/mkisoimages.sh -b '13_0_RELEASE_AMD64_CD' ${ZPATH}/iso/$1.iso ${ZPATH}/iso/setup
-    
-    # clean up again
-    rm -fr ${ZPATH}/iso/setup
+    if [ ! -e ${ZPATH}/iso/$1.iso ]; then
+	mkdir -p ${ZPATH}/iso/setup
+	tar -C ${ZPATH}/iso/setup -xf ${ZPATH}/iso/freebsd.iso
+	write_installerconfig
+
+	# finally, package up as iso again
+	sh /usr/src/release/amd64/mkisoimages.sh -b '13_0_RELEASE_AMD64_CD' ${ZPATH}/iso/$1.iso ${ZPATH}/iso/setup
+	
+	# clean up again
+	rm -fr ${ZPATH}/iso/setup
+    fi
 }
 
-# setup base jail after first start
-./102_setup_subjail.sh
+if [ "3" != "${STAGE}" ]; then
 
-# setup switch
-./103_setup_switch.sh
+    # setup base jail after first start
+    ./102_setup_subjail.sh
 
-# we prepare installation media for the three servers
-if [ ! -e /usr/src/UPDATING ]; then
-    echo Missing /usr/src
-    exit 2
+    # setup switch
+    ./103_setup_switch.sh
+
+    # we prepare installation media for the three servers
+    if [ ! -e /usr/src/UPDATING ]; then
+	echo Missing /usr/src
+	exit 2
+    fi
+
+    echo "STAGE=3" >> config.sh
 fi
 
 
@@ -104,5 +128,16 @@ CONF_HOSTNAME="mail2"
 CONF_IP="10.193.167.12"
 gen_media mail2
 
-./104_setup_vmjail.sh -m 1G -c unbound.iso
+./104_setup_vmjail.sh -m 1G -c unbound.iso unbound
 
+./104_setup_vmjail.sh -m 4G -c mail1.iso mail1
+
+./104_setup_vmjail.sh -m 4G -c mail2.iso mail2
+
+# after setting servers up, we install unbound and
+# configure our two domains to talk to each other
+
+scp -i .ssh/id_ecdsa mailsrv/01_setup_unbound.sh \
+    lab@10.193.167.10:
+ssh -i .ssh/id_ecdsa lab@10.193.167.10 -c \
+    'su -c /home/lab/01_setup_unbound.sh'
