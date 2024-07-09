@@ -177,6 +177,9 @@ echo Press ENTER to continue.
 read ENTER
 ssh -i .ssh/id_ecdsa lab@10.193.167.10
 
+await_ip 10.193.167.11
+sleep 10
+
 # connect to mail server 1 and set up mail domain
 # ny-central.lab
 ssh_copy mail.ny-central.lab.* 11
@@ -190,6 +193,11 @@ sysrc -f mailsrv/config.mail1.sh NETWORKS="10.193.167.0/24"
 sysrc -f mailsrv/config.mail1.sh SSHUSERS=lab
 sysrc -f mailsrv/config.mail1.sh EXTIF=vtnet0
 mv mailsrv/config.mail1.sh /tmp/config.sh
+mv mail.ny-central.lab.crt /tmp/server.crt
+mv mail.ny-central.lab.key /tmp/server.key
+ssh_copy /tmp/server.crt 11
+ssh_copy /tmp/server.key 11
+ssh_copy /ca/pki/ca.crt 11
 
 ssh_copy /tmp/config.sh 11
 rm -f /tmp/config.sh

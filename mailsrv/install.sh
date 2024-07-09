@@ -5,26 +5,13 @@
 
 . ./config.sh
 
+set -e
+
 #
 # Installing cyrus imap
 #
-pkg install -y cyrus-imapd38 cyrus-sasl cyrus-sasl-saslauthd
-
-# Installing postfix
-pkg install -y postfix-sasl
-
-# Install amavis, spamassassin, clamav, milter, and opendkim
-pkg install -y amavisd-new clamav clamav-unofficial-sigs spamassassin \
-    spamassassin-dqs spamass-milter opendkim
-
-# Install sshguard as additional protection
-# against credential stuffing
-pkg install -y sshguard
 
 # blacklistd is already in base
-
-# Install addtional security packages: spamd
-pkg install -y spamd
 
 #
 # System settings
@@ -39,7 +26,7 @@ pw groupadd sshusers
 pw groupmod sshusers -m ${SSHUSERS}
 sed -i '' 's@#Port 22@Port 22\
 AllowGroups sshusers\
-Ciphers "chacha20-poly1305@openssh.com,aes128-ctr,aes192-ctr,aes256-ctr,aes128-gcm@openssh.com,aes256-gcm@openssh.com"@g' ${SSHCF}
+Ciphers "chacha20-poly1305\@openssh.com,aes128-ctr,aes192-ctr,aes256-ctr,aes128-gcm\@openssh.com,aes256-gcm\@openssh.com"@g' ${SSHCF}
 
 # Harden SSH settings
 sed -i '' 's@#LoginGraceTime 2m@LoginGraceTime 2m@g' ${SSHCF}
@@ -83,6 +70,9 @@ touch /usr/local/etc/postfix/virtualmap
 # To add a user, we need to add an email address and a mailbox to deliver to
 # We also add the virusalert post box, which receives messages when
 # emails contain malware threats
+# remove any pre-existing entries
+sed -i '' "/${TESTEMAIL}/d" /usr/local/etc/postfix/virtualmap
+sed -i '' "/virusalert@${DOMAIN}/d" /usr/local/etc/postfix/virtualmap
 cat >> /usr/local/etc/postfix/virtualmap <<EOF
 ${TESTEMAIL} ${TESTUSER}
 virusalert@${DOMAIN} virusalert
@@ -93,6 +83,14 @@ postmap /usr/local/etc/postfix/vmailbox
 
 # Add TLS info for postfix
 # Also add virtual delivery
+# removing any pre-existing settings
+sed -i '' '/^smtpd_tls_CAfile/d' ${MAINCF}
+sed -i '' '/^smtpd_tls_cert_file/d' ${MAINCF}
+sed -i '' '/^smtpd_tls_key_file/d' ${MAINCF}
+sed -i '' '/^smtpd_tls_security_level/d' ${MAINCF}
+sed -i '' '/^virtual_mailbox_domains/d' ${MAINCF}
+sed -i '' '/^virtual_mailbox_maps/d' ${MAINCF}
+sed -i '' '/^virtual_alias_maps/d' ${MAINCF}
 cat >> ${MAINCF} <<EOF
 smtpd_tls_CAfile = /usr/local/etc/ssl/ca.crt
 smtpd_tls_cert_file = /usr/local/etc/ssl/server.crt
@@ -136,7 +134,11 @@ install -m 0444 server.crt /usr/local/etc/ssl/server.crt
 install -m 0444 -o cyrus server.key /usr/local/etc/ssl/cyrus.key
 install -m 0444 ca.crt /usr/local/etc/ssl/ca.crt
 install -m 0444 ca.crt /etc/ssl/certs/ca.crt
-install -m 0444 NY_Central.pem /usr/share/certs/trusted/NY_Central.pem
+install -m 0444 ca.crt /usr/share/certs/trusted/NY_Central.pem
+if [ ! -e /usr/local/etc/ssl/cert.pem.ca ]; then
+    cp /usr/local/etc/ssl/cert.pem /usr/local/etc/ssl/cert.pem.ca
+    cat ca.crt >> /usr/local/etc/ssl/cert.pem
+fi
 certctl rehash
 
 #
@@ -231,10 +233,10 @@ service postfix restart
 #
 
 # Install stunnel config
-install -m 0644 stunnel.conf /usr/local/etc/stunnel/stunnel.conf
+#install -m 0644 stunnel.conf /usr/local/etc/stunnel/stunnel.conf
 
 # Do not enable stunnel, only leave as backup
-sysrc stunnel_enable=NO
+#sysrc stunnel_enable=NO
 
 # Do not start redirect service
 # service stunnel start
