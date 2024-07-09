@@ -62,19 +62,9 @@ echo "security.bsd.unprivileged_read_msgbuf=0" >> /etc/sysctl.conf
 echo "security.bsd.unprivileged_proc_debug=0" >> /etc/sysctl.conf
 echo "kern.randompid=1" >> /etc/sysctl.conf
 
-cat <<AOT >/etc/rc.local
-#!/bin/sh
-if [ -e /usr/local/bin/doas ]; then
-   exit 0
-fi
-pkg install -y doas
-AOT
-chmod 755 /etc/rc.local
-
 mkdir -p /usr/local/etc
-
-cat >/usr/local/etc/doas.conf <<BOT
-permit lab nopass
+cat <<BOT >/usr/local/etc/doas.conf
+permit nopass lab
 BOT
 
 EOF
@@ -128,6 +118,11 @@ CONF_HOSTNAME="mail2"
 CONF_IP="10.193.167.12"
 gen_media mail2
 
+#
+# remove any previous entries from known hosts
+#
+sed -i '' '/10.193.167.10/d' /root/.ssh/known_hosts
+
 ./104_setup_vmjail.sh -m 1G -c unbound.iso unbound
 
 ./104_setup_vmjail.sh -m 4G -c mail1.iso mail1
@@ -137,7 +132,19 @@ gen_media mail2
 # after setting servers up, we install unbound and
 # configure our two domains to talk to each other
 
+# wait for unbound to complete booting
+await_ip 10.193.167.10
+
+sleep 10
+
 scp -i .ssh/id_ecdsa mailsrv/01_setup_unbound.sh \
     lab@10.193.167.10:
-ssh -i .ssh/id_ecdsa lab@10.193.167.10 -c \
-    'su -c /home/lab/01_setup_unbound.sh'
+scp -i .ssh/id_ecdsa mailsrv/unbound.conf \
+    lab@10.193.167.10:
+scp -i .ssh/id_ecdsa mailsrv/*.zone \
+    lab@10.193.167.10:
+echo Connecting to unbound - run 01_setup_unbound.sh!
+echo Press ENTER to continue.
+read ENTER
+ssh -i .ssh/id_ecdsa lab@10.193.167.10
+

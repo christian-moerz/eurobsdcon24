@@ -127,3 +127,14 @@ generate_ssh()
 	ssh-keygen -f .ssh/id_ecdsa -t ecdsa
     fi
 }
+
+await_ip() {
+    CHECKED=1
+
+    while [ "${CHECKED}" != "0" ]; do
+	ping -c 1 $1 > /dev/null 2>&1
+	CHECKED=$?
+    done
+    
+    return 0
+}
