@@ -31,6 +31,7 @@ fi
 generate_ssh
 
 PUBKEY=$(cat .ssh/id_ecdsa.pub)
+NAMESERVER=${DNS}
 
 write_installerconfig()
 {
@@ -45,7 +46,7 @@ sysrc sshd_enable=YES
 sysrc hostname=${CONF_HOSTNAME}
 sysrc defaultrouter=${CONF_ROUTER}
 
-echo nameserver ${DNS} > /etc/resolv.conf
+echo nameserver ${NAMESERVER} > /etc/resolv.conf
 
 pw useradd lab -m -G wheel -s /bin/csh
 echo labpass | pw usermod lab -n lab -h 0
@@ -112,16 +113,20 @@ gen_media unbound
 
 CONF_HOSTNAME="mail1"
 CONF_IP="10.193.167.11"
+NAMESERVER="10.193.167.10"
+SEARCH="ny-central.lab"
 gen_media mail1
 
 CONF_HOSTNAME="mail2"
 CONF_IP="10.193.167.12"
+SEARCH="eurobsdcon.lab"
 gen_media mail2
 
 #
 # remove any previous entries from known hosts
 #
 sed -i '' '/10.193.167.10/d' /root/.ssh/known_hosts
+sed -i '' '/10.193.167.11/d' /root/.ssh/known_hosts
 
 ./104_setup_vmjail.sh -m 1G -c unbound.iso unbound
 
@@ -132,19 +137,67 @@ sed -i '' '/10.193.167.10/d' /root/.ssh/known_hosts
 # after setting servers up, we install unbound and
 # configure our two domains to talk to each other
 
+# create a CA for our tests
+pkg install -y easy-rsa
+mkdir -p /ca
+CURRENT=$(pwd)
+cd /ca && easy-rsa init-pki
+easyrsa build-ca nopass
+
+# generate server certificates
+easyrsa build-server-full mail.ny-central.lab nopass
+easyrsa build-server-full mail.eurobsdcon.lab nopass
+
+cp /ca/pki/issued/mail.ny-central.lab.crt ${CURRENT}
+cp /ca/pki/private/mail.ny-central.lab.key ${CURRENT}
+cp /ca/pki/issued/mail.eurobsdcon.lab.crt ${CURRENT}
+cp /ca/pki/private/mail.eurobsdcon.lab.key ${CURRENT}
+
+cd ${CURRENT}
+
+# for simplicity, we create a single dhparam file for all
+if [ ! -e dhparams.pem ]; then
+    openssl dhparam -out dhparams.pem 4096
+fi
+
 # wait for unbound to complete booting
 await_ip 10.193.167.10
 
-sleep 10
+ssh_copy()
+{
+    scp -i .ssh/id_ecdsa $1 lab@10.193.167.$2:
+}
 
-scp -i .ssh/id_ecdsa mailsrv/01_setup_unbound.sh \
-    lab@10.193.167.10:
-scp -i .ssh/id_ecdsa mailsrv/unbound.conf \
-    lab@10.193.167.10:
-scp -i .ssh/id_ecdsa mailsrv/*.zone \
-    lab@10.193.167.10:
+ssh_copy mailsrv/01_setup_unbound.sh 10
+ssh_copy mailsrv/unbound.conf 10
+ssh_copy 'mailsrv/*.zone' 10
+
 echo Connecting to unbound - run 01_setup_unbound.sh!
 echo Press ENTER to continue.
 read ENTER
 ssh -i .ssh/id_ecdsa lab@10.193.167.10
 
+# connect to mail server 1 and set up mail domain
+# ny-central.lab
+ssh_copy mail.ny-central.lab.* 11
+ssh_copy mailsrv/install.sh 11
+cp mailsrv/config.sh mailsrv/config.mail1.sh
+sed -i '' 's/mailsrv.ny-central.local/mail1.ny-central.lab/' \
+    mailsrv/config.mail1.sh
+sed -i '' 's/ny-central.local/ny-central.lab/' \
+    mailsrv/config.mail1.sh
+sysrc -f mailsrv/config.mail1.sh NETWORKS="10.193.167.0/24"
+sysrc -f mailsrv/config.mail1.sh SSHUSERS=lab
+sysrc -f mailsrv/config.mail1.sh EXTIF=vtnet0
+mv mailsrv/config.mail1.sh /tmp/config.sh
+
+ssh_copy /tmp/config.sh 11
+rm -f /tmp/config.sh
+ssh_copy dhparams.pem 11
+
+echo Connecting to mail1 - run install.sh
+echo Press ENTER to continue.
+read ENTER
+ssh -i .ssh/id_ecdsa lab@10.193.167.11
+
+echo Base setup completed.
