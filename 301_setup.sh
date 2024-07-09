@@ -55,25 +55,25 @@ chown -R lab:lab /home/lab/.ssh
 chmod 700 /home/lab/.ssh
 chmod 600 /home/lab/.ssh/authorized_keys
 
-sysrc -f /etc/sysctl.conf security.bsd.see_other_uids=0
-sysrc -f /etc/sysctl.conf security.bsd.see_other_gids=0
-sysrc -f /etc/sysctl.conf security.bsd.see_jail_proc=0
-sysrc -f /etc/sysctl.conf security.bsd.unprivileged_read_msgbuf=0
-sysrc -f /etc/sysctl.conf security.bsd.unprivileged_proc_debug=0
-sysrc -f /etc/sysctl.conf kern.randompid=1
+echo "security.bsd.see_other_uids=0" >> /etc/sysctl.conf
+echo "security.bsd.see_other_gids=0" >> /etc/sysctl.conf
+echo "security.bsd.see_jail_proc=0" >> /etc/sysctl.conf
+echo "security.bsd.unprivileged_read_msgbuf=0" >> /etc/sysctl.conf
+echo "security.bsd.unprivileged_proc_debug=0" >> /etc/sysctl.conf
+echo "kern.randompid=1" >> /etc/sysctl.conf
 
-cat <<AOT > /etc/rc.local
+cat <<AOT >/etc/rc.local
 #!/bin/sh
-pkg info | grep doas > /dev/null 2>&1
-if [ "0" != "\$?" ]; then
-   pkg install -y doas
+if [ -e /usr/local/bin/doas ]; then
+   exit 0
 fi
+pkg install -y doas
 AOT
-
 chmod 755 /etc/rc.local
+
 mkdir -p /usr/local/etc
 
-cat > /usr/local/etc/doas.conf <<BOT
+cat >/usr/local/etc/doas.conf <<BOT
 permit lab nopass
 BOT
 
