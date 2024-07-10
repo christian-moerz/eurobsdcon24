@@ -185,7 +185,7 @@ if [ ! -e /usr/local/etc/ssl/cert.pem.ca ]; then
 fi
 mkdir -p /usr/share/certs/trusted
 install -m 0444 /ca/pki/ca.crt /usr/share/certs/trusted/localca.pem
-certctl trust ca.crt
+certctl trust /ca/pki/ca.crt
 openssl rehash /etc/ssl/certs
 certctl rehash
 
