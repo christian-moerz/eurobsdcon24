@@ -17,6 +17,9 @@
 # This needs to run inside base jail
 #
 
+set -x
+set -e
+
 . ./utils.sh
 
 ensure_jailed
@@ -160,6 +163,8 @@ if [ ! -e /ca ]; then
     # generate server certificates
     easyrsa build-server-full mail.ny-central.lab nopass
     easyrsa build-server-full mail.eurobsdcon.lab nopass
+
+    cd ${CURRENT}
 fi    
 cp /ca/pki/issued/mail.ny-central.lab.crt .
 cp /ca/pki/private/mail.ny-central.lab.key .
@@ -173,13 +178,16 @@ fi
 
 # install the CA certificate locally, so we can trust
 # those mail servers when accessing as client
-install -m 0444 /ca/pki/ca.crt /usr/local/etc/ssl/ca.crt
-cat /ca/pki/ca.crt >> /usr/local/etc/ssl/cert.pem
+if [ ! -e /usr/local/etc/ssl/cert.pem.ca ]; then
+    cp /usr/local/etc/ssl/cert.pem /usr/local/etc/ssl/cert.pem.ca
+    cat ca.crt >> /usr/local/etc/ssl/cert.pem
+    cat ca.crt >> /etc/ssl/cert.pem
+fi
 mkdir -p /usr/share/certs/trusted
 install -m 0444 /ca/pki/ca.crt /usr/share/certs/trusted/localca.pem
+certctl trust ca.crt
+openssl rehash /etc/ssl/certs
 certctl rehash
-
-cd ${CURRENT}
 
 # for simplicity, we create a single dhparam file for all
 if [ ! -e dhparams.pem ]; then
