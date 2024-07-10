@@ -134,6 +134,19 @@ sed -i '' '/10.193.167.11/d' /root/.ssh/known_hosts
 
 ./104_setup_vmjail.sh -m 4G -c mail2.iso mail2
 
+gen_user()
+{
+    id $1 > /dev/null
+    if [ "0" != "$?" ]; then
+	pw user add $1 -m
+	NEWPASS=$(echo $1.mail | openssl passwd -6 -stdin)
+	chpass -p ${NEWPASS} $1
+    fi
+}
+
+gen_user ny_central
+gen_user eurobsdcon
+
 # install a local mail client
 pkg info | grep alpine > /dev/null
 if [ "0" != "$?" ]; then
