@@ -4,7 +4,11 @@
 # Script running on unbound server to get DNS going
 #
 
-pkg install -y unbound
+pkg install -y unbound doas
+
+cat <<EOF > /usr/local/etc/doas.conf
+permit nopass lab
+EOF
 
 # then set up local zone
 mkdir -p /usr/local/etc/unbound

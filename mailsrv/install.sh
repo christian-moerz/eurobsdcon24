@@ -10,6 +10,25 @@ set -x
 # Break on failure
 set -e
 
+#
+# Installing cyrus imap
+#
+pkg install -y cyrus-imapd38 cyrus-sasl cyrus-sasl-saslauthd
+
+#
+# Install additional system packages
+pkg install -y ca_root_nss redis
+
+# Installing postfix
+pkg install -y postfix-sasl
+
+# Install amavis, spamassassin, clamav, milter, spamd, and opendkim
+pkg install -y amavisd-new clamav clamav-unofficial-sigs spamassassin \
+    spamassassin-dqs spamass-milter opendkim spamd
+
+# Install sshguard as additional protection
+# against credential stuffing
+pkg install -y sshguard
 
 # blacklistd is already in base
 
@@ -492,7 +511,7 @@ pw useradd opendkim -s /usr/sbin/nologin
 mkdir -p /usr/local/etc/opendkim
 
 sed -i '' "s@Domain[\\t ]*example.com@Domain ${DOMAIN}@g" ${DKIMCF}
-sed -i '' "s@KeyFile[\\t ]*/var/db/dkim/example.private@#KeyFile /var/db/dkim/example.private\\\
+sed -i '' "s@KeyFile[\\t ]*/var/db/dkim/example.private@#KeyFile /var/db/dkim/example.private\\
 KeyTable refile:/usr/local/etc/opendkim/keytable@g" ${DKIMCF}
 sed -i '' "s@# LogWhy[\\t ]*no@LogWhy yes@g" ${DKIMCF}
 sed -i '' "s@# MultipleSignatures[\\t ]*no@MultipleSignatures    yes@g" ${DKIMCF}
@@ -500,7 +519,7 @@ sed -i '' "s@# Nameservers addr1,addr2,...@Nameservers 10.193.167.10@g" ${DKIMCF
 sed -i '' "s@# RedirectFailuresTo[\\t ]*postmaster\@example.com@# RedirectFailuresTo    postmaster\@${DOMAIN}@g" ${DKIMCF}
 sed -i '' "s@# ReportAddress[\\t ]*\"DKIM Error Postmaster\" <postmaster\@example.com>@# ReportAddress \"DKIM Error Postmaster\" <postmaster\@${DOMAIN}>@g" ${DKIMCF}
 sed -i '' "s@Selector[\\t ]*my-selector-name@Selector _default@g" ${DKIMCF}
-sed -i '' "s@# SigningTable[\\t ]*filename@# SigningTable          filename\
+sed -i '' "s@# SigningTable[\\t ]*filename@# SigningTable          filename\\
 SigningTable refile:/usr/local/etc/opendkim/signingtable@g" ${DKIMCF}
 sed -i '' "s@Socket[\\t ]*inet:port\@localhost@Socket inet:10999\@localhost@g" ${DKIMCF}
 sed -i '' "s@# SoftwareHeader[\\t ]*no@# SoftwareHeader yes@g" ${DKIMCF}
@@ -512,14 +531,18 @@ cd /usr/local/etc/opendkim
 opendkim-genkey -s _default -d ${DOMAIN} -b 2048
 mv _default.private ny-central.lab.private
 mv _default.txt ny-central.lab.dns
+
+# transfer a copy to the local user
 cp ny-central.lab.dns ${CURRENT}
+# ensure we can download the file later
+chown lab:lab ${CURRENT}/ny-central.lab.dns
 cd ${CURRENT}
 
 echo "*@${DOMAIN}" > /usr/local/etc/opendkim/signingtable
 echo "${DOMAIN}  ${DOMAIN}:_default:/usr/local/etc/opendkim/ny-central.lab.private" > /usr/local/etc/opendkim/keytable
 
-#service opendkim_milter enable
-#service opendkim_milter start
+service milter-opendkim enable
+service milter-opendkim start
 
 echo Setup completed.
 
