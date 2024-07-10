@@ -161,10 +161,10 @@ if [ ! -e /ca ]; then
     easyrsa build-server-full mail.ny-central.lab nopass
     easyrsa build-server-full mail.eurobsdcon.lab nopass
 fi    
-cp /ca/pki/issued/mail.ny-central.lab.crt ${CURRENT}
-cp /ca/pki/private/mail.ny-central.lab.key ${CURRENT}
-cp /ca/pki/issued/mail.eurobsdcon.lab.crt ${CURRENT}
-cp /ca/pki/private/mail.eurobsdcon.lab.key ${CURRENT}
+cp /ca/pki/issued/mail.ny-central.lab.crt .
+cp /ca/pki/private/mail.ny-central.lab.key .
+cp /ca/pki/issued/mail.eurobsdcon.lab.crt .
+cp /ca/pki/private/mail.eurobsdcon.lab.key .
 
 pkg info | grep ca_root_nss > /dev/null
 if [ "0" != "$?" ]; then
