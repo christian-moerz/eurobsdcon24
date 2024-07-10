@@ -148,7 +148,10 @@ install -m 0444 ca.crt /usr/share/certs/trusted/NY_Central.pem
 if [ ! -e /usr/local/etc/ssl/cert.pem.ca ]; then
     cp /usr/local/etc/ssl/cert.pem /usr/local/etc/ssl/cert.pem.ca
     cat ca.crt >> /usr/local/etc/ssl/cert.pem
+    cat ca.crt >> /etc/ssl/cert.pem
 fi
+certctl trust ca.crt
+openssl rehash /etc/ssl/certs
 certctl rehash
 
 #
@@ -273,6 +276,10 @@ fi
 # Start spamd
 service sa-spamd start
 
+# enable spamassassin milter
+service spamass-milter enable
+service spamass-milter start
+
 #
 # Clamav
 #
@@ -393,6 +400,10 @@ sed -i '' "s@example.com@${DOMAIN}@g" ${AMACF}
 
 # Start amavis
 service amavisd start
+
+# Start amavis milter
+service amavisd-milter enable
+service amavisd-milter start
 
 # Restart postfix service after config change
 service postfix restart

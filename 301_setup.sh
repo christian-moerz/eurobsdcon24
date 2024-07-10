@@ -111,7 +111,6 @@ CONF_HOSTNAME="unbound"
 CONF_IP="10.193.167.10"
 CONF_SUBNET="255.255.255.0"
 CONF_ROUTER=${SWITCHIP}
-
 gen_media unbound
 
 CONF_HOSTNAME="mail1"
@@ -125,11 +124,17 @@ CONF_IP="10.193.167.12"
 SEARCH="eurobsdcon.lab"
 gen_media mail2
 
+CONF_HOSTNAME="client"
+CONF_IP="10.193.167.19"
+SEARCH="lab"
+gen_media client
+
 #
 # remove any previous entries from known hosts
 #
 sed -i '' '/10.193.167.10/d' /root/.ssh/known_hosts
 sed -i '' '/10.193.167.11/d' /root/.ssh/known_hosts
+sed -i '' '/10.193.167.19/d' /root/.ssh/known_hosts
 
 ./104_setup_vmjail.sh -m 1G -c unbound.iso unbound
 
@@ -137,30 +142,14 @@ sed -i '' '/10.193.167.11/d' /root/.ssh/known_hosts
 
 ./104_setup_vmjail.sh -m 4G -c mail2.iso mail2
 
-gen_user()
-{
-    id $1 > /dev/null
-    if [ "0" != "$?" ]; then
-	pw user add $1 -m
-	NEWPASS=$(echo $1.mail | openssl passwd -6 -stdin)
-	chpass -p ${NEWPASS} $1
-    fi
-}
+./104_setup_vmjail.sh -m 2G -c client.iso client
 
-gen_user ny_central
-gen_user eurobsdcon
 
-# install a local mail client
-pkg info | grep alpine > /dev/null
-if [ "0" != "$?" ]; then
-    pkg install -y alpine
-fi
 
 # after setting servers up, we install unbound and
 # configure our two domains to talk to each other
 
 if [ ! -e /ca ]; then
-
     # create a CA for our tests
     pkg install -y easy-rsa
     mkdir -p /ca
@@ -171,27 +160,26 @@ if [ ! -e /ca ]; then
     # generate server certificates
     easyrsa build-server-full mail.ny-central.lab nopass
     easyrsa build-server-full mail.eurobsdcon.lab nopass
-    
-    cp /ca/pki/issued/mail.ny-central.lab.crt ${CURRENT}
-    cp /ca/pki/private/mail.ny-central.lab.key ${CURRENT}
-    cp /ca/pki/issued/mail.eurobsdcon.lab.crt ${CURRENT}
-    cp /ca/pki/private/mail.eurobsdcon.lab.key ${CURRENT}
+fi    
+cp /ca/pki/issued/mail.ny-central.lab.crt ${CURRENT}
+cp /ca/pki/private/mail.ny-central.lab.key ${CURRENT}
+cp /ca/pki/issued/mail.eurobsdcon.lab.crt ${CURRENT}
+cp /ca/pki/private/mail.eurobsdcon.lab.key ${CURRENT}
 
-    pkg info | grep ca_root_nss > /dev/null
-    if [ "0" != "$?" ]; then
-	pkg install -y ca_root_nss
-    fi
-
-    # install the CA certificate locally, so we can trust
-    # those mail servers when accessing as client
-    install -m 0444 /ca/pki/ca.crt /usr/local/etc/ssl/ca.crt
-    cat /ca/pki/ca.crt >> /usr/local/etc/ssl/cert.pem
-    mkdir -p /usr/share/certs/trusted
-    install -m 0444 /ca/pki/ca.crt /usr/share/certs/trusted/localca.pem
-    certctl rehash
-
-    cd ${CURRENT}
+pkg info | grep ca_root_nss > /dev/null
+if [ "0" != "$?" ]; then
+    pkg install -y ca_root_nss
 fi
+
+# install the CA certificate locally, so we can trust
+# those mail servers when accessing as client
+install -m 0444 /ca/pki/ca.crt /usr/local/etc/ssl/ca.crt
+cat /ca/pki/ca.crt >> /usr/local/etc/ssl/cert.pem
+mkdir -p /usr/share/certs/trusted
+install -m 0444 /ca/pki/ca.crt /usr/share/certs/trusted/localca.pem
+certctl rehash
+
+cd ${CURRENT}
 
 # for simplicity, we create a single dhparam file for all
 if [ ! -e dhparams.pem ]; then
@@ -264,5 +252,15 @@ ssh_copy ny-central.lab.dns 10
 # Copy follow up script to server
 ssh_copy mailsrv/02_update_unbound.sh 10
 ssh -i .ssh/id_ecdsa lab@10.193.167.10 'doas /bin/sh 02_update_unbound.sh'
+
+#
+# Ready the client
+#
+ssh_copy /ca/pki/ca.crt 19
+ssh_copy mailsrv/03_setup_client.sh 19
+echo Connection to client - run 03_setup_client.sh
+echo Press ENTER to continue.
+read ENTER
+ssh -i .ssh/id_ecdsa lab@10.193.167.19
 
 echo Base setup completed.
