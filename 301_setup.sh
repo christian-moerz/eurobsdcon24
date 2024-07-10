@@ -257,5 +257,8 @@ ssh -i .ssh/id_ecdsa lab@10.193.167.11
 scp -i .ssh/id_ecdsa lab@10.193.167.11:ny-central.lab.dns .
 # Copy up to unbound
 ssh_copy ny-central.lab.dns 10
+# Copy follow up script to server
+ssh_copy mailsrv/02_update_unbound.sh 10
+ssh -i .ssh/id_ecdsa lab@10.193.167.10 'doas /bin/sh 02_update_unbound.sh'
 
 echo Base setup completed.

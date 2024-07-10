@@ -15,6 +15,7 @@ mkdir -p /usr/local/etc/unbound
 mv unbound.conf /usr/local/etc/unbound/unbound.conf
 mv nycentral.zone /usr/local/etc/unbound/ny-central.lab.zone
 mv eurobsdcon.zone /usr/local/etc/unbound/eurobsdcon.lab.zone
+mv 10.193.167.zone /usr/local/etc/unbound/
 
 DNS=$(cat /etc/resolv.conf | grep nameserver | head -1 | awk '{print $2}')
 
