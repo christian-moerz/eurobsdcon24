@@ -4,7 +4,7 @@
 
 install_key()
 {
-    if [ -e $1.lab.dns ]; then
+    if [ -e $1.dns ]; then
 	# make sure to remove any pre-existing keys
 	sed -i '' '/_default/d' /usr/local/etc/unbound/$1.zone
 	sed -i '' '/"p=/d' /usr/local/etc/unbound/$1.zone

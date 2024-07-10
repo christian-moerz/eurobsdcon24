@@ -203,7 +203,7 @@ await_ip 10.193.167.10
 
 ssh_copy()
 {
-    scp -i .ssh/id_ecdsa $1 lab@10.193.167.$2:
+    scp -o ClientAliveInterval=3600 -i .ssh/id_ecdsa $1 lab@10.193.167.$2:
 }
 
 ssh_copy mailsrv/01_setup_unbound.sh 10
