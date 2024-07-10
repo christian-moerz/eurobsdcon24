@@ -5,11 +5,11 @@
 
 . ./config.sh
 
+# Log commands
+set -x
+# Break on failure
 set -e
 
-#
-# Installing cyrus imap
-#
 
 # blacklistd is already in base
 
@@ -56,6 +56,12 @@ EOF
 mkdir -p /usr/local/etc/mail
 install -m 0644 /usr/local/share/postfix/mailer.conf.postfix /usr/local/etc/mail/mailer.conf
 
+#
+# Enable and start redis
+#
+service redis enable
+service redis start
+
 # Enable postfix
 sysrc postfix_enable=YES
 
@@ -75,6 +81,7 @@ sed -i '' "/${TESTEMAIL}/d" /usr/local/etc/postfix/virtualmap
 sed -i '' "/virusalert@${DOMAIN}/d" /usr/local/etc/postfix/virtualmap
 cat >> /usr/local/etc/postfix/virtualmap <<EOF
 ${TESTEMAIL} ${TESTUSER}
+poastmaster@${DOMAIN} ${TESTUSER}
 virusalert@${DOMAIN} virusalert
 EOF
 # Then we need to run postmap on the map file to rehash contents
@@ -251,9 +258,14 @@ service postfix restart
 sysrc spamd_enable=YES
 sysrc spamd_flags="-u spamd -H /var/spool/spamd"
 
-# Run updates
-sa-update
-sa-compile
+if [ -e spamassassin.tar.xz ]; then
+    mkdir -p /var/db/spamassassin
+    tar -C /var/db/spamassassin -xf spamassassin.tar.xz
+else
+    # Run updates
+    sa-update
+    sa-compile
+fi
 
 # Start spamd
 service sa-spamd start
@@ -266,6 +278,12 @@ service sa-spamd start
 sysrc clamav_freshclam_enable=YES
 sysrc clamav_clamd_enable=YES
 
+if [ -e clamav.tar.xz ]; then
+    # should speed up setup, if we provide current
+    # signatures via tar instead of downloading
+    tar -C /var/db/clamav -xf clamav.tar.xz
+fi
+
 # Start services
 service clamav-freshclam start
 freshclam
@@ -277,9 +295,6 @@ service clamav-clamd start
 
 # Enable amavis
 sysrc amavisd_enable=YES
-
-# Configure domain
-sed -i '' "s@example.com@${DOMAIN}@g" ${AMACF}
 
 # Integration documentation at
 # /usr/local/share/doc/amavisd-new/README.postfix
@@ -325,6 +340,11 @@ EOF
 # via milter
 sed -i '' 's/# @bypass_spam_checks_maps  = (1);/@bypass_spam_checks_maps  = (1);/g' ${AMACF}
 
+# Enable redis use by amavis
+sed -i '' "s/# @storage_redis_dsn = ( {server=>'127.0.0.1:6379', db_id=>1} );/@storage_redis_dsn = ( {server=>'127.0.0.1:6379', db_id=>1} );/g" ${AMACF}
+sed -i '' "s/# \$redis_logging_key/\$redis_logging_key/g" ${AMACF}
+sed -i '' "s/# \$redis_logging_queue_size_limit/\$redis_logging_queue_size_limit/g" ${AMACF}
+
 # Add content filter to postfix
 cat >> ${MAINCF} <<EOF
 smtpd_recipient_restrictions =
@@ -353,8 +373,7 @@ smtpd_tls_mandatory_ciphers=high
 #tls_high_cipherlist=EDH+CAMELLIA:EDH+aRSA:EECDH+aRSA+AESGCM:EECDH+aRSA+SHA384:EECDH+aRSA+SHA256:EECDH:+CAMELLIA256:+AES256:+CAMELLIA128:+AES128:!aNULL:!eNULL:!LOW:!3DES:!MD5:!EXP:!PSK:!DSS:!RC4:!SEED:!ECDSA:CAMELLIA256-SHA:AES256-SHA:CAMELLIA128-SHA:AES128-SHA
 
 tls_high_cipherlist = kEECDH:+kEECDH+SHA:kEDH:+kEDH+SHA:+kEDH+CAMELLIA:kECDH:+kECDH+SHA:kRSA:+kRSA+SHA:+kRSA+CAMELLIA:!aNULL:!eNULL:!SSLv2:!RC4:!MD5:!DES:!EXP:!SEED:!IDEA:!3DES
-tls_medium_cipherlist = kEECDH:+kEECDH+SHA:kEDH:+kEDH+SHA:+kEDH+CAMELLIA:kECDH:+kECDH+SHA:kRSA:+kRSA+SHA:+kRSA+CAMELLIA:!aNULL:!e
-NULL:!SSLv2:!MD5:!DES:!EXP:!SEED:!IDEA:!3DES
+tls_medium_cipherlist = kEECDH:+kEECDH+SHA:kEDH:+kEDH+SHA:+kEDH+CAMELLIA:kECDH:+kECDH+SHA:kRSA:+kRSA+SHA:+kRSA+CAMELLIA:!aNULL:!eNULL:!SSLv2:!MD5:!DES:!EXP:!SEED:!IDEA:!3DES
 
 smtp_tls_ciphers = high
 smtpd_tls_ciphers = high
@@ -362,6 +381,12 @@ smtpd_tls_ciphers = high
 disable_vrfy_command=yes
 smtpd_helo_required=yes
 EOF
+
+# Fix hostname
+sed -i '' "s@# \$myhostname = 'host.example.com'@\$myhostname = '${HOSTNAME}.${DOMAIN}'@g" ${AMACF}
+
+# Configure domain
+sed -i '' "s@example.com@${DOMAIN}@g" ${AMACF}
 
 # Start amavis
 service amavisd start
@@ -374,7 +399,7 @@ service postfix restart
 #
 
 # Enable a simple pf firewall
-cat > /etc/pf.conf <<EOF
+cat <<EOF > /etc/pf.conf
 ext_if = "${EXTIF}"
 table <sshguard> {}
 table <spamd-white> persist file "/etc/pf.spamdwhite"
@@ -459,6 +484,44 @@ service pflog start
 # Start spamd
 service obspamd start
 service obspamlogd start
+
+# Set up OpenDKIM
+# create opendkim user
+pw useradd opendkim -s /usr/sbin/nologin
+
+mkdir -p /usr/local/etc/opendkim
+
+sed -i '' "s@Domain[\\t ]*example.com@Domain ${DOMAIN}@g" ${DKIMCF}
+sed -i '' "s@KeyFile[\\t ]*/var/db/dkim/example.private@#KeyFile /var/db/dkim/example.private\\\
+KeyTable refile:/usr/local/etc/opendkim/keytable@g" ${DKIMCF}
+sed -i '' "s@# LogWhy[\\t ]*no@LogWhy yes@g" ${DKIMCF}
+sed -i '' "s@# MultipleSignatures[\\t ]*no@MultipleSignatures    yes@g" ${DKIMCF}
+sed -i '' "s@# Nameservers addr1,addr2,...@Nameservers 10.193.167.10@g" ${DKIMCF}
+sed -i '' "s@# RedirectFailuresTo[\\t ]*postmaster\@example.com@# RedirectFailuresTo    postmaster\@${DOMAIN}@g" ${DKIMCF}
+sed -i '' "s@# ReportAddress[\\t ]*\"DKIM Error Postmaster\" <postmaster\@example.com>@# ReportAddress \"DKIM Error Postmaster\" <postmaster\@${DOMAIN}>@g" ${DKIMCF}
+sed -i '' "s@Selector[\\t ]*my-selector-name@Selector _default@g" ${DKIMCF}
+sed -i '' "s@# SigningTable[\\t ]*filename@# SigningTable          filename\
+SigningTable refile:/usr/local/etc/opendkim/signingtable@g" ${DKIMCF}
+sed -i '' "s@Socket[\\t ]*inet:port\@localhost@Socket inet:10999\@localhost@g" ${DKIMCF}
+sed -i '' "s@# SoftwareHeader[\\t ]*no@# SoftwareHeader yes@g" ${DKIMCF}
+sed -i '' "s@# SyslogSuccess[\\t ]*No@SyslogSuccess yes@g" ${DKIMCF}
+sed -i '' "s@# UserID[\\t ]*userid@# UserID opendkim:opendkim@g" ${DKIMCF}
+
+CURRENT=$(pwd)
+cd /usr/local/etc/opendkim
+opendkim-genkey -s _default -d ${DOMAIN} -b 2048
+mv _default.private ny-central.lab.private
+mv _default.txt ny-central.lab.dns
+cp ny-central.lab.dns ${CURRENT}
+cd ${CURRENT}
+
+echo "*@${DOMAIN}" > /usr/local/etc/opendkim/signingtable
+echo "${DOMAIN}  ${DOMAIN}:_default:/usr/local/etc/opendkim/ny-central.lab.private" > /usr/local/etc/opendkim/keytable
+
+#service opendkim_milter enable
+#service opendkim_milter start
+
+echo Setup completed.
 
 #
 # Notes

@@ -134,26 +134,48 @@ sed -i '' '/10.193.167.11/d' /root/.ssh/known_hosts
 
 ./104_setup_vmjail.sh -m 4G -c mail2.iso mail2
 
+# install a local mail client
+pkg info | grep alpine > /dev/null
+if [ "0" != "$?" ]; then
+    pkg install -y alpine
+fi
+
 # after setting servers up, we install unbound and
 # configure our two domains to talk to each other
 
-# create a CA for our tests
-pkg install -y easy-rsa
-mkdir -p /ca
-CURRENT=$(pwd)
-cd /ca && easy-rsa init-pki
-easyrsa build-ca nopass
+if [ ! -e /ca ]; then
 
-# generate server certificates
-easyrsa build-server-full mail.ny-central.lab nopass
-easyrsa build-server-full mail.eurobsdcon.lab nopass
+    # create a CA for our tests
+    pkg install -y easy-rsa
+    mkdir -p /ca
+    CURRENT=$(pwd)
+    cd /ca && easy-rsa init-pki
+    easyrsa build-ca nopass
+    
+    # generate server certificates
+    easyrsa build-server-full mail.ny-central.lab nopass
+    easyrsa build-server-full mail.eurobsdcon.lab nopass
+    
+    cp /ca/pki/issued/mail.ny-central.lab.crt ${CURRENT}
+    cp /ca/pki/private/mail.ny-central.lab.key ${CURRENT}
+    cp /ca/pki/issued/mail.eurobsdcon.lab.crt ${CURRENT}
+    cp /ca/pki/private/mail.eurobsdcon.lab.key ${CURRENT}
 
-cp /ca/pki/issued/mail.ny-central.lab.crt ${CURRENT}
-cp /ca/pki/private/mail.ny-central.lab.key ${CURRENT}
-cp /ca/pki/issued/mail.eurobsdcon.lab.crt ${CURRENT}
-cp /ca/pki/private/mail.eurobsdcon.lab.key ${CURRENT}
+    pkg info | grep ca_root_nss > /dev/null
+    if [ "0" != "$?" ]; then
+	pkg install -y ca_root_nss
+    fi
 
-cd ${CURRENT}
+    # install the CA certificate locally, so we can trust
+    # those mail servers when accessing as client
+    install -m 0444 /ca/pki/ca.crt /usr/local/etc/ssl/ca.crt
+    cat /ca/pki/ca.crt >> /usr/local/etc/ssl/cert.pem
+    mkdir -p /usr/share/certs/trusted
+    install -m 0444 /ca/pki/ca.crt /usr/share/certs/trusted/localca.pem
+    certctl rehash
+
+    cd ${CURRENT}
+fi
 
 # for simplicity, we create a single dhparam file for all
 if [ ! -e dhparams.pem ]; then
@@ -178,12 +200,17 @@ read ENTER
 ssh -i .ssh/id_ecdsa lab@10.193.167.10
 
 await_ip 10.193.167.11
-sleep 10
+sleep_dot 10
 
 # connect to mail server 1 and set up mail domain
 # ny-central.lab
-ssh_copy mail.ny-central.lab.* 11
 ssh_copy mailsrv/install.sh 11
+if [ -e clamav.tar.xz ]; then
+    ssh_copy clamav.tar.xz 11
+fi
+if [ -e spamassassin.tar.xz ]; then
+    ssh_copy spamassassin.tar.xz 11
+fi
 cp mailsrv/config.sh mailsrv/config.mail1.sh
 sed -i '' 's/mailsrv.ny-central.local/mail1.ny-central.lab/' \
     mailsrv/config.mail1.sh
@@ -193,19 +220,29 @@ sysrc -f mailsrv/config.mail1.sh NETWORKS="10.193.167.0/24"
 sysrc -f mailsrv/config.mail1.sh SSHUSERS=lab
 sysrc -f mailsrv/config.mail1.sh EXTIF=vtnet0
 mv mailsrv/config.mail1.sh /tmp/config.sh
-mv mail.ny-central.lab.crt /tmp/server.crt
-mv mail.ny-central.lab.key /tmp/server.key
-ssh_copy /tmp/server.crt 11
-ssh_copy /tmp/server.key 11
-ssh_copy /ca/pki/ca.crt 11
-
 ssh_copy /tmp/config.sh 11
 rm -f /tmp/config.sh
+
+if [ -e mail.ny-central.lab.crt ]; then
+    mv mail.ny-central.lab.crt /tmp/server.crt
+    mv mail.ny-central.lab.key /tmp/server.key
+    ssh_copy /tmp/server.crt 11
+    ssh_copy /tmp/server.key 11
+    rm -f /tmp/server.crt
+    rm -f /tmp/server.key
+fi
+ssh_copy /ca/pki/ca.crt 11
+
 ssh_copy dhparams.pem 11
 
 echo Connecting to mail1 - run install.sh
 echo Press ENTER to continue.
 read ENTER
 ssh -i .ssh/id_ecdsa lab@10.193.167.11
+
+# Copy down dns record
+scp -i .ssh/id_ecdsa lab@10.193.167.11:ny-central.lab.dns .
+# Copy up to unbound
+ssh_copy ny-central.lab.dns 10
 
 echo Base setup completed.

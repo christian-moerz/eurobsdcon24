@@ -138,3 +138,15 @@ await_ip() {
     
     return 0
 }
+
+sleep_dot()
+{
+    echo -n Waiting
+    COUNTER=$1
+    while [ "$COUNTER" != "0" ]; do
+	COUNTER=$((COUNTER-1))
+	sleep 1
+	echo -n .
+    done
+    echo ""
+}
