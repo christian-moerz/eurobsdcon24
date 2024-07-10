@@ -2,9 +2,12 @@
 
 # Reset mail1 server
 service jail stop mail1
+service jail stop unbound
 
 zfs rollback zroot/labdisk/mail1@installed
+zfs rollback zroot/labdisk/unbound@installed
 
+service jail start unbound
 service jail start mail1
 
 #cp ~lclchristianm/Documents/workspace/mailsrv/install.sh mailsrv/install.sh

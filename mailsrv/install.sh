@@ -20,6 +20,9 @@ set -e
 # Set timezone
 cp /usr/share/zoneinfo/Europe/Vienna /etc/localtime
 
+# Add domain to resolv.conf
+echo "search ${DOMAIN}" >> /etc/resolv.conf
+
 # Limit ssh logins to sshusers group
 # Create sshusers group
 pw groupadd sshusers

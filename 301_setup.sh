@@ -30,6 +30,9 @@ fi
 
 generate_ssh
 
+# Clean up
+rm -f ny-central.lab.dns
+
 PUBKEY=$(cat .ssh/id_ecdsa.pub)
 NAMESERVER=${DNS}
 
