@@ -1,7 +1,7 @@
 $ORIGIN eurobsdcon.lab
 $TTL 86400
 @ IN SOA ns1.eurobsdcon.lab. root.eurobsdcon.lab. (
-  20240713 ; serial
+  20240714 ; serial
   21600    ; refresh
   3600     ; retry
   604800   ; expiry
@@ -10,6 +10,7 @@ $TTL 86400
 
 	IN	NS		ns1.eurobsdcon.lab.
 	IN	MX	10	mail.eurobsdcon.lab.
+	IN	TXT	"v=spf1 a mx -all"
 
 ns1	IN	A	10.193.167.10
 mail	IN	A	10.193.167.12

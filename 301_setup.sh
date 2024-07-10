@@ -203,7 +203,8 @@ await_ip 10.193.167.10
 
 ssh_copy()
 {
-    scp -o ClientAliveInterval=3600 -i .ssh/id_ecdsa $1 lab@10.193.167.$2:
+    scp -o ConnectionAttempts=50 -o ConnectTimeout=3600 \
+	-i .ssh/id_ecdsa $1 lab@10.193.167.$2:
 }
 
 ssh_copy mailsrv/01_setup_unbound.sh 10
@@ -216,7 +217,7 @@ read ENTER
 ssh -i .ssh/id_ecdsa lab@10.193.167.10
 
 await_ip 10.193.167.11
-sleep_dot 10
+#sleep_dot 10
 
 # connect to mail server 1 and set up mail domain
 # ny-central.lab

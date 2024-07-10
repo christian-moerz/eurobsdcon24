@@ -1,7 +1,7 @@
 $ORIGIN ny-central.lab
 $TTL 86400
 @    IN		SOA	ns1.ny-central.lab. root.ny-central.lab. (
-     20240715 ; serial
+     20240716 ; serial
      21600    ; refresh
      3600     ; retry
      604800   ; expiry
@@ -10,6 +10,7 @@ $TTL 86400
 
 	IN	NS		ns1.ny-central.lab.
 	IN	MX	10	mail.ny-central.lab.
+	IN	TXT	"v=spf1 a mx -all"
 
 gateway	IN	A	10.193.167.1
 ns1	IN	A	10.193.167.10
