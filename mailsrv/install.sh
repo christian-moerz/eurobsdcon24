@@ -552,6 +552,8 @@ sed -i '' "s@Socket[\\t ]*inet:port\@localhost@Socket inet:10999\@localhost@g" $
 sed -i '' "s@# SoftwareHeader[\\t ]*no@# SoftwareHeader yes@g" ${DKIMCF}
 sed -i '' "s@# SyslogSuccess[\\t ]*No@SyslogSuccess yes@g" ${DKIMCF}
 sed -i '' "s@# UserID[\\t ]*userid@# UserID opendkim:opendkim@g" ${DKIMCF}
+sed -i '' "s@# RequireSafeKeys[\\t ]*Yes@RequireSafeKeys No@g" ${DKIMCF}
+sed -i '' "s@# Mode[\\t ]*sv@Mode sv@g" ${DKIMCF}
 
 CURRENT=$(pwd)
 cd /usr/local/etc/opendkim
@@ -565,8 +567,11 @@ cp ny-central.lab.dns ${CURRENT}
 chown lab:lab ${CURRENT}/ny-central.lab.dns
 cd ${CURRENT}
 
-echo "*@${DOMAIN}" > /usr/local/etc/opendkim/signingtable
-echo "${DOMAIN}  ${DOMAIN}:_default:/usr/local/etc/opendkim/ny-central.lab.private" > /usr/local/etc/opendkim/keytable
+echo "*@${DOMAIN} ${DOMAIN}" > /usr/local/etc/opendkim/signingtable
+echo "${DOMAIN} ${DOMAIN}:_default:/usr/local/etc/opendkim/ny-central.lab.private" > /usr/local/etc/opendkim/keytable
+
+# fix key permissions
+chown mailnull /usr/local/etc/opendkim/${DOMAIN}.private
 
 service milter-opendkim enable
 service milter-opendkim start
