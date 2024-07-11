@@ -1,7 +1,7 @@
 $TTL 86400
 $ORIGIN 167.193.10.in-addr.arpa.
 @	IN	SOA	ns1.ny-central.lab root.ny-central.lab. (
-	20240722 ; serial
+	20240723 ; serial
 	21600	 ; refresh
 	3600	 ; retry
 	604800	 ; expiry
@@ -13,4 +13,4 @@ $ORIGIN 167.193.10.in-addr.arpa.
 10	IN	PTR	unbound.ny-central.lab.
 11	IN	PTR	mail.ny-central.lab.
 11	IN	PTR	mail1.ny-central.lab.
-
+19	IN	PTR	client.ny-central.lab.

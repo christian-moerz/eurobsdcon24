@@ -10,6 +10,25 @@ set -x
 # Break on failure
 set -e
 
+#
+# Installing cyrus imap
+#
+pkg install -y cyrus-imapd38 cyrus-sasl cyrus-sasl-saslauthd
+
+#
+# Install additional system packages
+pkg install -y ca_root_nss redis
+
+# Installing postfix
+pkg install -y postfix-sasl
+
+# Install amavis, spamassassin, clamav, milter, spamd, and opendkim
+pkg install -y amavisd-new clamav clamav-unofficial-sigs spamassassin \
+    spamassassin-dqs spamass-milter opendkim spamd amavisd-milter
+
+# Install sshguard as additional protection
+# against credential stuffing
+pkg install -y sshguard
 
 # blacklistd is already in base
 
@@ -124,7 +143,7 @@ sed -i '' "s@#myhostname = host.domain.tld@myhostname = ${HOSTNAME}@g" ${MAINCF}
 sed -i '' "s@#mydomain = domain.tld@mydomain = ${DOMAIN}@g" ${MAINCF}
 
 # Enable destination - if single domain
-# sed -i '' 's@#mydestination = \$myhostname, localhost.\$mydomain, localhost, \$mydomain$@mydestination = $myhostname, localhost.$mydomain, localhost, $mydomain@g' ${MAINCF}
+# sed -i '' 's@#mydestination = \$myhostname, localhost.\$mydomain, localhost, \$mydomain@mydestination = $myhostname, localhost.$mydomain, localhost, $mydomain@g' ${MAINCF}
 
 # Enable local users
 sed -i '' 's@#local_recipient_maps = unix:passwd.byname \$alias_maps$@local_recipient_maps = unix:passwd.byname $alias_maps@g' ${MAINCF}
@@ -276,9 +295,24 @@ fi
 # Start spamd
 service sa-spamd start
 
+# disable bayes auto learn
+sed -i '' "s@# bayes_auto_learn 1@bayes_auto_learn 0\\
+bayes_path /var/maiad/.spamassassin/bayes
+bayes_file_mode 0775
+@g" ${SPAMCF}
+sed -i '' "s@# rewrite_header Subject *****SPAM*****@rewrite_header Subject [SPAM]\\
+sa_tag_level_deflt = -9999;
+report_safe 1@g" ${SPAMCF}
+
 # enable spamassassin milter
 service spamass-milter enable
+sysrc spamass_milter_socket_owner="spamd"
+sysrc spamass_milter_socket_group="postfix"
+sysrc spamass_milter_socket_mode="664"
 service spamass-milter start
+
+mkdir -p /var/maiad/.spamassassin/bayes
+chown -R spamd /var/maiad
 
 #
 # Clamav
@@ -312,16 +346,12 @@ sysrc amavisd_enable=YES
 # Integrate amavis with postfix
 cat >> ${MASTERCF} <<EOF
 smtps      inet    n       -       n       -       -     smtpd
-  -o smtpd_tls_wrappermode=yes
+9  -o smtpd_tls_wrappermode=yes
   -o smtpd_sasl_auth_enable=yes
 amavisfeed unix    -       -       n        -      2     lmtp
 	   -o lmtp_data_done_timeout=1200
 	   -o lmtp_send_xforward_command=yes
 	   -o lmtp_tls_note_starttls_offer=no
-#amavisfeed unix    -       -       n       -      2     smtp
-#	   -o smtp_data_done_timeout=1200
-#	   -o smtp_send_xforward_command=yes
-#	   -o smtp_tls_note_starttls_offer=no
 127.0.0.1:10025 inet n    -       n       -        -     smtpd
      -o content_filter=
      -o smtpd_delay_reject=no
@@ -356,6 +386,7 @@ sed -i '' "s/# \$redis_logging_key/\$redis_logging_key/g" ${AMACF}
 sed -i '' "s/# \$redis_logging_queue_size_limit/\$redis_logging_queue_size_limit/g" ${AMACF}
 
 # Add content filter to postfix
+HOSTSHORT=$(hostname)
 cat >> ${MAINCF} <<EOF
 smtpd_recipient_restrictions =
         permit_sasl_authenticated,
@@ -380,7 +411,6 @@ smtpd_tls_protocols = TLSv1.1 TLSv1.2 TLSv1.3
 
 # Configure the allowed cipher list
 smtpd_tls_mandatory_ciphers=high
-#tls_high_cipherlist=EDH+CAMELLIA:EDH+aRSA:EECDH+aRSA+AESGCM:EECDH+aRSA+SHA384:EECDH+aRSA+SHA256:EECDH:+CAMELLIA256:+AES256:+CAMELLIA128:+AES128:!aNULL:!eNULL:!LOW:!3DES:!MD5:!EXP:!PSK:!DSS:!RC4:!SEED:!ECDSA:CAMELLIA256-SHA:AES256-SHA:CAMELLIA128-SHA:AES128-SHA
 
 tls_high_cipherlist = kEECDH:+kEECDH+SHA:kEDH:+kEDH+SHA:+kEDH+CAMELLIA:kECDH:+kECDH+SHA:kRSA:+kRSA+SHA:+kRSA+CAMELLIA:!aNULL:!eNULL:!SSLv2:!RC4:!MD5:!DES:!EXP:!SEED:!IDEA:!3DES
 tls_medium_cipherlist = kEECDH:+kEECDH+SHA:kEDH:+kEDH+SHA:+kEDH+CAMELLIA:kECDH:+kECDH+SHA:kRSA:+kRSA+SHA:+kRSA+CAMELLIA:!aNULL:!eNULL:!SSLv2:!MD5:!DES:!EXP:!SEED:!IDEA:!3DES
@@ -390,6 +420,8 @@ smtpd_tls_ciphers = high
 
 disable_vrfy_command=yes
 smtpd_helo_required=yes
+
+smtpd_sasl_local_domain=${HOSTSHORT}
 EOF
 
 # Fix hostname
@@ -547,4 +579,10 @@ echo Setup completed.
 
 # We won't get delivery to shared folder
 # but we can share a mailbox to other users.
+
+# troubleshooting SASL in /usr/local/lib/sasl2/smtpd.conf
+# log_level: 9
+# pwcheck_method: auxprop
+# auxprop_plugin: sasldb
+# mech_list: PLAIN LOGIN CRAM-MD5 DIGEST-MD5 NTLM
 
