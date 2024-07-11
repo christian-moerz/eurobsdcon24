@@ -346,7 +346,7 @@ sysrc amavisd_enable=YES
 # Integrate amavis with postfix
 cat >> ${MASTERCF} <<EOF
 smtps      inet    n       -       n       -       -     smtpd
-9  -o smtpd_tls_wrappermode=yes
+  -o smtpd_tls_wrappermode=yes
   -o smtpd_sasl_auth_enable=yes
 amavisfeed unix    -       -       n        -      2     lmtp
 	   -o lmtp_data_done_timeout=1200
