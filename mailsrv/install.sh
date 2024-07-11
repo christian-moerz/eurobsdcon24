@@ -10,6 +10,25 @@ set -x
 # Break on failure
 set -e
 
+#
+# Installing cyrus imap
+#
+pkg install -y cyrus-imapd38 cyrus-sasl cyrus-sasl-saslauthd
+
+#
+# Install additional system packages
+pkg install -y ca_root_nss redis
+
+# Installing postfix
+pkg install -y postfix-sasl
+
+# Install amavis, spamassassin, clamav, milter, spamd, and opendkim
+pkg install -y amavisd-new clamav clamav-unofficial-sigs spamassassin \
+    spamassassin-dqs spamass-milter opendkim spamd amavisd-milter
+
+# Install sshguard as additional protection
+# against credential stuffing
+pkg install -y sshguard
 
 # blacklistd is already in base
 
@@ -281,7 +300,7 @@ sed -i '' "s@# bayes_auto_learn 1@bayes_auto_learn 0\\
 bayes_path /var/maiad/.spamassassin/bayes\\
 bayes_file_mode 0775\\
 @g" ${SPAMCF}
-sed -i '' "s@# rewrite_header Subject *****SPAM*****\@rewrite_header Subject [SPAM]\\
+sed -i '' "s@# rewrite_header Subject \*\*\*\*\*SPAM\*\*\*\*\*@rewrite_header Subject [SPAM]\\
 sa_tag_level_deflt = -9999;\\
 report_safe 1@g" ${SPAMCF}
 
