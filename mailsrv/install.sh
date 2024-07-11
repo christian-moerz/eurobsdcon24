@@ -297,11 +297,11 @@ service sa-spamd start
 
 # disable bayes auto learn
 sed -i '' "s@# bayes_auto_learn 1@bayes_auto_learn 0\\
-bayes_path /var/maiad/.spamassassin/bayes
-bayes_file_mode 0775
+bayes_path /var/maiad/.spamassassin/bayes\\
+bayes_file_mode 0775\\
 @g" ${SPAMCF}
 sed -i '' "s@# rewrite_header Subject *****SPAM*****@rewrite_header Subject [SPAM]\\
-sa_tag_level_deflt = -9999;
+sa_tag_level_deflt = -9999;\\
 report_safe 1@g" ${SPAMCF}
 
 # enable spamassassin milter
