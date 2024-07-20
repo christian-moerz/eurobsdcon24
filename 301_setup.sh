@@ -262,6 +262,54 @@ ssh_copy mailsrv/02_update_unbound.sh 10
 ssh -i .ssh/id_ecdsa lab@10.193.167.10 'doas /bin/sh 02_update_unbound.sh'
 
 #
+# Setup eurobsdcon.lab server
+#
+
+ssh_copy mailsrv/install.sh 12
+if [ -e clamav.tar.xz ]; then
+    ssh_copy clamav.tar.xz 12
+fi
+if [ -e spamassassin.tar.xz ]; then
+    ssh_copy spamassassin.tar.xz 12
+fi
+cp mailsrv/config.sh mailsrv/config.mail2.sh
+sed -i '' 's/mailsrv.ny-central.local/mail2.eurobsdcon.lab/' \
+    mailsrv/config.mail2.sh
+sed -i '' 's/ny-central.local/eurobsdcon.lab/' \
+    mailsrv/config.mail1.sh
+sysrc -f mailsrv/config.mail1.sh NETWORKS="10.193.167.0/24"
+sysrc -f mailsrv/config.mail1.sh SSHUSERS=lab
+sysrc -f mailsrv/config.mail1.sh EXTIF=vtnet0
+mv mailsrv/config.mail2.sh /tmp/config.sh
+ssh_copy /tmp/config.sh 12
+rm -f /tmp/config.sh
+
+if [ -e mail.eurobsdcon.crt ]; then
+    mv mail.eurobsdcon.lab.crt /tmp/server.crt
+    mv mail.eurobsdcon.lab.key /tmp/server.key
+    ssh_copy /tmp/server.crt 12
+    ssh_copy /tmp/server.key 12
+    rm -f /tmp/server.crt
+    rm -f /tmp/server.key
+fi
+ssh_copy /ca/pki/ca.crt 12
+
+ssh_copy dhparams.pem 12
+
+echo Connecting to mail2 - run install.sh
+echo Press ENTER to continue.
+read ENTER
+ssh -i .ssh/id_ecdsa lab@10.193.167.12
+
+# Copy down dns record
+scp -i .ssh/id_ecdsa lab@10.193.167.12:eurobsdcon.lab.dns .
+# Copy up to unbound
+ssh_copy eurobsdcon.lab.dns 10
+# Copy follow up script to server
+ssh_copy mailsrv/02_update_unbound.sh 10
+ssh -i .ssh/id_ecdsa lab@10.193.167.10 'doas /bin/sh 02_update_unbound.sh'
+
+#
 # Ready the client
 #
 ssh_copy /ca/pki/ca.crt 19

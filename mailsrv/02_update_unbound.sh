@@ -17,3 +17,4 @@ install_key()
 }
 
 install_key ny-central.lab
+install_key eurobsdcon.lab
