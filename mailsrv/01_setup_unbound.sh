@@ -4,6 +4,9 @@
 # Script running on unbound server to get DNS going
 #
 
+set -e
+set -x
+
 pkg install -y unbound doas
 
 cat <<EOF > /usr/local/etc/doas.conf

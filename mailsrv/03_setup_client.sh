@@ -30,4 +30,7 @@ certctl trust ca.crt
 openssl rehash /etc/ssl/certs
 certctl rehash
 
+# install pine rc alpine configs for ny_central and eurobsdcon
+tar -C /home -xvf pinerc.tar
+
 echo Setup completed.

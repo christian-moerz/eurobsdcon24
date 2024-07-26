@@ -539,17 +539,17 @@ sed -i '' "s@# Mode[\\t ]*sv@Mode sv@g" ${DKIMCF}
 CURRENT=$(pwd)
 cd /usr/local/etc/opendkim
 opendkim-genkey -s _default -d ${DOMAIN} -b 2048
-mv _default.private ny-central.lab.private
-mv _default.txt ny-central.lab.dns
+mv _default.private ${DOMAIN}.private
+mv _default.txt ${DOMAIN}.dns
 
 # transfer a copy to the local user
-cp ny-central.lab.dns ${CURRENT}
+cp ${DOMAIN}.dns ${CURRENT}
 # ensure we can download the file later
-chown lab:lab ${CURRENT}/ny-central.lab.dns
+chown lab:lab ${CURRENT}/${DOMAIN}.dns
 cd ${CURRENT}
 
 echo "*@${DOMAIN} ${DOMAIN}" > /usr/local/etc/opendkim/signingtable
-echo "${DOMAIN} ${DOMAIN}:_default:/usr/local/etc/opendkim/ny-central.lab.private" > /usr/local/etc/opendkim/keytable
+echo "${DOMAIN} ${DOMAIN}:_default:/usr/local/etc/opendkim/${DOMAIN}.private" > /usr/local/etc/opendkim/keytable
 
 # fix key permissions
 chown mailnull /usr/local/etc/opendkim/${DOMAIN}.private
@@ -571,4 +571,10 @@ echo Setup completed.
 # pwcheck_method: auxprop
 # auxprop_plugin: sasldb
 # mech_list: PLAIN LOGIN CRAM-MD5 DIGEST-MD5 NTLM
+
+#
+# Back up clamav db
+#
+tar -C /var/db/clamav -cJf clamav.tar.xz .
+
 
