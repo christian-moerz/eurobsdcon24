@@ -10,6 +10,25 @@ set -x
 # Break on failure
 set -e
 
+#
+# Installing cyrus imap
+#
+pkg install -y cyrus-imapd38 cyrus-sasl cyrus-sasl-saslauthd
+
+#
+# Install additional system packages
+pkg install -y ca_root_nss redis
+
+# Installing postfix
+pkg install -y postfix-sasl
+
+# Install amavis, spamassassin, clamav, milter, spamd, and opendkim
+pkg install -y amavisd-new clamav clamav-unofficial-sigs spamassassin \
+    spamassassin-dqs spamass-milter opendkim spamd amavisd-milter
+
+# Install sshguard as additional protection
+# against credential stuffing
+pkg install -y sshguard
 
 # blacklistd is already in base
 
@@ -105,7 +124,8 @@ cat >> ${MAINCF} <<EOF
 smtpd_tls_CAfile = /usr/local/etc/ssl/ca.crt
 smtpd_tls_cert_file = /usr/local/etc/ssl/server.crt
 smtpd_tls_key_file = /usr/local/etc/ssl/server.key
-smtpd_tls_security_level = encrypt
+smtpd_tls_security_level = may
+smtpd_tls_auth_only = yes
 
 # virtual delivery configuration
 virtual_mailbox_domains = ${DOMAIN}
@@ -282,7 +302,7 @@ bayes_path /var/maiad/.spamassassin/bayes\\
 bayes_file_mode 0775\\
 @g" ${SPAMCF}
 sed -i '' "s@# rewrite_header Subject \*\*\*\*\*SPAM\*\*\*\*\*@rewrite_header Subject [SPAM]\\
-sa_tag_level_deflt = -9999;\\
+add_header all Report _REPORT_\\
 report_safe 1@g" ${SPAMCF}
 
 # enable spamassassin milter
@@ -432,11 +452,11 @@ table <sshguard> {}
 table <spamd-white> persist file "/etc/pf.spamdwhite"
 
 # allow white list to go directly to smtps and smtp
-rdr pass inet proto tcp from <spamd-white> to any port 465 -> 127.0.0.1 port 466
-no rdr inet proto tcp from <spamd-white> to any \
-      port smtp
-rdr pass inet proto tcp from any to any \
-      port smtp -> 127.0.0.1 port spamd
+# rdr pass inet proto tcp from <spamd-white> to any port 465 -> 127.0.0.1 port 466
+#no rdr inet proto tcp from <spamd-white> to any \
+#      port smtp
+#rdr pass inet proto tcp from any to any \
+#      port smtp -> 127.0.0.1 port spamd
 
 set skip on lo0
 

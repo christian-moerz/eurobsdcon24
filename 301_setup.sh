@@ -154,6 +154,9 @@ if [ -e /root/.ssh/known_hosts ]; then
     sed -i '' '/10.193.167.10/d' /root/.ssh/known_hosts
     sed -i '' '/10.193.167.11/d' /root/.ssh/known_hosts
     sed -i '' '/10.193.167.19/d' /root/.ssh/known_hosts
+    sed -i '' '/unbound/d' /root/.ssh/known_hosts
+    sed -i '' '/mail1/d' /root/.ssh/known_hosts
+    sed -i '' '/mail2/d' /root/.ssh/known_hosts
     sed -i '' '/client/d' /root/.ssh/known_hosts
 fi
 
