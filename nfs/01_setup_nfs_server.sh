@@ -40,6 +40,7 @@ mkdir -p /var/tftpboot
 ln -s /var/tftpboot /tftpboot
 # enable tftp in inetd
 sed -i '' 's@#tftp@tftp@g' /etc/inetd.conf
+sed -i '' 's@tftpd \-l \-s /tftpboot@tftpd blocksize 1468 -l -s /tftpboot@g' /etc/inetd.conf
 service inetd enable
 service inetd start
 
