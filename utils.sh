@@ -150,3 +150,66 @@ sleep_dot()
     done
     echo ""
 }
+
+write_installerconfig()
+{
+    if [ "${NAMESERVER}" == "" ]; then
+	echo "NAMESERVER not set"
+	exit 2
+    fi
+    cat >> ${ZPATH}/iso/setup/etc/installerconfig <<EOF
+PARTITIONS=DEFAULT				  
+DISTRIBUTIONS="kernel.txz base.txz"		  
+export nonInteractive="YES"			  
+
+#!/bin/sh
+sysrc ifconfig_DEFAULT="inet ${CONF_IP} netmask ${CONF_SUBNET}"
+sysrc sshd_enable=YES
+sysrc hostname=${CONF_HOSTNAME}
+sysrc defaultrouter=${CONF_ROUTER}
+
+echo nameserver ${NAMESERVER} > /etc/resolv.conf
+
+pw useradd lab -m -G wheel -s /bin/csh
+echo labpass | pw usermod lab -n lab -h 0
+mkdir -p /home/lab/.ssh
+echo ${PUBKEY} > /home/lab/.ssh/authorized_keys
+chown -R lab:lab /home/lab/.ssh
+chmod 700 /home/lab/.ssh
+chmod 600 /home/lab/.ssh/authorized_keys
+
+echo "security.bsd.see_other_uids=0" >> /etc/sysctl.conf
+echo "security.bsd.see_other_gids=0" >> /etc/sysctl.conf
+echo "security.bsd.see_jail_proc=0" >> /etc/sysctl.conf
+echo "security.bsd.unprivileged_read_msgbuf=0" >> /etc/sysctl.conf
+echo "security.bsd.unprivileged_proc_debug=0" >> /etc/sysctl.conf
+echo "kern.randompid=1" >> /etc/sysctl.conf
+
+mkdir -p /usr/local/etc
+cat <<BOT >/usr/local/etc/doas.conf
+permit nopass lab
+BOT
+
+EOF
+}
+
+gen_media()
+{
+    if [ ! -e ${ZPATH}/iso/$1.iso ]; then
+	mkdir -p ${ZPATH}/iso/setup
+	tar -C ${ZPATH}/iso/setup -xf ${ZPATH}/iso/freebsd.iso
+	write_installerconfig
+
+	# finally, package up as iso again
+	sh /usr/src/release/amd64/mkisoimages.sh -b '13_0_RELEASE_AMD64_CD' ${ZPATH}/iso/$1.iso ${ZPATH}/iso/setup
+	
+	# clean up again
+	rm -fr ${ZPATH}/iso/setup
+    fi
+}
+
+ssh_copy()
+{
+    scp -o ConnectionAttempts=50 -o ConnectTimeout=3600 \
+	-i .ssh/id_ecdsa $1 lab@10.193.167.$2:
+}
