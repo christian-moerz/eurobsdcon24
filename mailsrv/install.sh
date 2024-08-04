@@ -10,6 +10,25 @@ set -x
 # Break on failure
 set -e
 
+#
+# Installing cyrus imap
+#
+pkg install -y cyrus-imapd38 cyrus-sasl cyrus-sasl-saslauthd
+
+#
+# Install additional system packages
+pkg install -y ca_root_nss redis
+
+# Installing postfix
+pkg install -y postfix-sasl
+
+# Install amavis, spamassassin, clamav, milter, spamd, and opendkim
+pkg install -y amavisd-new clamav clamav-unofficial-sigs spamassassin \
+    spamassassin-dqs spamass-milter opendkim spamd amavisd-milter
+
+# Install sshguard as additional protection
+# against credential stuffing
+pkg install -y sshguard
 
 # blacklistd is already in base
 
@@ -146,11 +165,13 @@ install -m 0444 -o cyrus server.key /usr/local/etc/ssl/cyrus.key
 install -m 0444 ca.crt /usr/local/etc/ssl/ca.crt
 install -m 0444 ca.crt /etc/ssl/certs/ca.crt
 install -m 0444 ca.crt /usr/share/certs/trusted/NY_Central.pem
+set +e
 if [ ! -e /usr/local/etc/ssl/cert.pem.ca ]; then
     cp /usr/local/etc/ssl/cert.pem /usr/local/etc/ssl/cert.pem.ca
     cat ca.crt >> /usr/local/etc/ssl/cert.pem
     cat ca.crt >> /etc/ssl/cert.pem
 fi
+set -e
 certctl trust ca.crt
 openssl rehash /etc/ssl/certs
 certctl rehash

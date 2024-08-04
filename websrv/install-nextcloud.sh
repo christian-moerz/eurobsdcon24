@@ -18,7 +18,7 @@ fi
 #
 
 PHPVER=83
-PSQLVER=16
+PSQLVER=15
 DOWNLOAD=https://download.nextcloud.com/server/releases/nextcloud-29.0.4.zip
 DBNAME=nextcloud
 DBUSER=nextcloud
@@ -30,7 +30,7 @@ ADMINPASS=admin.pass!1
 #
 set +e
 pkg info | grep nginx > /dev/null
-if [ "0" !=" $?" ]; then
+if [ "0" != "$?" ]; then
     pkg install -y nginx \
 	ca_root_nss \
 	doas \
