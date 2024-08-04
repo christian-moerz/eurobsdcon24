@@ -29,7 +29,7 @@ fi
 if [ ! -e /ca/pki/issued/cloud.ny-central.lab.crt ]; then
     CURRENT=$(pwd)
     cd /ca
-    easyrsa build-server-full -y cloud.ny-central.lab nopass
+    easyrsa build-server-full cloud.ny-central.lab nopass -y
     cd ${CURRENT}
 fi
 
@@ -43,8 +43,10 @@ if [ ! -e /usr/src/UPDATING ]; then
     exit 2
 fi
 
+PUBKEY=$(cat .ssh/id_ecdsa.pub)
 CONF_HOSTNAME="cloud"
 CONF_IP="10.193.167.13"
+CONF_SUBNET="255.255.255.0"
 NAMESERVER="10.193.167.10"
 SEARCH="ny-central.lab"
 gen_media cloud
@@ -67,7 +69,7 @@ set -e
 cat <<EOF >/tmp/update_dns.sh
 #!/bin/sh
 sed -i '' "/cloud/d" /usr/local/etc/unbound/ny-central.lab.zone
-echo "10.193.167.13 cloud" >> /usr/local/etc/unbound/ny-central.lab.zone
+echo "cloud IN A 10.193.167.13" >> /usr/local/etc/unbound/ny-central.lab.zone
 service unbound reload
 EOF
 ssh_copy /tmp/update_dns.sh 10
