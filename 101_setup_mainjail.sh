@@ -84,7 +84,6 @@ sysrc_file ${RC} sendmail_eanble=NONE
 
 # replace variables in jail.conf for main jail
 sed -i '' "s@JAILNAME@${JAILNAME}@g" ${ETC}
-sed -i '' "s@IP@${IP}@g" ${ETC}
 sed -i '' "s@SUBNET@${SUBNET}@g" ${ETC}
 sed -i '' "s@ZPOOL@${ZPOOL}@g" ${ETC}
 sed -i '' "s@ZVOL@${ZVOL}@g" ${ETC}
@@ -93,6 +92,8 @@ sed -i '' "s@ZSTOREVOL@${ZSTOREVOL}@g" ${ETC}
 sed -i '' "s@NETWORK@${NETWORK}@g" ${ETC}
 sed -i '' "s@NETMASK@${NETMASK}@g" ${ETC}
 sed -i '' "s@SWITCHIP@${SWITCHIP}@g" ${ETC}
+sed -i '' "s@JAILIP@${JAILIP}@g" ${ETC}
+sed -i '' "s@IP@${IP}@g" ${ETC}
 
 echo % cat ${ETC}
 cat ${ETC}

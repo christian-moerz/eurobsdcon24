@@ -1,4 +1,6 @@
 dhcpd.conf
+*.zip
+*.tar.gz
 config.net
 *.txz
 *.iso

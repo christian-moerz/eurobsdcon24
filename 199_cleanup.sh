@@ -42,6 +42,10 @@ sed -i '' '/kern\.racct\.enable=1/d' /boot/loader.conf
 # finally, we clean up config.sh and config.net
 rm -f config.sh config.net
 
+# make sure we have destroyed any remains
+ifconfig vtnet0 destroy
+bhyvectl --destroy --vm=client > /dev/null
+
 echo Destroying ${ZPOOL}/${ZVOL} and ${ZPOOL}/${ZSTOREVOL} - continue?
 read SURE
 
