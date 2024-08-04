@@ -103,6 +103,7 @@ if [ -e /root/.ssh/known_hosts ]; then
     sed -i '' '/mail1/d' /root/.ssh/known_hosts
     sed -i '' '/mail2/d' /root/.ssh/known_hosts
     sed -i '' '/client/d' /root/.ssh/known_hosts
+    sed -i '' '/cloud/d' /root/.ssh/known_hosts
 fi
 
 ./104_setup_vmjail.sh -m 1G -c unbound.iso unbound

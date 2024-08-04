@@ -213,3 +213,18 @@ ssh_copy()
     scp -o ConnectionAttempts=50 -o ConnectTimeout=3600 \
 	-i .ssh/id_ecdsa $1 lab@10.193.167.$2:
 }
+
+build_ip()
+{
+    BASEIP=$1
+    NEWID=$2
+    NETID=$(echo ${BASEIP} | awk -F. '{print $1 "." $2 "." $3 "." }')
+    echo ${NETID}${NEWID}
+}
+
+reset_jail()
+{
+    service jail stop $1
+    zfs rollback zroot/labdisk/$1@installed
+    service jail start $1
+}

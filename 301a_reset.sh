@@ -1,11 +1,6 @@
 #!/bin/sh
 
-reset_jail()
-{
-    service jail stop $1
-    zfs rollback zroot/labdisk/$1@installed
-    service jail start $1
-}
+. ./utils.sh
 
 reset_jail unbound
 reset_jail mail1
@@ -18,3 +13,4 @@ cat mailsrv/install.sh | grep pkg > /dev/null
 if [ "0" == "$?" ]; then
     sed -i '' '13,31d' mailsrv/install.sh
 fi
+

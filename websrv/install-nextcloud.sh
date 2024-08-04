@@ -23,17 +23,28 @@ DOWNLOAD=https://download.nextcloud.com/server/releases/nextcloud-29.0.4.zip
 DBNAME=nextcloud
 DBUSER=nextcloud
 DBPASS=nextpass
+ADMINPASS=admin.pass!1
 
 #
 # Install a database and a web server with PHP
 #
-pkg install -y nginx \
-    ca_root_nss \
-    doas \
-    postgresql${PSQLVER}-server \
-    php${PHPVER}-pdo_pgsql \
-    php${PHPVER}-curl \
-    php${PHPVER}-gd
+set +e
+pkg info | grep nginx > /dev/null
+if [ "0" !=" $?" ]; then
+    pkg install -y nginx \
+	ca_root_nss \
+	doas \
+	postgresql${PSQLVER}-server \
+	php${PHPVER}-pdo_pgsql \
+	php${PHPVER}-curl \
+	php${PHPVER}-gd \
+	php${PHPVER}-extensions \
+	php${PHPVER}-mbstring \
+	php${PHPVER}-zip \
+	php${PHPVER}-zlib \
+	php${PHPVER}-pcntl
+fi
+set -e
 
 # install the CA certificate locally, so we can trust
 # those mail servers when accessing as client
@@ -52,7 +63,8 @@ certctl rehash
 # Initialize database and ready for start
 #
 sysrc postgresql_enable=YES
-service postgresql init
+service postgresql initdb
+service postgresql start
 
 #
 # Allow doas for lab user
@@ -73,15 +85,19 @@ listen.mode = 0660@g' /usr/local/etc/php-fpm.d/www.conf
 # Set php to production config
 install /usr/local/etc/php.ini-production /usr/local/etc/php.ini
 
+# Update memory limit
+sed -i '' 's@memory_limit = 128M@memory_limit = 1G@g' /usr/local/etc/php.ini
+
 # Enable php
 sysrc php_fpm_enable=YES
 service php-fpm start
 
 # Install tls key
 install -o www -m 0600 server.key /usr/local/etc/ssl/www.key
+install -o www -m 0444 server.crt /usr/local/etc/ssl/www.crt
 
 # Reconfigure nginx
-NCPU=$(sysctl hw.ncpu | awk -F: '{print $2}')
+NCPU=$(sysctl -n hw.ncpu)
 # Add php config and server name
 # Add root directory and index names
 cat > /usr/local/etc/nginx/nginx.conf <<EOF
@@ -98,11 +114,13 @@ events {
     worker_connections  1024;
 }
 
+http {
+
 upstream php-handler {
     server unix:/var/run/php-fpm.sock;
 }
 
-# Set the `immutable` cache control options only for assets with a cache busting `v` argument
+# Set the \`immutable\` cache control options only for assets with a cache busting \`v\` argument
 map \$arg_v \$asset_immutable {
     "" "";
     default ", immutable";
@@ -121,8 +139,9 @@ server {
 }
 
 server {
-    listen 443      ssl http2;
-    listen [::]:443 ssl http2;
+    listen 443      ssl;
+    listen [::]:443 ssl;
+    http2 on;
     server_name cloud.${DOMAIN};
 
     # Path to the root of your installation
@@ -131,7 +150,7 @@ server {
     # Use Mozilla's guidelines for SSL/TLS settings
     # https://mozilla.github.io/server-side-tls/ssl-config-generator/
     ssl_certificate     /usr/local/etc/ssl/www.crt;
-    ssl_certificate_key /etc/local/etc/ssl/www.key;
+    ssl_certificate_key /usr/local/etc/ssl/www.key;
 
     # Prevent nginx HTTP Server Detection
     server_tokens off;
@@ -158,7 +177,7 @@ server {
     gzip_types application/atom+xml text/javascript application/javascript application/json application/ld+json application/manifest+json application/rss+xml application/vnd.geo+json application/vnd.ms-fontobject application/wasm application/x-font-ttf application/x-web-app-manifest+json application/xhtml+xml application/xml font/opentype image/bmp image/svg+xml image/x-icon text/cache-manifest text/css text/plain text/vcard text/vnd.rim.location.xloc text/vtt text/x-component text/x-cross-domain-policy;
 
     # Pagespeed is not supported by Nextcloud, so if your server is built
-    # with the `ngx_pagespeed` module, uncomment this line to disable it.
+    # with the \`ngx_pagespeed\` module, uncomment this line to disable it.
     #pagespeed off;
 
     # The settings allows you to optimize the HTTP2 bandwidth.
@@ -166,7 +185,7 @@ server {
     # for tuning hints
     client_body_buffer_size 512k;
 
-    # HTTP response headers borrowed from Nextcloud `.htaccess`
+    # HTTP response headers borrowed from Nextcloud \`.htaccess\`
     add_header Referrer-Policy                   "no-referrer"       always;
     add_header X-Content-Type-Options            "nosniff"           always;
     add_header X-Frame-Options                   "SAMEORIGIN"        always;
@@ -187,19 +206,19 @@ server {
 	application/wasm wasm;
     }
 
-    # Specify how to handle directories -- specifying `/index.php\$request_uri`
+    # Specify how to handle directories -- specifying \`/index.php\$request_uri\`
     # here as the fallback means that Nginx always exhibits the desired behaviour
     # when a client requests a path that corresponds to a directory that exists
     # on the server. In particular, if that directory contains an index.php file,
     # that file is correctly served; if it doesn't, then the request is passed to
     # the front-end controller. This consistent behaviour means that we don't need
     # to specify custom rules for certain paths (e.g. images and other assets,
-    # `/updater`, `/ocs-provider`), and thus
-    # `try_files \$uri \$uri/ /index.php\$request_uri`
+    # \`/updater\`, \`/ocs-provider\`), and thus
+    # \`try_files \$uri \$uri/ /index.php\$request_uri\`
     # always provides the desired behaviour.
     index index.php index.html /index.php\$request_uri;
 
-    # Rule borrowed from `.htaccess` to handle Microsoft DAV clients
+    # Rule borrowed from \`.htaccess\` to handle Microsoft DAV clients
     location = / {
         if ( \$http_user_agent ~ ^DavClnt ) {
             return 302 /remote.php/webdav/\$is_args\$args;
@@ -212,13 +231,13 @@ server {
         access_log off;
     }
 
-    # Make a regex exception for `/.well-known` so that clients can still
+    # Make a regex exception for \`/.well-known\` so that clients can still
     # access it despite the existence of the regex rule
-    # `location ~ /(\.|autotest|...)` which would otherwise handle requests
-    # for `/.well-known`.
+    # \`location ~ /(\.|autotest|...)\` which would otherwise handle requests
+    # for \`/.well-known\`.
     location ^~ /.well-known {
         # The rules in this block are an adaptation of the rules
-        # in `.htaccess` that concern `/.well-known`.
+        # in \`.htaccess\` that concern \`/.well-known\`.
 
         location = /.well-known/carddav { return 301 /remote.php/dav/; }
         location = /.well-known/caldav  { return 301 /remote.php/dav/; }
@@ -226,18 +245,18 @@ server {
         location /.well-known/acme-challenge    { try_files \$uri \$uri/ =404; }
         location /.well-known/pki-validation    { try_files \$uri \$uri/ =404; }
 
-        # Let Nextcloud's API for `/.well-known` URIs handle all other
+        # Let Nextcloud's API for \`/.well-known\` URIs handle all other
         # requests by passing them to the front-end controller.
         return 301 /index.php\$request_uri;
     }
 
-    # Rules borrowed from `.htaccess` to hide certain paths from clients
+    # Rules borrowed from \`.htaccess\` to hide certain paths from clients
     location ~ ^/(?:build|tests|config|lib|3rdparty|templates|data)(?:\$|/)  { return 404; }
     location ~ ^/(?:\.|autotest|occ|issue|indie|db_|console)                { return 404; }
 
     # Ensure this block, which passes PHP files to the PHP process, is above the blocks
     # which handle static assets (as seen below). If this block is not declared first,
-    # then Nginx will encounter an infinite rewriting loop when it prepends `/index.php`
+    # then Nginx will encounter an infinite rewriting loop when it prepends \`/index.php\`
     # to the URI, resulting in a HTTP 500 error response.
     location ~ \.php(?:\$|/) {
         # Required for legacy support
@@ -266,7 +285,7 @@ server {
     # Serve static files
     location ~ \.(?:css|js|mjs|svg|gif|ico|jpg|png|webp|wasm|tflite|map|ogg|flac)\$ {
         try_files \$uri /index.php\$request_uri;
-        # HTTP response headers borrowed from Nextcloud `.htaccess`
+        # HTTP response headers borrowed from Nextcloud \`.htaccess\`
         add_header Cache-Control                     "public, max-age=15778463\$asset_immutable";
         add_header Referrer-Policy                   "no-referrer"       always;
         add_header X-Content-Type-Options            "nosniff"           always;
@@ -279,11 +298,11 @@ server {
 
     location ~ \.woff2?\$ {
         try_files \$uri /index.php\$request_uri;
-        expires 7d;         # Cache-Control policy borrowed from `.htaccess`
+        expires 7d;         # Cache-Control policy borrowed from \`.htaccess\`
         access_log off;     # Optional: Don't log access to assets
     }
 
-    # Rule borrowed from `.htaccess`
+    # Rule borrowed from \`.htaccess\`
     location /remote {
         return 301 /remote.php\$request_uri;
     }
@@ -293,6 +312,7 @@ server {
     }
 }
 
+}
 EOF
 
 touch /var/log/nginx/error.log
@@ -306,7 +326,10 @@ service nginx start
 #
 # Download nextcloud
 #
-fetch -o /usr/local/www/nextcloud.zip ${DOWNLOAD}
+if [ ! -e nextcloud.zip ]; then
+    fetch -o nextcloud.zip ${DOWNLOAD}
+fi
+cp nextcloud.zip /usr/local/www
 
 # Extract
 tar -C /usr/local/www -xvf /usr/local/www/nextcloud.zip
@@ -322,4 +345,33 @@ echo "alter user ${DBUSER} with password '${DBPASS}';" | su postgres -c 'psql'
 #
 # Run installation on command line
 #
-#su www -c "/usr/local/bin/php /
+su -m www -c "/usr/local/bin/php /usr/local/www/nextcloud/occ \
+   maintenance:install \
+   --database=pgsql \
+   --database-name=${DBNAME} \
+   --database-user=${DBUSER} \
+   --database-pass=${DBPASS} \
+   --admin-user=admin \
+   --admin-pass=${ADMINPASS}"
+
+#
+# After installing, add trusted domain name
+#
+sed -i '' "s/0 => 'localhost'/0 => 'localhost',\\
+1 => 'cloud.ny-central.lab'/g" /usr/local/www/nextcloud/config/config.php
+
+#
+# Install mail app if available
+#
+if [ -e nextcloud_mail.tar.gz ]; then
+    tar -C /usr/local/www/nextcloud/apps -xvf nextcloud_mail.tar.gz
+    chown -R www:www /usr/local/www/nextcloud/apps
+
+    # then enable mail app
+    su -m www -c "/usr/local/bin/php /usr/local/www/nextcloud/occ \
+       app:enable mail"
+fi
+
+su -m www -c "/usr/local/bin/php /usr/local/www/nextcloud/occ \
+   app:enable twofactor_totp"
+

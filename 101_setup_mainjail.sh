@@ -16,6 +16,14 @@ IP=10.10.10.41
 SUBNET=255.255.255.252
 JAILIP=10.10.10.42
 
+# configuration settings for network inside jail
+SWITCHIP=10.193.167.1
+SUBNET=255.255.255.0
+NETMASK=24
+DOMAINNAME=bsd
+NETWORK=10.193.167.0
+BROADCAST=10.193.167.255
+
 PWD=$(pwd)
 
 ################################################################################
@@ -82,6 +90,9 @@ sed -i '' "s@ZPOOL@${ZPOOL}@g" ${ETC}
 sed -i '' "s@ZVOL@${ZVOL}@g" ${ETC}
 sed -i '' "s@ZPATH@${LABPATH}@g" ${ETC}
 sed -i '' "s@ZSTOREVOL@${ZSTOREVOL}@g" ${ETC}
+sed -i '' "s@NETWORK@${NETWORK}@g" ${ETC}
+sed -i '' "s@NETMASK@${NETMASK}@g" ${ETC}
+sed -i '' "s@SWITCHIP@${SWITCHIP}@g" ${ETC}
 
 echo % cat ${ETC}
 cat ${ETC}
@@ -130,6 +141,11 @@ ZVOL=${ZVOL}
 JAILNAME=${JAILNAME}
 ZPATH=${ZPATH}
 LABPATH=${LABPATH}
+SWITCHIP=${SWITCHIP}
+SUBNET=${SUBNET}
+DOMAINNAME=${DOMAINNAME}
+NETWORK=${NETWORK}
+BROADCAST=${BROADCAST}
 EOF
 
 # we enable resource accounting in kernel
