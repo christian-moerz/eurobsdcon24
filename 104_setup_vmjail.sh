@@ -280,13 +280,13 @@ chmod 755 ${ZPATH}/${JAILNAME}/usr/local/etc/rc.d/bhyve
 echo % cat ${ZPATH}/${JAILNAME}/usr/local/etc/rc.d/bhyve
 cat ${ZPATH}/${JAILNAME}/usr/local/etc/rc.d/bhyve
 
+# enable bhyve rc.d script
+echo % sysrc -f ${ETC} bhyve_enable=YES
+jexec ${JAILNAME} sysrc -f ${ETC} bhyve_enable=YES
+
 # stop jail
 echo % service jail onestop ${JAILNAME}
 service jail onestop ${JAILNAME}
-
-# enable bhyve rc.d script
-echo % sysrc -f ${ETC} bhyve_enable=YES
-sysrc -f ${ETC} bhyve_enable=YES
 
 # restart with rc.local startup
 echo % service jail onestart ${JAILNAME}
