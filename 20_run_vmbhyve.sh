@@ -8,7 +8,7 @@ fi
 
 # Use vm-bhyve for network setup
 # set up switch
-vm switch create ${SWITCHNAME} -a ${SWITCHIP}/${SUBNET}
+vm switch create -a ${SWITCHIP}/${SUBNET} ${SWITCHNAME}
 
 # NAT is not supported
 # vm switch nat vmswitch on
