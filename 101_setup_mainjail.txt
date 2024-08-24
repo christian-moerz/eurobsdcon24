@@ -8,8 +8,8 @@
 % tar -C /labenv/lab -xf /labenv/base.txz
 % mkdir -p /labenv/lab/root/eurobsdcon
 % cp /etc/resolv.conf /labenv/lab/etc
-% sysrc -f /labenv/lab/etc/rc.conf ifconfig_vtnet0="inet 10.10.10.42 netmask 255.255.255.0"
-ifconfig_vtnet0:  -> inet 10.10.10.42 netmask 255.255.255.0
+% sysrc -f /labenv/lab/etc/rc.conf ifconfig_vtnet0="inet 10.10.10.42 netmask 255.255.255.252"
+ifconfig_vtnet0:  -> inet 10.10.10.42 netmask 255.255.255.252
 % sysrc -f /labenv/lab/etc/rc.conf defaultrouter="10.10.10.41"
 defaultrouter: NO -> 10.10.10.41
 % sysrc -f /labenv/lab/etc/rc.conf sendmail_eanble=NONE
@@ -34,11 +34,9 @@ lab {
 	allow.vmm = 1;
 
 	$jailip = "10.10.10.41";
-	$jailnet = "255.255.255.0";
+	$jailnet = "255.255.255.252";
 	
 	.include "/etc/jail.conf.d/lab.template";
-
-	securelevel = -1;
 
 	exec.poststart += "zfs jail ${name} zroot/labdisk";
 	exec.poststart += "route add -net 10.193.167.0/24 10.10.10.42";

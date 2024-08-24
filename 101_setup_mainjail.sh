@@ -13,7 +13,7 @@ LABPATH=/labenv
 # this is the mount path inside the jail!
 ZPATH=/lab
 IP=10.10.10.41
-SUBNET=255.255.255.252
+JAILSUBNET=255.255.255.252
 JAILIP=10.10.10.42
 
 # configuration settings for network inside jail
@@ -56,6 +56,10 @@ if [ ! -e ${LABPATH}/${JAILNAME}/bin ]; then
     echo % tar -C ${LABPATH}/${JAILNAME} -xf ${LABPATH}/base.txz
     tar -C ${LABPATH}/${JAILNAME} -xf ${LABPATH}/base.txz
 fi
+if [ ! -e ${LABPATH}/${JAILNAME}/boot/kernel ]; then
+    echo % tar -C ${LABPATH}/${JAILNAME} -xf ${LABPATH}/kernel.txz
+    tar -C ${LABPATH}/${JAILNAME} -xf ${LABPATH}/kernel.txz
+fi
 echo % mkdir -p ${LABPATH}/${JAILNAME}/root/eurobsdcon
 mkdir -p ${LABPATH}/${JAILNAME}/root/eurobsdcon
 
@@ -72,8 +76,8 @@ echo % cp /etc/resolv.conf ${LABPATH}/${JAILNAME}/etc
 cp /etc/resolv.conf ${LABPATH}/${JAILNAME}/etc
 RC=${LABPATH}/${JAILNAME}/etc/rc.conf
 # set main jail network config
-echo % sysrc -f ${RC} "ifconfig_vtnet0=\"inet ${JAILIP} netmask ${SUBNET}\""
-sysrc -f ${RC} ifconfig_vtnet0="inet ${JAILIP} netmask ${SUBNET}"
+echo % sysrc -f ${RC} "ifconfig_vtnet0=\"inet ${JAILIP} netmask ${JAILSUBNET}\""
+sysrc -f ${RC} ifconfig_vtnet0="inet ${JAILIP} netmask ${JAILSUBNET}"
 #sysrc -f ${RC} defaultrouter="${IP}"
 sysrc_file ${RC} "defaultrouter=\"${IP}\""
 # disable sendmail in main jail
@@ -82,7 +86,7 @@ sysrc_file ${RC} sendmail_eanble=NONE
 
 # replace variables in jail.conf for main jail
 sed -i '' "s@JAILNAME@${JAILNAME}@g" ${ETC}
-sed -i '' "s@SUBNET@${SUBNET}@g" ${ETC}
+sed -i '' "s@SUBNET@${JAILSUBNET}@g" ${ETC}
 sed -i '' "s@ZPOOL@${ZPOOL}@g" ${ETC}
 sed -i '' "s@ZVOL@${ZVOL}@g" ${ETC}
 sed -i '' "s@ZPATH@${LABPATH}@g" ${ETC}
