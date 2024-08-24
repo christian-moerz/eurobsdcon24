@@ -1,0 +1,66 @@
++ zfs set 'mountpoint=/lab' zroot/labdisk
++ echo % mkdir -p /lab/iso
+% mkdir -p /lab/iso
++ mkdir -p /lab/iso
+% cp base.txz /lab/base.txz
+% cp kernel.txz /lab/kernel.txz
+% cp freebsd.iso /lab/iso/freebsd.iso
+% cp subjail.template /etc/jail.conf.d/jail.template
+% cp subjail_routed.template /etc/jail.conf.d/jail_routed.template
+% cp subjail_routed_tap.template /etc/jail.conf.d/jail_routed_tap.template
++ pkg install -y -f pkg git
++ sysrc 'jail_enable=YES'
+jail_enable: NO -> YES
++ tar -C /usr/src -xvf src.tar
++ mkdir -p /lab/iso/setup
++ tar -C /lab/iso/setup -xvf /lab/iso/freebsd.iso
+% cat >> /lab/iso/setup/etc/installerconfig <<EOF
+PARTITIONS=DEFAULT				  
+DISTRIBUTIONS="kernel.txz base.txz"		  
+export nonInteractive="YES"			  
+
+#!/bin/sh
+sysrc ifconfig_DEFAULT=DHCP
+sysrc sshd_enable=YES
+sysrc hostname=quick-setup
+cat >> /etc/sysctl.conf <<DOT
+security.bsd.see_other_uids=0
+security.bsd.see_other_gids=0
+security.bsd.see_jail_proc=0
+security.bsd.unprivileged_read_msgbuf=0
+security.bsd.unprivileged_proc_debug=0
+kern.randompid=1
+DOT
+EOF
+
++ sh /usr/src/release/amd64/mkisoimages.sh -b 13_0_RELEASE_AMD64_CD /lab/iso/quick.iso /lab/iso/setup
+Creating `/tmp/efiboot.6QotiT'
+/tmp/efiboot.6QotiT: 4039 sectors in 4039 FAT12 clusters (512 bytes/cluster)
+BytesPerSec=512 SecPerClust=1 ResSectors=1 FATs=2 RootDirEnts=512 Sectors=4096 Media=0xf0 FATsecs=12 SecPerTrack=63 Heads=255 HiddenSecs=0
+Populating `/tmp/efiboot.6QotiT'
+Image `/tmp/efiboot.6QotiT' complete
+1+0 records in
+1+0 records out
+32768 bytes transferred in 0.000047 secs (701685261 bytes/sec)
++ rm -fr /lab/iso/setup
+% cat > /usr/local/bin/connect <<EOF
+#!/bin/sh
+if [ "" == "\$1" ]; then
+   echo Missing jail name.
+   exit 2
+fi
+
+jexec \$1 tmux attach-session -t bhyve
+EOF
+
++ chmod 755 /usr/local/bin/connect
+mkdir -p /usr/local/bin
+cat >> /usr/local/bin/bhyveclean <<EOF
+#!/bin/sh
+
+if [ -e /dev/vmm/\$1 ]; then
+   bhyvectl --destroy --vm=\$1
+fi
+EOF
+chmod 755 /usr/local/bin/bhyveclean
+

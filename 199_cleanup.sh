@@ -18,6 +18,7 @@ fi
 
 # load from config.sh
 . ./config.sh
+. ./utils.sh
 
 ensure_unjailed
 

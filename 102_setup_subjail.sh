@@ -95,8 +95,12 @@ sysrc jail_enable=YES
 
 if [ ! -e ${ZPATH}/iso/quick.iso ]; then
 
-    cd /usr/src
-    git clone -b releng/14.0 --depth 1 https://github.com/freebsd/freebsd-src /usr/src
+    if [ -e src.tar ]; then
+        tar -C /usr/src -xvf src.tar
+    else
+        cd /usr/src
+        git clone -b releng/14.0 --depth 1 https://github.com/freebsd/freebsd-src /usr/src
+    fi
     
     # Prepare a quick setup media
     mkdir -p ${ZPATH}/iso/setup

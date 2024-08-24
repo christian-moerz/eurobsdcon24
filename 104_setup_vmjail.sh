@@ -111,10 +111,15 @@ cat /etc/jail.conf.d/${JAILNAME}.conf
 
 # set rc.conf settings for sub jail
 ETC=${ZPATH}/${JAILNAME}/etc/rc.conf
+echo % sysrc -f ${ETC} sendmail_enable=NONE
 sysrc -f ${ETC} sendmail_enable=NONE
+echo % sysrc -f ${ETC} ifconfig_bhyve0="DHCP"
 sysrc -f ${ETC} ifconfig_bhyve0="DHCP"
+echo % sysrc -f ${ETC} syslogd_flags="-ss"
 sysrc -f ${ETC} syslogd_flags="-ss"
+echo % sysrc -f ${ETC} cloned_interfaces="bridge0"
 sysrc -f ${ETC} cloned_interfaces="bridge0"
+echo % sysrc -f ${ETC} ifconfig_bridge0="addm bhyve0 up"
 sysrc -f ${ETC} ifconfig_bridge0="addm bhyve0 up"
 
 echo % cat ${ETC}
@@ -206,6 +211,7 @@ RESULT=0
 
 TAP=\$(ifconfig tap create)
 ifconfig \${TAP} ether ${VMMAC}
+
 ifconfig bridge0 addm \${TAP}
 
 while [ "0" == "\${RESULT}" ]; do
@@ -231,6 +237,7 @@ EOF
 chmod 755 ${ZPATH}/${JAILNAME}/usr/local/bin/bhyvestart
 echo % cat ${ZPATH}/${JAILNAME}/usr/local/bin/bhyvestart
 cat ${ZPATH}/${JAILNAME}/usr/local/bin/bhyvestart
+echo % chmod 755 ${ZPATH}/${JAILNAME}/usr/local/bin/bhyvestart
 
 # create bhyve rc.d script
 mkdir -p ${ZPATH}/${JAILNAME}/usr/local/etc/rc.d
@@ -279,9 +286,10 @@ EOF
 chmod 755 ${ZPATH}/${JAILNAME}/usr/local/etc/rc.d/bhyve
 echo % cat ${ZPATH}/${JAILNAME}/usr/local/etc/rc.d/bhyve
 cat ${ZPATH}/${JAILNAME}/usr/local/etc/rc.d/bhyve
+echo % chmod 755 ${ZPATH}/${JAILNAME}/usr/local/etc/rc.d/bhyve
 
 # enable bhyve rc.d script
-echo % sysrc -f ${ETC} bhyve_enable=YES
+echo % jexec ${JAILNAME} sysrc -f ${ETC} bhyve_enable=YES
 jexec ${JAILNAME} sysrc -f ${ETC} bhyve_enable=YES
 
 # stop jail

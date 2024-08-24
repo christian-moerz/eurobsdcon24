@@ -87,6 +87,8 @@ vnet.interface = "vtnet0";
 
 % cp /labenv/base.txz /labenv/lab/root
 % cp /labenv/kernel.txz /labenv/lab/root
-rctl enabled in /etc/rc.conf
+% cp /labenv/src.txz /labenv/lab/root
+% cp /labenv/freebsd.iso /labenv/lab/root
+
 % service jail onestart lab
 Starting jails: lab.

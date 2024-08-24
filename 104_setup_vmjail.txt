@@ -1,0 +1,48 @@
+% zfs create zroot/labdisk/bhyve2
+% zfs set primarycache=metadata zroot/labdisk/bhyve2
+% tar -C /lab/bhyve2 -xf /lab/base.txz
+% tar -C /lab/bhyve2 -xf /lab/kernel.txz
+% cat /etc/jail.conf.d/bhyve2.conf
+bhyve2 {
+	    host.hostname = ${name};
+	    vnet;
+	    children.max = 0;
+
+	    $mac = "00:00:c1:7e:f3:c0";
+	    $imac = "00:ff:c1:7e:f3:c0";
+
+	    allow.mount;
+	    mount.devfs;
+	    devfs_ruleset = 6;
+
+	    allow.vmm = 1;
+
+	    .include "/etc/jail.conf.d/jail.template";
+
+	    securelevel = 3;
+
+	    # we cannot sub-jail any zvols, so we need to
+	    # work with whatever we have
+}
+% sysrc -f /lab/bhyve2/etc/rc.conf sendmail_enable=NONE
+% sysrc -f /lab/bhyve2/etc/rc.conf ifconfig_bhyve0=DHCP
+% sysrc -f /lab/bhyve2/etc/rc.conf syslogd_flags=-ss
+% sysrc -f /lab/bhyve2/etc/rc.conf cloned_interfaces=bridge0
+% sysrc -f /lab/bhyve2/etc/rc.conf ifconfig_bridge0=addm bhyve0 up
+% cat /lab/bhyve2/etc/rc.conf
+% mkdir -p /lab/bhyve2/iso
+% mkdir -p /lab/bhyve2/vm
+% truncate -s 20G /lab/bhyve2/vm/disk.img
+% cat /lab/bhyve2.fstab
+/lab/iso    /lab/bhyve2/iso nullfs ro 0 0
+% service jail onestart bhyve2
+Starting jails: cannot start jail  "bhyve2": 
+jail: /etc/jail.conf.d/jail.template: No such file or directory
+.
+% jexec bhyve2 pkg install -y edk2-bhyve tmux
+% jexec bhyve2 ifconfig tap create
+
+% jexec bhyve2 ifconfig ether 00:aa:c1:7e:f3:c0
+% jexec bhyve2 ifconfig bridge0 addm
+% jexec bhyve2 bhyvectl --create --vm=bhyve2
+Bhyve failed.
