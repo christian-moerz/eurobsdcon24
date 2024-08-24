@@ -1,0 +1,78 @@
+% zfs create zroot/labenv
+% zfs create zroot/labenv/lab
+% zfs create zroot/labdisk
+% cp jail.conf /etc/jail.conf.d/lab.conf
+% cp base.txz /labenv/base.txz
+% cp kernel.txz /labenv/kernel.txz
+% cp freebsd.iso /labenv/freebsd.iso
+% tar -C /labenv/lab -xf /labenv/base.txz
+% mkdir -p /labenv/lab/root/eurobsdcon
+% cp /etc/resolv.conf /labenv/lab/etc
+% sysrc -f /labenv/lab/etc/rc.conf ifconfig_vtnet0="inet 10.10.10.42 netmask 255.255.255.0"
+ifconfig_vtnet0:  -> inet 10.10.10.42 netmask 255.255.255.0
+% sysrc -f /labenv/lab/etc/rc.conf defaultrouter="10.10.10.41"
+defaultrouter: NO -> 10.10.10.41
+% sysrc -f /labenv/lab/etc/rc.conf sendmail_eanble=NONE
+sendmail_eanble:  -> NONE
+% cat /etc/jail.conf.d/lab.conf
+lab {
+	host.hostname = ${name};
+	vnet;
+	children.max = 10;
+
+	mount.devfs;
+	devfs_ruleset = 6;
+
+	allow.mount;
+	allow.mount.devfs;
+	allow.mount.zfs;
+	allow.mount.tmpfs;
+	allow.mount.nullfs;
+
+	enforce_statfs = 1;
+
+	allow.vmm = 1;
+
+	$jailip = "10.10.10.41";
+	$jailnet = "255.255.255.0";
+	
+	.include "/etc/jail.conf.d/lab.template";
+
+	securelevel = -1;
+
+	exec.poststart += "zfs jail ${name} zroot/labdisk";
+	exec.poststart += "route add -net 10.193.167.0/24 10.10.10.42";
+	exec.prestop += "zfs unjail ${name} zroot/labdisk";
+	exec.prestop += "route del -net 10.193.167.0/24 10.10.10.42";
+	mount.fstab = "/labenv/${name}.fstab";
+}
+% zfs set jailed=on zroot/labdisk
+% cp devfs.rules /etc/devfs.rules
+% service devfs restart
+% cp mk-epair.sh /labenv
+% cp jail.template /etc/jail.conf.d/lab.template
+% cat /etc/jail.conf.d/lab.template
+exec.prestart = "/labenv/mk-epair.sh -n ${name}0 -N vtnet0 -g vm-out -G vm-if";
+exec.prestart += "ifconfig ${name}0 inet ${jailip} netmask ${jailnet}";
+exec.prestart += "cp /etc/resolv.conf /labenv/${name}/etc";
+exec.prestart += "sysctl net.inet.ip.forwarding=1";
+
+exec.start = "/bin/sh /etc/rc";
+
+exec.stop = "/bin/sh /etc/rc.shutdown";
+
+exec.poststop = "ifconfig ${name}0 destroy";
+exec.poststop += "sysctl net.inet.ip.forwarding=0";
+
+path = "/labenv/${name}";
+securelevel = 3;
+vnet.interface = "vtnet0";
+% cp fstab /labenv/lab.fstab
+% cat /labenv/lab.fstab
+/home/lclchristianm/Documents/eurobsdcon /labenv/lab/root/eurobsdcon nullfs rw 0 0
+
+% cp /labenv/base.txz /labenv/lab/root
+% cp /labenv/kernel.txz /labenv/lab/root
+rctl enabled in /etc/rc.conf
+% service jail onestart lab
+Starting jails: lab.

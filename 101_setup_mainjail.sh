@@ -43,8 +43,6 @@ ensure_zfs ${ZPOOL}/${ZVOL}/${JAILNAME}
 # delegate management to jail
 ensure_zfs ${ZPOOL}/${ZSTOREVOL}
 
-ensure_zfs_jailed "${ZPOOL}/${ZSTOREVOL}"
-
 ETC=/etc/jail.conf.d/${JAILNAME}.conf
 ensure_cp jail.conf ${ETC}
 
@@ -97,6 +95,9 @@ sed -i '' "s@IP@${IP}@g" ${ETC}
 
 echo % cat ${ETC}
 cat ${ETC}
+
+# jail zvol for labenv
+ensure_zfs_jailed "${ZPOOL}/${ZSTOREVOL}"
 
 # install devfs rules for jails, which allows
 # use of vmm
