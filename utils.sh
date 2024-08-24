@@ -25,8 +25,8 @@ ensure_zfs_metadata() {
 ensure_zfs_mountpoint()
 {
     MPOINT=$(zfs get -H mountpoint $2 | awk '{print $3}')
+    echo % zfs set mountpoint=$1 $2
     if [ "${MPOINT}" != "$1" ]; then
-	echo % zfs set mountpoint=$1 $2
 	zfs set mountpoint=$1 $2
     fi
 }

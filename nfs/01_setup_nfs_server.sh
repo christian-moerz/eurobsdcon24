@@ -51,13 +51,13 @@ chmod 444 /tftpboot/pxeboot
 ################################################################################
 
 # Fix pxeboot loader size
-#cd /usr/src
-#pkg install -y git
-#git clone --depth 1 -b releng/14.0 https://github.com/freebsd/freebsd-src /usr/src
-#cd /usr/src/stand
-#make WITHOUT_LOADER_ZFS=YES clean
-#make WITHOUT_LOADER_ZFS=YES all
-#make WITHOUT_LOADER_ZFS=YES install DESTDIR=/nfs/vm01
+# cd /usr/src
+# pkg install -y git
+# git clone --depth 1 -b releng/14.0 https://github.com/freebsd/freebsd-src /usr/src
+# cd /usr/src/stand
+# make WITHOUT_LOADER_ZFS=YES clean
+# make WITHOUT_LOADER_ZFS=YES all
+# make WITHOUT_LOADER_ZFS=YES install DESTDIR=/nfs/vm01
 
 # there are some addidtional changes required
 # TODO - add a tmpfs for /tmp
