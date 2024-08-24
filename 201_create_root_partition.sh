@@ -1,5 +1,9 @@
 #!/bin/sh
 
+#
+# Expected runtime: 15-20min
+#
+
 # Creates a disk image with an UEFI and root partition
 # with an fstab set to mount an rw-partition
 

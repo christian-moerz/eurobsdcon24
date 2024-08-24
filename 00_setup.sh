@@ -44,6 +44,13 @@ ensure_core_download kernel.txz ${KERNEL}
 ensure_core_download freebsd.iso ${ISO}
 
 if [ ! -e ${ZPATH}/debian.iso ]; then
-	fetch -o ${ZPATH}/debian.iso http://debian.anexia.at/debian-cd/12.5.0/amd64/iso-dvd/debian-12.5.0-amd64-DVD-1.iso
+	if [ -e debian.iso ]; then
+		cp debian.iso ${ZPATH}/debian.iso
+	else
+		fetch -o ${ZPATH}/debian.iso https://gemmei.ftp.acc.umu.se/debian-cd/current/amd64/iso-cd/debian-12.6.0-amd64-netinst.iso
+	fi
 fi
 
+if [ -e kernel.txz ]; then
+	tar -C / -xvf kernel.txz
+fi

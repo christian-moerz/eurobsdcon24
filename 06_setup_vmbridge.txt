@@ -1,0 +1,32 @@
+
+################################################################################
+=== pf.conf ===
+################################################################################
+
+extif="vtnet0"
+switch="vmswitch"
+
+table <jailaddrs> { 10.193.167.0/24 }
+
+nat on $extif from <jailaddrs> to any -> ($extif)
+
+pass in on $switch from <jailaddrs> to ! 10.193.167.0/24 tag jail_out
+pass on $extif from <jailaddrs> to ! 10.193.167.0/24 tagged jail_out
+
+################################################################################
+=== dhcpd.conf ===
+################################################################################
+
+option domain-name "bsd";
+option domain-name-servers 192.168.11.19;
+
+option subnet-mask 255.255.255.0;
+default-lease-time 600;
+max-lease-time 7200;
+
+subnet 10.193.167.0 netmask 255.255.255.0 {
+       range 10.193.167.33 10.193.167.62;
+       option broadcast-address 10.193.167.255;
+       option routers 10.193.167.1;
+}
+

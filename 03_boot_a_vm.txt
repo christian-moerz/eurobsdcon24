@@ -1,0 +1,13 @@
+bhyvectl --create --vm=freebsd-vm
+
+bhyve \
+	-H \
+	-c 2 \
+	-D \
+	-l bootrom,/usr/local/share/uefi-firmware/BHYVE_UEFI.fd \
+	-m 2G \
+	-s 0,hostbridge \
+	-s 1,ahci-cd,/lab/freebsd.iso \
+	-s 2,nvme,/lab/freebsd-vm/disk.img \
+	-s 3,lpc \
+	freebsd-vm
