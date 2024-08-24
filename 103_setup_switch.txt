@@ -1,0 +1,171 @@
++ [ -e config.sh ]
++ . ./config.sh
++ ZPOOL=zroot
++ ZSTOREVOL=labdisk
++ ZVOL=labenv
++ JAILNAME=lab
++ ZPATH=/lab
++ LABPATH=/labenv
++ SWITCHIP=10.193.167.1
++ SUBNET=255.255.255.0
++ DOMAINNAME=bsd
++ NETWORK=10.193.167.0
++ BROADCAST=10.193.167.255
++ . ./utils.sh
++ BASE=http://ftp.freebsd.org/pub/FreeBSD/releases/amd64/amd64/14.0-RELEASE/base.txz
++ KERNEL=http://ftp.freebsd.org/pub/FreeBSD/releases/amd64/amd64/14.0-RELEASE/kernel.txz
++ ISO=http://ftp.freebsd.org/pub/FreeBSD/releases/amd64/amd64/ISO-IMAGES/14.0/FreeBSD-14.0-RELEASE-amd64-disc1.iso
++ SWITCHIP=10.193.167.1
++ SUBNET=255.255.255.0
++ DOMAINNAME=bsd
++ NETWORK=10.193.167.0
++ BROADCAST=10.193.167.255
++ SWITCHNAME=vmswitch
++ cat
++ IPRANGE_START=10.193.167.33
++ IPRANGE_STOP=10.193.167.62
++ cat /etc/resolv.conf
++ grep nameserver
++ head -1
++ awk '{ print $2 }'
++ DNS=192.168.11.19
++ pkg install -y isc-dhcp44-server
+[lab] Installing pkg-1.21.3...
+[lab] Extracting pkg-1.21.3: .......... done
+Updating FreeBSD repository catalogue...
+[lab] Fetching meta.conf: . done
+[lab] Fetching data.pkg: .......... done
+Processing entries: .......... done
+FreeBSD repository update completed. 34428 packages processed.
+All repositories are up to date.
+Updating database digests format: . done
+The following 1 package(s) will be affected (of 0 checked):
+
+New packages to be INSTALLED:
+	isc-dhcp44-server: 4.4.3P1_1
+
+Number of packages to be installed: 1
+
+The process will require 7 MiB more space.
+2 MiB to be downloaded.
+[lab] [1/1] Fetching isc-dhcp44-server-4.4.3P1_1.pkg: .......... done
+Checking integrity... done (0 conflicting)
+[lab] [1/1] Installing isc-dhcp44-server-4.4.3P1_1...
+===> Creating groups
+Creating group 'dhcpd' with gid '136'
+===> Creating users
+Creating user 'dhcpd' with uid '136'
+[lab] [1/1] Extracting isc-dhcp44-server-4.4.3P1_1: .......... done
+=====
+Message from isc-dhcp44-server-4.4.3P1_1:
+
+--
+****  To setup dhcpd, please edit /usr/local/etc/dhcpd.conf.
+
+****  This port installs the dhcp daemon, but doesn't invoke dhcpd by default.
+      If you want to invoke dhcpd at startup, add these lines to /etc/rc.conf:
+
+	    dhcpd_enable="YES"				# dhcpd enabled?
+	    dhcpd_flags="-q"				# command option(s)
+	    dhcpd_conf="/usr/local/etc/dhcpd.conf"	# configuration file
+	    dhcpd_ifaces=""				# ethernet interface(s)
+	    dhcpd_withumask="022"			# file creation mask
+
+****  If compiled with paranoia support (the default), the following rc.conf
+      options are also supported:
+
+	    dhcpd_chuser_enable="YES"		# runs w/o privileges?
+	    dhcpd_withuser="dhcpd"		# user name to run as
+	    dhcpd_withgroup="dhcpd"		# group name to run as
+	    dhcpd_chroot_enable="YES"		# runs chrooted?
+	    dhcpd_devfs_enable="YES"		# use devfs if available?
+	    dhcpd_rootdir="/var/db/dhcpd"	# directory to run in
+	    dhcpd_includedir="<some_dir>"	# directory with config-
+						  files to include
+
+****  WARNING: never edit the chrooted or jailed dhcpd.conf file but
+      /usr/local/etc/dhcpd.conf instead which is always copied where
+      needed upon startup.
++ sysrc 'ifconfig_bridge0=inet 10.193.167.1 netmask 255.255.255.0 name vmswitch'
+ifconfig_bridge0:  -> inet 10.193.167.1 netmask 255.255.255.0 name vmswitch
++ sysrc 'create_args_bridge0=ether 00:00:00:ff:ff:01'
+create_args_bridge0:  -> ether 00:00:00:ff:ff:01
++ sysrc 'cloned_interfaces+=bridge0'
+cloned_interfaces:  -> bridge0
++ service isc-dhcpd enable
+dhcpd enabled in /etc/rc.conf
++ cat
++ TEMPLATE=/etc/jail.conf.d/jail.template
++ sed -i '' s@SWITCHNAME@vmswitch@g /etc/jail.conf.d/jail.template
+sed: /etc/jail.conf.d/jail.template: No such file or directory
++ cat
++ cp /usr/local/etc/dhcpd.conf /usr/local/etc/dhcpd.conf.bridged
++ ifconfig bridge0 create
++ ifconfig bridge0 ether 00:00:00:ff:ff:01
++ ifconfig bridge0 inet 10.193.167.1 netmask 255.255.255.0
++ ifconfig bridge0 name vmswitch
+vmswitch
++ service isc-dhcpd start
+Starting dhcpd.
+Internet Systems Consortium DHCP Server 4.4.3-P1
+Copyright 2004-2022 Internet Systems Consortium.
+All rights reserved.
+For info, please visit https://www.isc.org/software/dhcp/
+Config file: /usr/local/etc/dhcpd.conf
+Database file: /var/db/dhcpd/dhcpd.leases
+PID file: /var/run/dhcpd/dhcpd.pid
+Wrote 0 leases to leases file.
+Listening on BPF/vmswitch/00:00:00:ff:ff:01/10.193.167.0/24
+Sending on   BPF/vmswitch/00:00:00:ff:ff:01/10.193.167.0/24
+
+No subnet declaration for vtnet0 (10.10.10.42).
+** Ignoring requests on vtnet0.  If this is not what
+   you want, please write a subnet declaration
+   in your dhcpd.conf file for the network segment
+   to which interface vtnet0 is attached. **
+
+Sending on   Socket/fallback/fallback-net
++ pkg install -y ipcalc
+Updating FreeBSD repository catalogue...
+FreeBSD repository is up to date.
+All repositories are up to date.
+The following 2 package(s) will be affected (of 0 checked):
+
+New packages to be INSTALLED:
+	ipcalc: 0.51
+	perl5: 5.36.3_2
+
+Number of packages to be installed: 2
+
+The process will require 62 MiB more space.
+15 MiB to be downloaded.
+[lab] [1/2] Fetching perl5-5.36.3_2.pkg: .......... done
+[lab] [2/2] Fetching ipcalc-0.51.pkg: . done
+Checking integrity... done (0 conflicting)
+[lab] [1/2] Installing perl5-5.36.3_2...
+[lab] [1/2] Extracting perl5-5.36.3_2: .......... done
+[lab] [2/2] Installing ipcalc-0.51...
+[lab] [2/2] Extracting ipcalc-0.51: .... done
++ grep Netmask
++ awk '-F=' '{ print $2}'
++ ipcalc -nb 10.193.167.0/255.255.255.0
++ SUBMASK=' 24   '
++ echo 24
++ SUBMASK=24
++ cat
++ [ '' '==' '' ]
++ sed -i '' 's/ .0\/24//g' /etc/pf.conf
++ service pf enable
+pf enabled in /etc/rc.conf
++ service pf start
+Enabling pfpfctl: DIOCOSFPFLUSH: Operation not permitted
+/etc/rc.d/pf: WARNING: Unable to load /etc/pf.conf.
+pfctl: DIOCSTART: Operation not permitted
+.
++ echo 'net.inet.ip.forwarding=1'
++ service sysctl restart
++ clean_config
++ cat config.sh
++ sort
++ uniq
++ mv config.sh2 config.sh

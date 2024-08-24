@@ -19,6 +19,8 @@ fi
 # load from config.sh
 . ./config.sh
 
+ensure_unjailed
+
 ################################################################################
 
 # stop base jail

@@ -1,4 +1,4 @@
-o#!/bin/sh
+#!/bin/sh
 
 # prepares network environment in main jail
 # sets up a routed switch network

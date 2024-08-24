@@ -73,6 +73,14 @@ ensure_jailed()
     fi
 }
 
+ensure_unjailed()
+{
+    if [ `sysctl -n security.jail.jailed` != "0" ]; then
+        echo Not running outside jail!
+        exit 1
+    fi
+}
+
 # ensure a download is completed
 ensure_download()
 {
