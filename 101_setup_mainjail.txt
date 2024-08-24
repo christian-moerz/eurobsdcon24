@@ -1,10 +1,11 @@
+############
+# SLIDE 16 #
+############
+
 % zfs create zroot/labenv
 % zfs create zroot/labenv/lab
 % zfs create zroot/labdisk
 % cp jail.conf /etc/jail.conf.d/lab.conf
-% cp base.txz /labenv/base.txz
-% cp kernel.txz /labenv/kernel.txz
-% cp freebsd.iso /labenv/freebsd.iso
 % tar -C /labenv/lab -xf /labenv/base.txz
 % mkdir -p /labenv/lab/root/eurobsdcon
 % cp /etc/resolv.conf /labenv/lab/etc
@@ -14,6 +15,10 @@ ifconfig_vtnet0:  -> inet 10.10.10.42 netmask 255.255.255.252
 defaultrouter: NO -> 10.10.10.41
 % sysrc -f /labenv/lab/etc/rc.conf sendmail_eanble=NONE
 sendmail_eanble:  -> NONE
+
+############
+# SLIDE 17 #
+############
 % cat /etc/jail.conf.d/lab.conf
 lab {
 	host.hostname = ${name};
@@ -42,11 +47,11 @@ lab {
 	exec.poststart += "route add -net 10.193.167.0/24 10.10.10.42";
 	exec.prestop += "zfs unjail ${name} zroot/labdisk";
 	exec.prestop += "route del -net 10.193.167.0/24 10.10.10.42";
+
+        # keep this out first (add later)
 	mount.fstab = "/labenv/${name}.fstab";
 }
 % zfs set jailed=on zroot/labdisk
-% cp devfs.rules /etc/devfs.rules
-% service devfs restart
 % cp mk-epair.sh /labenv
 % cp jail.template /etc/jail.conf.d/lab.template
 % cat /etc/jail.conf.d/lab.template
@@ -65,6 +70,17 @@ exec.poststop += "sysctl net.inet.ip.forwarding=0";
 path = "/labenv/${name}";
 securelevel = 3;
 vnet.interface = "vtnet0";
+
+############
+# SLIDE 18 #
+############
+% cp devfs.rules /etc/devfs.rules
+% service devfs restart
+
+
+############
+# SLIDE 21 #
+############
 % cp fstab /labenv/lab.fstab
 % cat /labenv/lab.fstab
 /home/lclchristianm/Documents/eurobsdcon /labenv/lab/root/eurobsdcon nullfs rw 0 0
