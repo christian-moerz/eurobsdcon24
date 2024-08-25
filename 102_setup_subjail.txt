@@ -1,3 +1,7 @@
+############
+# SLIDE 22 #
+############
+
 + zfs set 'mountpoint=/lab' zroot/labdisk
 + echo % mkdir -p /lab/iso
 % mkdir -p /lab/iso

@@ -77,15 +77,6 @@ fi
 EOF
 chmod 755 /usr/local/bin/bhyveclean
 
-# re-install pkg so we have a pkg package for
-# later use in subjail
-pkg install -y -f pkg git
-
-if [ ! -e /usr/local/bin/git ]; then
-    echo Installation for git failed.
-    exit 2
-fi
-
 # make sure we only keep variables once
 # instead of repeating them
 clean_config
@@ -98,6 +89,15 @@ if [ ! -e ${ZPATH}/iso/quick.iso ]; then
     if [ -e src.tar ]; then
         tar -C /usr/src -xvf src.tar
     else
+	# re-install pkg so we have a pkg package for
+	# later use in subjail
+	pkg install -y -f pkg git
+	
+	if [ ! -e /usr/local/bin/git ]; then
+	    echo Installation for git failed.
+	    exit 2
+	fi
+
         cd /usr/src
         git clone -b releng/14.0 --depth 1 https://github.com/freebsd/freebsd-src /usr/src
     fi

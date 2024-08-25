@@ -18,3 +18,4 @@ dhparams.pem
 *.key
 *.xz
 *.dns
+src.tar
