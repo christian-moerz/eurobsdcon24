@@ -216,7 +216,8 @@ ifconfig bridge0 addm \${TAP}
 
 while [ "0" == "\${RESULT}" ]; do
       bhyvectl --create --vm=${JAILNAME}
-      /usr/bin/cpuset -l 1-8 \\
+
+	/usr/bin/cpuset -l 8-11 \\
             /usr/sbin/bhyve \\
       		      -H -c 2 -D -l com1,stdio \\
 		      -l bootrom,/usr/local/share/uefi-firmware/BHYVE_UEFI.fd \\
@@ -289,8 +290,8 @@ cat ${ZPATH}/${JAILNAME}/usr/local/etc/rc.d/bhyve
 echo % chmod 755 ${ZPATH}/${JAILNAME}/usr/local/etc/rc.d/bhyve
 
 # enable bhyve rc.d script
-echo % jexec ${JAILNAME} sysrc -f ${ETC} bhyve_enable=YES
-jexec ${JAILNAME} sysrc -f ${ETC} bhyve_enable=YES
+echo % jexec ${JAILNAME} sysrc bhyve_enable=YES
+jexec ${JAILNAME} sysrc bhyve_enable=YES
 
 # stop jail
 echo % service jail onestop ${JAILNAME}

@@ -145,3 +145,15 @@ Stopping jails: bhyve2.
 Starting jails: bhyve2.
 % sysrc jail_list+=bhyve2
 jail_list:  -> bhyve2
+
+############
+# SLIDE 25 #
+############
+# use the following command in host to check resource usage
+# rctl -h -u jail:lab.<jailname>
+
+############
+# SLIDE 26 #
+############
+Demonstrate cpuset use
+

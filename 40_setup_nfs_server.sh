@@ -1,6 +1,7 @@
 #!/bin/sh
 
-set -x
+# set -x
+set -e
 
 if [ -e config.sh ]; then
 	. ./config.sh
@@ -17,6 +18,43 @@ if [ "0" != "$?" ]; then
     ./06_setup_vmbridge.sh
 fi
 
+# prepare an iso file for quick setup
+if [ ! -e ${ZPATH}/iso/nfs-server.iso ]; then
+    echo % mkdir -p ${ZPATH}/iso/setup
+    mkdir -p ${ZPATH}/iso/setup
+    echo % tar -C ${ZPATH}/iso/setup -xf ${ZPATH}/iso/freebsd.iso
+    tar -C ${ZPATH}/iso/setup -xf ${ZPATH}/iso/freebsd.iso
+    
+    cat >> ${ZPATH}/iso/setup/etc/installerconfig <<-EOF
+PARTITIONS=DEFAULT				  
+DISTRIBUTIONS="kernel.txz base.txz"
+export nonInteractive="YES"
+    
+#!/bin/sh
+sysrc ifconfig_DEFAULT=DHCP
+sysrc sshd_enable=YES
+sysrc hostname=freebsd-nfs
+sysrc ifconfig_vtnet0="inet 10.193.167.2 netmask 255.255.255.0"
+sysrc defaultrouter="10.192.167.1"
+pw useradd chris -m -G wheel -s /bin/csh
+cat >> /etc/sysctl.conf <<-DOT
+security.bsd.see_other_uids=0
+security.bsd.see_other_gids=0
+security.bsd.see_jail_proc=0
+security.bsd.unprivileged_read_msgbuf=0
+security.bsd.unprivileged_proc_debug=0
+kern.randompid=1
+DOT
+EOF
+    echo % cat ${ZPATH}/iso/setup/etc/installerconfig
+    cat ${ZPATH}/iso/setup/etc/installerconfig
+
+    echo % sh /usr/src/release/amd64/mkisoimages.sh -b 13_0_RELEASE_AMD64_CD ${ZPATH}/iso/nfs-server.iso ${ZPATH}/iso/setup
+    sh /usr/src/release/amd64/mkisoimages.sh -b 13_0_RELEASE_AMD64_CD ${ZPATH}/iso/nfs-server.iso ${ZPATH}/iso/setup
+
+    echo % rm -fr ${ZPATH}/iso/setup
+    rm -fr ${ZPATH}/iso/setup
+fi
 
 # remove 10.193.167.2 from dhcp range
 # because we use that as static ip for
@@ -24,65 +62,19 @@ fi
 
 # make sure we are not running the nfs server ip in the dynamic range
 sed -i '' 's@range 10.193.167.2 10.193.167.100;@range 10.193.167.3 10.193.167.100;@' /usr/local/etc/dhcpd.conf
-service dhcpd enable
-service dhcpd restart
+service isc-dhcpd enable
+service isc-dhcpd restart
 
-# create a zfs volume if it does not exist
-mount | grep freebsd-nfs > /dev/null
-if [ ! -e ${ZPATH}/freebsd-nfs ]; then
-	zfs create ${ZPOOL}/${ZSTOREVOL}/freebsd-nfs
-	zfs mount ${ZPOOL}/${ZSTOREVOL}/freebsd-nfs
-fi
-
-# Set up a disk for a virtual machine setup
-truncate -s 20G ${ZPATH}/freebsd-nfs/disk.img
-
-# create a new vm - in a jail, we need to do this manually
-bhyvectl --create --vm=freebsd-nfs
-
-# We create a tap with prefix tap10001 because that is
-# passed through to our machine via devfs
-TAP=$(ifconfig tap create)
-
-# Start up a bhyve virtual machine with a local network interface
-# add a user "chris" to be able to copy ssh key later on!
-bhyve \
-	-H \
-	-c 2 \
-	-D \
-	-l com1,/dev/nmdmfreebsd-nfs0A \
-	-l bootrom,/usr/local/share/uefi-firmware/BHYVE_UEFI.fd \
-	-m 2G \
-	-s 0,hostbridge \
-	-s 2,nvme,${ZPATH}/freebsd-nfs/disk.img \
-	-s 3,lpc \
-	-s 4,virtio-net,${TAP},mac=00:00:00:ff:ff:02 \
-	-s 5,ahci-cd,${ZPATH}/freebsd.iso \
-	freebsd-nfs &
-
-PID=$!
-
-# tap10001 was created now
-ifconfig ${TAP} name nfs0
-ifconfig ${SWITCHNAME} addm nfs0
-
-wait ${PID}
-
-# Destroy the previously created vm
-# In a jail we MUST do this before shutting it down
-# otherwise, the jail id/name is inherited by the host
-# and when the jail gets restarted, this vm won't be able
-# to start because it's already "known" by the host
-bhyvectl --destroy --vm=freebsd-nfs
-
-ifconfig nfs0 destroy
+./104_setup_vmjail.sh -c nfs-server.iso freebsd-nfs
 
 #
 # add diskless option to dhcp
 #
 mkdir -p /usr/local/etc/dhcpd
-cp /usr/local/etc/dhcpd.conf /usr/local/etc/dhcpd.base
-cat >> /usr/local/etc/dhcpd/00_diskless <<EOF
+if [ ! -e /usr/local/etc/dhcpd.base ]; then
+    cp /usr/local/etc/dhcpd.conf /usr/local/etc/dhcpd.base
+fi
+cat > /usr/local/etc/dhcpd/00_diskless <<EOF
 group diskless {
     next-server 10.193.167.2;
     filename "pxeboot";
@@ -97,4 +89,11 @@ group diskless {
 EOF
 
 cat /usr/local/etc/dhcpd.base /usr/local/etc/dhcpd/* > /usr/local/etc/dhcpd.conf
+
+echo % cat /usr/local/etc/dhcpd.conf
+cat /usr/local/etc/dhcpd.conf
+
+echo % service isc-dhcpd restart
 service isc-dhcpd restart
+
+

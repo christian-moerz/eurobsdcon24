@@ -1,0 +1,229 @@
+% mkdir -p /lab/iso/setup
+% tar -C /lab/iso/setup -xf /lab/iso/freebsd.iso
+% cat /lab/iso/setup/etc/installerconfig
+PARTITIONS=DEFAULT				  
+DISTRIBUTIONS="kernel.txz base.txz"
+export nonInteractive="YES"
+    
+#!/bin/sh
+sysrc ifconfig_DEFAULT=DHCP
+sysrc sshd_enable=YES
+sysrc hostname=freebsd-nfs
+sysrc ifconfig_vtnet0="inet 10.193.167.2 netmask 255.255.255.0"
+sysrc defaultrouter="10.192.167.1"
+pw useradd chris -m -G wheel -s /bin/csh
+cat >> /etc/sysctl.conf <<-DOT
+security.bsd.see_other_uids=0
+security.bsd.see_other_gids=0
+security.bsd.see_jail_proc=0
+security.bsd.unprivileged_read_msgbuf=0
+security.bsd.unprivileged_proc_debug=0
+kern.randompid=1
+DOT
+% sh /usr/src/release/amd64/mkisoimages.sh -b 13_0_RELEASE_AMD64_CD /lab/iso/nfs-server.iso /lab/iso/setup
+Creating `/tmp/efiboot.Xc5oRa'
+/tmp/efiboot.Xc5oRa: 4039 sectors in 4039 FAT12 clusters (512 bytes/cluster)
+BytesPerSec=512 SecPerClust=1 ResSectors=1 FATs=2 RootDirEnts=512 Sectors=4096 Media=0xf0 FATsecs=12 SecPerTrack=63 Heads=255 HiddenSecs=0
+Populating `/tmp/efiboot.Xc5oRa'
+Image `/tmp/efiboot.Xc5oRa' complete
+% rm -fr /lab/iso/setup
+% zfs create zroot/labdisk/freebsd-nfs
+% zfs set primarycache=metadata zroot/labdisk/freebsd-nfs
+% tar -C /lab/freebsd-nfs -xf /lab/base.txz
+% tar -C /lab/freebsd-nfs -xf /lab/kernel.txz
+% cat /etc/jail.conf.d/freebsd-nfs.conf
+freebsd-nfs {
+	    host.hostname = ${name};
+	    vnet;
+	    children.max = 0;
+
+	    $mac = "00:00:8e:73:79:43";
+	    $imac = "00:ff:8e:73:79:43";
+
+	    allow.mount;
+	    mount.devfs;
+	    devfs_ruleset = 6;
+
+	    allow.vmm = 1;
+
+	    .include "/etc/jail.conf.d/jail.template";
+
+	    securelevel = 3;
+
+	    # we cannot sub-jail any zvols, so we need to
+	    # work with whatever we have
+}
+% cat /lab/freebsd-nfs/etc/rc.conf
+sendmail_enable="NONE"
+ifconfig_bhyve0="DHCP"
+syslogd_flags="-ss"
+cloned_interfaces="bridge0"
+ifconfig_bridge0="addm bhyve0 up"
+% mkdir -p /lab/freebsd-nfs/iso
+% mkdir -p /lab/freebsd-nfs/vm
+% truncate -s 20G /lab/freebsd-nfs/vm/disk.img
+% cat /lab/freebsd-nfs.fstab
+/lab/iso    /lab/freebsd-nfs/iso nullfs ro 0 0
+% service jail onestart freebsd-nfs
+Starting jails: freebsd-nfs.
+% jexec freebsd-nfs pkg install -y edk2-bhyve tmux
+[freebsd-nfs] Installing pkg-1.21.3...
+[freebsd-nfs] Extracting pkg-1.21.3: .......... done
+Updating FreeBSD repository catalogue...
+[freebsd-nfs] Fetching meta.conf: . done
+[freebsd-nfs] Fetching data.pkg: .......... done
+Processing entries: .......... done
+FreeBSD repository update completed. 34428 packages processed.
+All repositories are up to date.
+Updating database digests format: . done
+The following 4 package(s) will be affected (of 0 checked):
+
+New packages to be INSTALLED:
+	edk2-bhyve: g202308_5
+	libevent: 2.1.12
+	ncurses: 6.5
+	tmux: 3.3a_3
+
+Number of packages to be installed: 4
+
+The process will require 15 MiB more space.
+3 MiB to be downloaded.
+[freebsd-nfs] [1/4] Fetching ncurses-6.5.pkg: .......... done
+[freebsd-nfs] [2/4] Fetching edk2-bhyve-g202308_5.pkg: .......... done
+[freebsd-nfs] [3/4] Fetching libevent-2.1.12.pkg: .......... done
+[freebsd-nfs] [4/4] Fetching tmux-3.3a_3.pkg: .......... done
+Checking integrity... done (0 conflicting)
+[freebsd-nfs] [1/4] Installing ncurses-6.5...
+[freebsd-nfs] [1/4] Extracting ncurses-6.5: .......... done
+[freebsd-nfs] [2/4] Installing libevent-2.1.12...
+[freebsd-nfs] [2/4] Extracting libevent-2.1.12: .......... done
+[freebsd-nfs] [3/4] Installing edk2-bhyve-g202308_5...
+[freebsd-nfs] [3/4] Extracting edk2-bhyve-g202308_5: ......... done
+[freebsd-nfs] [4/4] Installing tmux-3.3a_3...
+[freebsd-nfs] [4/4] Extracting tmux-3.3a_3: .......... done
+=====
+Message from ncurses-6.5:
+
+--
+To get the terminfo database please install the terminfo-db package:
+pkg install terminfo-db
+% jexec freebsd-nfs ifconfig tap create
+tap1
+% jexec freebsd-nfs ifconfig tap1 ether 00:aa:8e:73:79:43
+% jexec freebsd-nfs ifconfig bridge0 addm tap1
+% jexec freebsd-nfs bhyvectl --create --vm=freebsd-nfs
+% jexec freebsd-nfs tmux new-session -d -s bhyve bhyve       -H -c 2 -D -l com1,stdio       -l bootrom,/usr/local/share/uefi-firmware/BHYVE_UEFI.fd       -m 2G       -s 0,hostbridge       -s 1,ahci-cd,/iso/nfs-server.iso       -s 2,nvme,/vm/disk.img       -s 3,lpc       -s 4,virtio-net,tap1       freebsd-nfs
+% jexec freebsd-nfs tmux attach-session -t bhyve
+[exited]
+% jexec freebsd-nfs bhyvectl --destroy --vm=freebsd-nfs
+% cat /lab/freebsd-nfs/usr/local/bin/bhyvestart
+#!/bin/sh
+
+RESULT=0
+
+TAP=$(ifconfig tap create)
+ifconfig ${TAP} ether 00:aa:8e:73:79:43
+
+ifconfig bridge0 addm ${TAP}
+
+while [ "0" == "${RESULT}" ]; do
+      bhyvectl --create --vm=freebsd-nfs
+
+	/usr/bin/cpuset -l 8-11 \
+            /usr/sbin/bhyve \
+      		      -H -c 2 -D -l com1,stdio \
+		      -l bootrom,/usr/local/share/uefi-firmware/BHYVE_UEFI.fd \
+		      -m 2G \
+		      -s 0,hostbridge \
+ 		      -s 2,nvme,/vm/disk.img \
+ 		      -s 3,lpc \
+ 		      -s 4,virtio-net,${TAP} \
+ 		      freebsd-nfs
+
+      RESULT=$?
+      bhyvectl --destroy --vm=freebsd-nfs
+done
+
+ifconfig ${TAP} destroy
+
+% chmod 755 /lab/freebsd-nfs/usr/local/bin/bhyvestart
+% cat /lab/freebsd-nfs/usr/local/etc/rc.d/bhyve
+#!/bin/sh
+
+# PROVIDE: bhyve
+# REQUIRE: DAEMON
+# BEFORE: login
+# KEYWORD: shutdown
+
+. /etc/rc.subr
+
+name=bhyve
+rcvar=bhyve_enable
+
+start_cmd="vm_start"
+stop_cmd="vm_stop"
+pidfile="/var/run/${name}.pid"
+
+vm_start()
+{
+/usr/local/bin/tmux new-session -d -s bhyve "/usr/local/bin/bhyvestart"
+}
+
+do_kill()
+{
+	kill -0 $1 > /dev/null 2>&1
+}
+
+vm_stop()
+{
+        pid=$(ps ax | grep freebsd-nfs | grep -v grep|awk '{print $1}')
+        echo -n "Shutting down... ${pid} "
+        kill -TERM ${pid}
+        while do_kill ${pid}; do
+                echo -n '.'
+                sleep 1
+        done
+        echo " done."
+}
+
+load_rc_config 
+run_rc_command "$1"
+% chmod 755 /lab/freebsd-nfs/usr/local/etc/rc.d/bhyve
+% jexec freebsd-nfs sysrc bhyve_enable=YES
+bhyve_enable:  -> YES
+% service jail onestop freebsd-nfs
+Stopping jails: freebsd-nfs.
+% service jail onestart freebsd-nfs
+Starting jails: freebsd-nfs.
+% sysrc jail_list+=freebsd-nfs
+jail_list: bhyve2 -> bhyve2 freebsd-nfs
+% cat /usr/local/etc/dhcpd.conf
+option domain-name "bsd";
+option domain-name-servers 192.168.11.19;
+
+option subnet-mask 255.255.255.0;
+default-lease-time 600;
+max-lease-time 7200;
+
+subnet 10.193.167.0 netmask 255.255.255.0 {
+       range 10.193.167.33 10.193.167.62;
+       option broadcast-address 10.193.167.255;
+       option routers 10.193.167.1;
+}
+
+
+group diskless {
+    next-server 10.193.167.2;
+    filename "pxeboot";
+    option root-path "10.193.167.2:/nfs/vm01/";
+
+    host client {
+       hardware ethernet 00:00:00:ff:ff:03;
+       fixed-address 10.193.167.3;
+    }
+}
+
+% service isc-dhcpd restart
+Stopping dhcpd.
+Waiting for PIDS: 63533.
+Starting dhcpd.
