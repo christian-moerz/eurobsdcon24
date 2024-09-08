@@ -10,10 +10,10 @@
 # Break on failure
 set -e
 
-echo % pkg install -y cyrus-imapd38 cyrus-sasl cyrus-sasl-saslauthd \\
+echo "% pkg install -y cyrus-imapd38 cyrus-sasl cyrus-sasl-saslauthd \\
      ca_root_nss redis postfix-sasl amavisd-new clamav \\
      clamav-unofficial-sigs spamassassin spamassassin-dqs \\
-     spamass-milter opendkim spamd amavisd-milter sshguard
+     spamass-milter opendkim spamd amavisd-milter sshguard"
 
 #
 # Installing cyrus imap
@@ -56,9 +56,9 @@ pw groupadd sshusers
 echo % pw groupmod sshusers -m ${SSHUSERS}
 pw groupmod sshusers -m ${SSHUSERS}
 
-echo % sed -i '' 's@#Port 22@Port 22\\
+echo "% sed -i '' 's@#Port 22@Port 22\\
 AllowGroups sshusers\\
-Ciphers "chacha20-poly1305\@openssh.com,aes128-ctr,aes192-ctr,aes256-ctr,aes128-gcm\@openssh.com,aes256-gcm\@openssh.com"@g' ${SSHCF}
+Ciphers \"chacha20-poly1305\@openssh.com,aes128-ctr,aes192-ctr,aes256-ctr,aes128-gcm\@openssh.com,aes256-gcm\@openssh.com\"@g' ${SSHCF}"
 
 sed -i '' 's@#Port 22@Port 22\
 AllowGroups sshusers\
@@ -249,8 +249,8 @@ certctl rehash
 # Cyrus / IMAP configuration
 #
 
-echo % sed -i '' "s@#servername:@servername: ${HOSTNAME}\\
-#servername:@g" ${MAINCF}
+echo "% sed -i '' \"s@#servername:@servername: ${HOSTNAME}\\
+#servername:@g\" ${MAINCF}"
 
 sed -i '' "s@#servername:@servername: ${HOSTNAME}\
 #servername:@g" ${MAINCF}
@@ -260,10 +260,10 @@ echo % sed -i '' "s@#tls_server_cert: <none>@tls_server_cert: /usr/local/etc/ssl
 sed -i '' "s@#tls_server_cert: <none>@tls_server_cert: /usr/local/etc/ssl/server.crt@g" ${IMAP}
 
 # Set server key path
-echo % sed -i '' "s@#tls_server_key: <none>@tls_server_key: /usr/local/etc/ssl/cyrus.key\\
+echo "% sed -i '' \"s@#tls_server_key: <none>@tls_server_key: /usr/local/etc/ssl/cyrus.key\\
 tls_server_dhparam: /usr/local/etc/ssl/dhparams.pem\\
 tls_versions: tls1_2 tls1_3\\
-debug: 1@g" ${IMAP}
+debug: 1@g\" ${IMAP}"
 
 sed -i '' "s@#tls_server_key: <none>@tls_server_key: /usr/local/etc/ssl/cyrus.key\\
 tls_server_dhparam: /usr/local/etc/ssl/dhparams.pem\\
@@ -405,18 +405,18 @@ echo % service sa-spamd start
 service sa-spamd start
 
 # disable bayes auto learn
-echo % sed -i '' "s@# bayes_auto_learn 1@bayes_auto_learn 0\\
+echo "% sed -i '' \"s@# bayes_auto_learn 1@bayes_auto_learn 0\\
 bayes_path /var/maiad/.spamassassin/bayes\\
 bayes_file_mode 0775\\
-@g" ${SPAMCF}
+@g\" ${SPAMCF}"
 sed -i '' "s@# bayes_auto_learn 1@bayes_auto_learn 0\\
 bayes_path /var/maiad/.spamassassin/bayes\\
 bayes_file_mode 0775\\
 @g" ${SPAMCF}
 
-echo % sed -i '' "s@# rewrite_header Subject \*\*\*\*\*SPAM\*\*\*\*\*@rewrite_header Subject [SPAM]\\
+echo "% sed -i '' \"s@# rewrite_header Subject \*\*\*\*\*SPAM\*\*\*\*\*@rewrite_header Subject [SPAM]\\
 add_header all Report _REPORT_\\
-report_safe 1@g" ${SPAMCF}
+report_safe 1@g\" ${SPAMCF}"
 sed -i '' "s@# rewrite_header Subject \*\*\*\*\*SPAM\*\*\*\*\*@rewrite_header Subject [SPAM]\\
 add_header all Report _REPORT_\\
 report_safe 1@g" ${SPAMCF}
@@ -707,39 +707,39 @@ pw useradd opendkim -s /usr/sbin/nologin
 echo % mkdir -p /usr/local/etc/opendkim
 mkdir -p /usr/local/etc/opendkim
 
-echo % sed -i '' "s@Domain[\\t ]*example.com@Domain ${DOMAIN}@g" ${DKIMCF}
+echo "% sed -i '' \"s@Domain[\\t ]*example.com@Domain ${DOMAIN}@g\" ${DKIMCF}"
 sed -i '' "s@Domain[\\t ]*example.com@Domain ${DOMAIN}@g" ${DKIMCF}
-echo % sed -i '' "s@KeyFile[\\t ]*/var/db/dkim/example.private@#KeyFile /var/db/dkim/example.private\\
-KeyTable refile:/usr/local/etc/opendkim/keytable@g" ${DKIMCF}
+echo "% sed -i '' \"s@KeyFile[\\t ]*/var/db/dkim/example.private@#KeyFile /var/db/dkim/example.private\\
+KeyTable refile:/usr/local/etc/opendkim/keytable@g\" ${DKIMCF}"
 sed -i '' "s@KeyFile[\\t ]*/var/db/dkim/example.private@#KeyFile /var/db/dkim/example.private\\
 KeyTable refile:/usr/local/etc/opendkim/keytable@g" ${DKIMCF}
-echo % sed -i '' "s@# LogWhy[\\t ]*no@LogWhy yes@g" ${DKIMCF}
+echo "% sed -i '' \"s@# LogWhy[\\t ]*no@LogWhy yes@g\" ${DKIMCF}"
 sed -i '' "s@# LogWhy[\\t ]*no@LogWhy yes@g" ${DKIMCF}
-echo % sed -i '' "s@# MultipleSignatures[\\t ]*no@MultipleSignatures    yes@g" ${DKIMCF}
+echo "% sed -i '' \"s@# MultipleSignatures[\\t ]*no@MultipleSignatures    yes@\g" ${DKIMCF}"
 sed -i '' "s@# MultipleSignatures[\\t ]*no@MultipleSignatures    yes@g" ${DKIMCF}
-echo % sed -i '' "s@# Nameservers addr1,addr2,...@Nameservers 10.193.167.10@g" ${DKIMCF}
+echo "% sed -i '' \"s@# Nameservers addr1,addr2,...@Nameservers 10.193.167.10@g\" ${DKIMCF}"
 sed -i '' "s@# Nameservers addr1,addr2,...@Nameservers 10.193.167.10@g" ${DKIMCF}
-echo % sed -i '' "s@# RedirectFailuresTo[\\t ]*postmaster\@example.com@# RedirectFailuresTo    postmaster\@${DOMAIN}@g" ${DKIMCF}
+echo "% sed -i '' \"s@# RedirectFailuresTo[\\t ]*postmaster\@example.com@# RedirectFailuresTo    postmaster\@${DOMAIN}@g\" ${DKIMCF}"
 sed -i '' "s@# RedirectFailuresTo[\\t ]*postmaster\@example.com@# RedirectFailuresTo    postmaster\@${DOMAIN}@g" ${DKIMCF}
-echo % sed -i '' "s@# ReportAddress[\\t ]*\"DKIM Error Postmaster\" <postmaster\@example.com>@# ReportAddress \"DKIM Error Postmaster\" <postmaster\@${DOMAIN}>@g" ${DKIMCF}
+echo "% sed -i '' \"s@# ReportAddress[\\t ]*\"DKIM Error Postmaster\" <postmaster\@example.com>@# ReportAddress \\\"DKIM Error Postmaster\\\" <postmaster\@${DOMAIN}>@g\" ${DKIMCF}
 sed -i '' "s@# ReportAddress[\\t ]*\"DKIM Error Postmaster\" <postmaster\@example.com>@# ReportAddress \"DKIM Error Postmaster\" <postmaster\@${DOMAIN}>@g" ${DKIMCF}
-echo % sed -i '' "s@Selector[\\t ]*my-selector-name@Selector _default@g" ${DKIMCF}
+echo "% sed -i '' \"s@Selector[\\t ]*my-selector-name@Selector _default@g\" ${DKIMCF}"
 sed -i '' "s@Selector[\\t ]*my-selector-name@Selector _default@g" ${DKIMCF}
-echo % sed -i '' "s@# SigningTable[\\t ]*filename@# SigningTable          filename\\
-SigningTable refile:/usr/local/etc/opendkim/signingtable@g" ${DKIMCF}
+echo "% sed -i '' \"s@# SigningTable[\\t ]*filename@# SigningTable          filename\\
+SigningTable refile:/usr/local/etc/opendkim/signingtable@g\" ${DKIMCF}"
 sed -i '' "s@# SigningTable[\\t ]*filename@# SigningTable          filename\\
 SigningTable refile:/usr/local/etc/opendkim/signingtable@g" ${DKIMCF}
-echo % sed -i '' "s@Socket[\\t ]*inet:port\@localhost@Socket inet:10999\@localhost@g" ${DKIMCF}
+echo "% sed -i '' \"s@Socket[\\t ]*inet:port\@localhost@Socket inet:10999\@localhost@g\" ${DKIMCF}"
 sed -i '' "s@Socket[\\t ]*inet:port\@localhost@Socket inet:10999\@localhost@g" ${DKIMCF}
-echo % sed -i '' "s@# SoftwareHeader[\\t ]*no@# SoftwareHeader yes@g" ${DKIMCF}
+echo "% sed -i '' \"s@# SoftwareHeader[\\t ]*no@# SoftwareHeader yes@g\" ${DKIMCF}"
 sed -i '' "s@# SoftwareHeader[\\t ]*no@# SoftwareHeader yes@g" ${DKIMCF}
-echo % sed -i '' "s@# SyslogSuccess[\\t ]*No@SyslogSuccess yes@g" ${DKIMCF}
+echo "% sed -i '' \"s@# SyslogSuccess[\\t ]*No@SyslogSuccess yes@g\" ${DKIMCF}"
 sed -i '' "s@# SyslogSuccess[\\t ]*No@SyslogSuccess yes@g" ${DKIMCF}
-echo % sed -i '' "s@# UserID[\\t ]*userid@# UserID opendkim:opendkim@g" ${DKIMCF}
+echo "% sed -i '' \"s@# UserID[\\t ]*userid@# UserID opendkim:opendkim@g\" ${DKIMCF}"
 sed -i '' "s@# UserID[\\t ]*userid@# UserID opendkim:opendkim@g" ${DKIMCF}
-echo % sed -i '' "s@# RequireSafeKeys[\\t ]*Yes@RequireSafeKeys No@g" ${DKIMCF}
+echo "% sed -i '' \"s@# RequireSafeKeys[\\t ]*Yes@RequireSafeKeys No@g\" ${DKIMCF}"
 sed -i '' "s@# RequireSafeKeys[\\t ]*Yes@RequireSafeKeys No@g" ${DKIMCF}
-echo % sed -i '' "s@# Mode[\\t ]*sv@Mode sv@g" ${DKIMCF}
+echo "% sed -i '' \"s@# Mode[\\t ]*sv@Mode sv@g\" ${DKIMCF}"
 sed -i '' "s@# Mode[\\t ]*sv@Mode sv@g" ${DKIMCF}
 
 CURRENT=$(pwd)
@@ -757,9 +757,9 @@ cd ${CURRENT}
 echo " // Install for DNS:"
 cat ${CURRENT}/${DOMAIN}.dns
 
-echo % echo "*@${DOMAIN} ${DOMAIN}" \> /usr/local/etc/opendkim/signingtable
+echo "% echo \"*@${DOMAIN} ${DOMAIN}\" \> /usr/local/etc/opendkim/signingtable"
 echo "*@${DOMAIN} ${DOMAIN}" > /usr/local/etc/opendkim/signingtable
-echo % echo "${DOMAIN} ${DOMAIN}:_default:/usr/local/etc/opendkim/${DOMAIN}.private" \> /usr/local/etc/opendkim/keytable
+echo "% echo \"${DOMAIN} ${DOMAIN}:_default:/usr/local/etc/opendkim/${DOMAIN}.private\" \> /usr/local/etc/opendkim/keytable"
 echo "${DOMAIN} ${DOMAIN}:_default:/usr/local/etc/opendkim/${DOMAIN}.private" > /usr/local/etc/opendkim/keytable
 
 # fix key permissions

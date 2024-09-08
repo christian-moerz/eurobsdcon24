@@ -18,6 +18,10 @@
 # 101_setup_jails.sh must have already been run
 # This needs to run inside base jail
 #
+# 102 and 103 will be set up/run by this script
+# it will register its completion, so it won't
+# run again later.
+#
 
 set -x
 set -e
