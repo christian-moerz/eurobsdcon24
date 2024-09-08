@@ -715,14 +715,14 @@ sed -i '' "s@KeyFile[\\t ]*/var/db/dkim/example.private@#KeyFile /var/db/dkim/ex
 KeyTable refile:/usr/local/etc/opendkim/keytable@g" ${DKIMCF}
 echo "% sed -i '' \"s@# LogWhy[\\t ]*no@LogWhy yes@g\" ${DKIMCF}"
 sed -i '' "s@# LogWhy[\\t ]*no@LogWhy yes@g" ${DKIMCF}
-echo "% sed -i '' \"s@# MultipleSignatures[\\t ]*no@MultipleSignatures    yes@\g" ${DKIMCF}"
+echo "% sed -i '' \"s@# MultipleSignatures[\\t ]*no@MultipleSignatures    yes@g\" ${DKIMCF}"
 sed -i '' "s@# MultipleSignatures[\\t ]*no@MultipleSignatures    yes@g" ${DKIMCF}
 echo "% sed -i '' \"s@# Nameservers addr1,addr2,...@Nameservers 10.193.167.10@g\" ${DKIMCF}"
 sed -i '' "s@# Nameservers addr1,addr2,...@Nameservers 10.193.167.10@g" ${DKIMCF}
 echo "% sed -i '' \"s@# RedirectFailuresTo[\\t ]*postmaster\@example.com@# RedirectFailuresTo    postmaster\@${DOMAIN}@g\" ${DKIMCF}"
 sed -i '' "s@# RedirectFailuresTo[\\t ]*postmaster\@example.com@# RedirectFailuresTo    postmaster\@${DOMAIN}@g" ${DKIMCF}
-echo "% sed -i '' \"s@# ReportAddress[\\t ]*\"DKIM Error Postmaster\" <postmaster\@example.com>@# ReportAddress \\\"DKIM Error Postmaster\\\" <postmaster\@${DOMAIN}>@g\" ${DKIMCF}
-sed -i '' "s@# ReportAddress[\\t ]*\"DKIM Error Postmaster\" <postmaster\@example.com>@# ReportAddress \"DKIM Error Postmaster\" <postmaster\@${DOMAIN}>@g" ${DKIMCF}
+echo "% sed -i '' \"s@# ReportAddress[\\t ]*\"DKIM Error Postmaster\" \<postmaster\@example.com\>@# ReportAddress \\\"DKIM Error Postmaster\\\" \<postmaster\@${DOMAIN}\>@g\" ${DKIMCF}
+sed -i '' "s@# ReportAddress[\\t ]*\"DKIM Error Postmaster\" <postmaster\@example.com>@# ReportAddress \"DKIM Error Postmaster\" <postmaster\@${DOMAIN}>@g" ${DKIMCF}"
 echo "% sed -i '' \"s@Selector[\\t ]*my-selector-name@Selector _default@g\" ${DKIMCF}"
 sed -i '' "s@Selector[\\t ]*my-selector-name@Selector _default@g" ${DKIMCF}
 echo "% sed -i '' \"s@# SigningTable[\\t ]*filename@# SigningTable          filename\\
