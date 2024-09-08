@@ -87,7 +87,7 @@ sysrc jail_enable=YES
 if [ ! -e ${ZPATH}/iso/quick.iso ]; then
 
     if [ -e src.tar ]; then
-        tar -C /usr/src -xvf src.tar
+        tar -C /usr/src -xf src.tar
     else
 	# re-install pkg so we have a pkg package for
 	# later use in subjail
@@ -104,7 +104,7 @@ if [ ! -e ${ZPATH}/iso/quick.iso ]; then
     
     # Prepare a quick setup media
     mkdir -p ${ZPATH}/iso/setup
-    tar -C ${ZPATH}/iso/setup -xvf ${ZPATH}/iso/freebsd.iso
+    tar -C ${ZPATH}/iso/setup -xf ${ZPATH}/iso/freebsd.iso
 
     # write an installer config
     cat >> ${ZPATH}/iso/setup/etc/installerconfig <<EOF
