@@ -169,10 +169,12 @@ if [ ! -e /usr/local/etc/ssl/cert.pem.ca ]; then
     cat /ca/pki/ca.crt >> /etc/ssl/cert.pem
 fi
 mkdir -p /usr/share/certs/trusted
-install -m 0444 /ca/pki/ca.crt /usr/share/certs/trusted/localca.pem
-certctl trust /ca/pki/ca.crt
-openssl rehash /etc/ssl/certs
-certctl rehash
+if [ ! -e /usr/share/certs/trusted/localca.pem ]; then
+    install -m 0444 /ca/pki/ca.crt /usr/share/certs/trusted/localca.pem
+    certctl trust /ca/pki/ca.crt
+    openssl rehash /etc/ssl/certs
+    certctl rehash
+fi
 
 # for simplicity, we create a single dhparam file for all
 if [ ! -e dhparams.pem ]; then
