@@ -12,1040 +12,7 @@ FreeBSD repository update completed. 34428 packages processed.
 All repositories are up to date.
 Updating database digests format: . done
 The following 24 package(s) will be affected (of 0 checked):
-
-New packages to be INSTALLED:
-	cyrus-imapd38: 3.8.3
-	cyrus-sasl: 2.1.28_4
-	cyrus-sasl-saslauthd: 2.1.28_2
-	e2fsprogs-libuuid: 1.47.1
-	gettext-runtime: 0.22.5
-	glib: 2.80.5,2
-	icu: 74.2_1,1
-	indexinfo: 0.3.1
-	jansson: 2.14
-	libedit: 3.1.20240517,1
-	libffi: 3.4.6
-	libical: 3.0.16_1
-	libiconv: 1.17_1
-	libsrs2: 1.0.18_4
-	libxml2: 2.11.8
-	mpdecimal: 4.0.0
-	p5-Term-ReadLine-Gnu: 1.46
-	pcre: 8.45_4
-	pcre2: 10.43
-	perl5: 5.36.3_2
-	py311-packaging: 24.1
-	python311: 3.11.9
-	readline: 8.2.10
-	sqlite3: 3.46.0,1
-
-Number of packages to be installed: 24
-
-The process will require 439 MiB more space.
-71 MiB to be downloaded.
-[1/24] Fetching cyrus-sasl-2.1.28_4.pkg: .......... done
-[2/24] Fetching indexinfo-0.3.1.pkg: . done
-[3/24] Fetching libxml2-2.11.8.pkg: .......... done
-[4/24] Fetching mpdecimal-4.0.0.pkg: .......... done
-[5/24] Fetching p5-Term-ReadLine-Gnu-1.46.pkg: ........ done
-[6/24] Fetching libedit-3.1.20240517,1.pkg: ......... done
-[7/24] Fetching icu-74.2_1,1.pkg: .......... done
-[8/24] Fetching pcre-8.45_4.pkg: .......... done
-[9/24] Fetching sqlite3-3.46.0,1.pkg: .......... done
-[10/24] Fetching py311-packaging-24.1.pkg: .......... done
-[11/24] Fetching cyrus-sasl-saslauthd-2.1.28_2.pkg: ... done
-[12/24] Fetching glib-2.80.5,2.pkg: .......... done
-[13/24] Fetching perl5-5.36.3_2.pkg: .......... done
-[14/24] Fetching pcre2-10.43.pkg: .......... done
-[15/24] Fetching libffi-3.4.6.pkg: .... done
-[16/24] Fetching readline-8.2.10.pkg: .......... done
-[17/24] Fetching cyrus-imapd38-3.8.3.pkg: .......... done
-[18/24] Fetching libsrs2-1.0.18_4.pkg: ..... done
-[19/24] Fetching libiconv-1.17_1.pkg: .......... done
-[20/24] Fetching libical-3.0.16_1.pkg: .......... done
-[21/24] Fetching gettext-runtime-0.22.5.pkg: .......... done
-[22/24] Fetching jansson-2.14.pkg: ...... done
-[23/24] Fetching e2fsprogs-libuuid-1.47.1.pkg: ... done
-[24/24] Fetching python311-3.11.9.pkg: .......... done
-Checking integrity... done (0 conflicting)
-[1/24] Installing indexinfo-0.3.1...
-[1/24] Extracting indexinfo-0.3.1: .... done
-[2/24] Installing mpdecimal-4.0.0...
-[2/24] Extracting mpdecimal-4.0.0: .......... done
-[3/24] Installing libffi-3.4.6...
-[3/24] Extracting libffi-3.4.6: .......... done
-[4/24] Installing readline-8.2.10...
-[4/24] Extracting readline-8.2.10: .......... done
-[5/24] Installing gettext-runtime-0.22.5...
-[5/24] Extracting gettext-runtime-0.22.5: .......... done
-[6/24] Installing python311-3.11.9...
-[6/24] Extracting python311-3.11.9: .......... done
-[7/24] Installing py311-packaging-24.1...
-[7/24] Extracting py311-packaging-24.1: .......... done
-[8/24] Installing pcre2-10.43...
-[8/24] Extracting pcre2-10.43: .......... done
-[9/24] Installing libiconv-1.17_1...
-[9/24] Extracting libiconv-1.17_1: .......... done
-[10/24] Installing libxml2-2.11.8...
-[10/24] Extracting libxml2-2.11.8: .......... done
-[11/24] Installing libedit-3.1.20240517,1...
-[11/24] Extracting libedit-3.1.20240517,1: .......... done
-[12/24] Installing icu-74.2_1,1...
-[12/24] Extracting icu-74.2_1,1: .......... done
-[13/24] Installing glib-2.80.5,2...
-[13/24] Extracting glib-2.80.5,2: .......... done
-[14/24] Installing perl5-5.36.3_2...
-[14/24] Extracting perl5-5.36.3_2: .......... done
-[15/24] Installing cyrus-sasl-2.1.28_4...
-*** Added group `cyrus' (id 60)
-*** Added user `cyrus' (id 60)
-[15/24] Extracting cyrus-sasl-2.1.28_4: .......... done
-[16/24] Installing p5-Term-ReadLine-Gnu-1.46...
-[16/24] Extracting p5-Term-ReadLine-Gnu-1.46: .......... done
-[17/24] Installing pcre-8.45_4...
-[17/24] Extracting pcre-8.45_4: .......... done
-[18/24] Installing sqlite3-3.46.0,1...
-[18/24] Extracting sqlite3-3.46.0,1: .......... done
-[19/24] Installing libsrs2-1.0.18_4...
-[19/24] Extracting libsrs2-1.0.18_4: .......... done
-[20/24] Installing libical-3.0.16_1...
-[20/24] Extracting libical-3.0.16_1: .......... done
-[21/24] Installing jansson-2.14...
-[21/24] Extracting jansson-2.14: .......... done
-[22/24] Installing e2fsprogs-libuuid-1.47.1...
-[22/24] Extracting e2fsprogs-libuuid-1.47.1: .......... done
-[23/24] Installing cyrus-sasl-saslauthd-2.1.28_2...
-[23/24] Extracting cyrus-sasl-saslauthd-2.1.28_2: .......... done
-[24/24] Installing cyrus-imapd38-3.8.3...
-[24/24] Extracting cyrus-imapd38-3.8.3: .......... done
-*** Updated user `cyrus'.
-sieve		4190/tcp   #ManageSieve Protocol
-sieve		4190/udp   #ManageSieve Protocol
-
-==> Running trigger: gio-modules.ucl
-Generating GIO modules cache
-==> Running trigger: glib-schemas.ucl
-Compiling glib schemas
-No schema files found: doing nothing.
-=====
-Message from python311-3.11.9:
-
---
-Note that some standard Python modules are provided as separate ports
-as they require additional dependencies. They are available as:
-
-py311-gdbm       databases/py-gdbm@py311
-py311-sqlite3    databases/py-sqlite3@py311
-py311-tkinter    x11-toolkits/py-tkinter@py311
-=====
-Message from cyrus-sasl-2.1.28_4:
-
---
-You can use sasldb2 for authentication, to add users use:
-
-	saslpasswd2 -c username
-
-If you want to enable SMTP AUTH with the system Sendmail, read
-Sendmail.README
-
-NOTE: This port has been compiled with a default pwcheck_method of
-      auxprop.  If you want to authenticate your user by /etc/passwd,
-      PAM or LDAP, install ports/security/cyrus-sasl2-saslauthd and
-      set sasl_pwcheck_method to saslauthd after installing the
-      Cyrus-IMAPd 2.X port.  You should also check the
-      /usr/local/lib/sasl2/*.conf files for the correct
-      pwcheck_method.
-      If you want to use GSSAPI mechanism, install
-      ports/security/cyrus-sasl2-gssapi.
-      If you want to use SRP mechanism, install
-      ports/security/cyrus-sasl2-srp.
-      If you want to use LDAP auxprop plugin, install
-      ports/security/cyrus-sasl2-ldapdb.
-=====
-Message from pcre-8.45_4:
-
---
-===>   NOTICE:
-
-This port is deprecated; you may wish to reconsider installing it:
-
-EOLed by upstream, use devel/pcre2 instead.
-=====
-Message from cyrus-sasl-saslauthd-2.1.28_2:
-
---
-To run saslauthd from startup, add saslauthd_enable="YES" in your
-/etc/rc.conf.
-=====
-Message from cyrus-imapd38-3.8.3:
-
---
-To setup mail spool, modify /usr/local/etc/imapd.conf appropriately,
-then run /usr/local/cyrus/sbin/mkimap.
-To run Cyrus IMAPd from startup, add cyrus_imapd_enable="YES" in your
-/etc/rc.conf.
-Updating FreeBSD repository catalogue...
-FreeBSD repository is up to date.
-All repositories are up to date.
-The following 2 package(s) will be affected (of 0 checked):
-
-New packages to be INSTALLED:
-	ca_root_nss: 3.93_2
-	redis: 7.2.5
-
-Number of packages to be installed: 2
-
-The process will require 9 MiB more space.
-1 MiB to be downloaded.
-[1/2] Fetching ca_root_nss-3.93_2.pkg: .......... done
-[2/2] Fetching redis-7.2.5.pkg: .......... done
-Checking integrity... done (0 conflicting)
-[1/2] Installing ca_root_nss-3.93_2...
-[1/2] Extracting ca_root_nss-3.93_2: ....... done
-Scanning /usr/share/certs/untrusted for certificates...
-Scanning /usr/share/certs/trusted for certificates...
-Scanning /usr/local/share/certs for certificates...
-[2/2] Installing redis-7.2.5...
-===> Creating groups
-Creating group 'redis' with gid '535'
-===> Creating users
-Creating user 'redis' with uid '535'
-[2/2] Extracting redis-7.2.5: ......... done
-=====
-Message from ca_root_nss-3.93_2:
-
---
-FreeBSD does not, and can not warrant that the certification authorities
-whose certificates are included in this package have in any way been
-audited for trustworthiness or RFC 3647 compliance.
-
-Assessment and verification of trust is the complete responsibility of
-the system administrator.
-
-This package installs symlinks to support root certificate discovery
-for software that either uses other cryptographic libraries than
-OpenSSL, or use OpenSSL but do not follow recommended practice.
-
-If you prefer to do this manually, replace the following symlinks with
-either an empty file or your site-local certificate bundle.
-
-  * /etc/ssl/cert.pem
-  * /usr/local/etc/ssl/cert.pem
-  * /usr/local/openssl/cert.pem
-=====
-Message from redis-7.2.5:
-
---
-To setup "redis" you need to edit the configuration file:
-      /usr/local/etc/redis.conf
-
-      To run redis from startup, add redis_enable="YES"
-      in your /etc/rc.conf.
-Updating FreeBSD repository catalogue...
-FreeBSD repository is up to date.
-All repositories are up to date.
-The following 1 package(s) will be affected (of 0 checked):
-
-New packages to be INSTALLED:
-	postfix-sasl: 3.9.0_1,1
-
-Number of packages to be installed: 1
-
-The process will require 8 MiB more space.
-2 MiB to be downloaded.
-[1/1] Fetching postfix-sasl-3.9.0_1,1.pkg: .......... done
-Checking integrity... done (0 conflicting)
-[1/1] Installing postfix-sasl-3.9.0_1,1...
-===> Creating groups
-Using existing group 'mail'
-Creating group 'maildrop' with gid '126'
-Creating group 'postfix' with gid '125'
-===> Creating users
-Creating user 'postfix' with uid '125'
-===> Creating homedir(s)
-Adding user 'postfix' to group 'mail'
-[1/1] Extracting postfix-sasl-3.9.0_1,1: .......... done
-
-===============================================================
-Postfix was *not* activated in /usr/local/etc/mail/mailer.conf! 
-
-To finish installation run the following commands:
-
-  mkdir -p /usr/local/etc/mail
-  install -m 0644 /usr/local/share/postfix/mailer.conf.postfix /usr/local/etc/mail/mailer.conf
-===============================================================
-
-=====
-Message from postfix-sasl-3.9.0_1,1:
-
---
-To use postfix instead of sendmail:
-  - clear sendmail queue and stop the sendmail daemons
-
-Run the following commands to enable postfix during startup:
-  - sysrc postfix_enable="YES"
-  - sysrc sendmail_enable="NONE"
-
-If postfix is *not* already activated in /usr/local/etc/mail/mailer.conf
-  - mv /usr/local/etc/mail/mailer.conf /usr/local/etc/mail/mailer.conf.old
-  - install -d /usr/local/etc/mail
-  - install -m 0644 /usr/local/share/postfix/mailer.conf.postfix /usr/local/etc/mail/mailer.conf
-
-Disable sendmail(8) specific tasks,
-add the following lines to /etc/periodic.conf(.local):
-  daily_clean_hoststat_enable="NO"
-  daily_status_mail_rejects_enable="NO"
-  daily_status_include_submit_mailq="NO"
-  daily_submit_queuerun="NO"
-
-If you are using SASL, you need to make sure that postfix has access to read
-the sasldb file.  This is accomplished by adding postfix to group mail and
-making the /usr/local/etc/sasldb* file(s) readable by group mail (this should
-be the default for new installs).
-Updating FreeBSD repository catalogue...
-FreeBSD repository is up to date.
-All repositories are up to date.
-The following 104 package(s) will be affected (of 0 checked):
-
-New packages to be INSTALLED:
-	7-zip: 24.07
-	amavisd-milter: 1.7.0_1
-	amavisd-new: 2.12.3_3,1
-	arc: 5.21q_1
-	arj: 3.10.22_12
-	bash: 5.2.26_1
-	cabextract: 1.11_1
-	clamav: 1.3.2,1
-	clamav-unofficial-sigs: 7.2.5_3
-	curl: 8.9.1_1
-	db5: 5.3.28_9
-	expat: 2.6.2
-	file: 5.39_1
-	gmp: 6.3.0
-	gnupg: 2.4.5
-	gnupg1: 1.4.23_4
-	gnutls: 3.8.5_3
-	gsed: 4.9
-	json-c: 0.17
-	libassuan: 2.5.7
-	libevent: 2.1.12
-	libgcrypt: 1.11.0
-	libgpg-error: 1.50
-	libidn: 1.42
-	libidn2: 2.3.7
-	libksba: 1.6.6
-	liblz4: 1.9.4_1,1
-	libmspack: 0.11alpha
-	libnghttp2: 1.62.1
-	libpsl: 0.21.5_1
-	libsodium: 1.0.19
-	libssh2: 1.11.0_1,3
-	libsysinfo: 0.0.3_3
-	libtasn1: 4.19.0_1
-	libunistring: 1.2
-	lua54: 5.4.6_1
-	lzo2: 2.10_1
-	lzop: 1.04_1
-	nettle: 3.10_1
-	npth: 1.7
-	opendkim: 2.10.3_20
-	p11-kit: 0.25.3_2
-	p5-Archive-Zip: 1.68
-	p5-BerkeleyDB: 0.65
-	p5-Class-XSAccessor: 1.19_2,1
-	p5-Clone: 0.46
-	p5-Convert-BinHex: 1.125
-	p5-Convert-TNEF: 0.18_2
-	p5-Convert-UUlib: 1.70,1
-	p5-Crypt-OpenSSL-Bignum: 0.09
-	p5-Crypt-OpenSSL-RSA: 0.33
-	p5-Crypt-OpenSSL-Random: 0.17
-	p5-CryptX: 0.080
-	p5-Digest-HMAC: 1.04
-	p5-Encode-Detect: 1.01_1
-	p5-Encode-Locale: 1.05
-	p5-Error: 0.17029
-	p5-HTML-Parser: 3.82
-	p5-HTML-Tagset: 3.24
-	p5-HTTP-Date: 6.06
-	p5-HTTP-Message: 6.46
-	p5-IO-HTML: 1.004
-	p5-IO-Multiplex: 1.16
-	p5-IO-Socket-INET6: 2.73
-	p5-IO-Socket-IP: 0.42
-	p5-IO-Socket-SSL: 2.085_1
-	p5-IO-Stringy: 2.113
-	p5-JSON: 4.10
-	p5-LWP-MediaTypes: 6.04
-	p5-MIME-Tools: 5.515,2
-	p5-Mail-AuthenticationResults: 2.20231031
-	p5-Mail-DKIM: 1.20240619
-	p5-Mail-SPF: 3.20240617
-	p5-Mail-Tools: 2.21
-	p5-Mozilla-CA: 20240730
-	p5-Net-CIDR-Lite: 0.22
-	p5-Net-DNS: 1.45,1
-	p5-Net-IDN-Encode: 2.500
-	p5-Net-LibIDN: 0.12_6
-	p5-Net-SSLeay: 1.94
-	p5-Net-Server: 2.014
-	p5-NetAddr-IP: 4.079
-	p5-Socket6: 0.29
-	p5-TimeDate: 2.33,1
-	p5-URI: 5.28
-	p5-Unix-Syslog: 1.1_1
-	p5-XString: 0.005
-	p5-common-sense: 3.75
-	pinentry: 1.3.0
-	pinentry-curses: 1.3.0
-	re2c: 3.0
-	ripole: 0.2.2
-	rpm2cpio: 1.4_2
-	rsync: 3.3.0
-	spamass-milter: 0.4.0_5
-	spamassassin: 4.0.1_1
-	spamassassin-dqs: 1.5.1_1
-	spamd: 4.9.1_7
-	unbound: 1.21.0
-	unrar: 7.01,6
-	unzoo: 4.4_2
-	xxhash: 0.8.2_1
-	zoo: 2.10.1_5
-	zstd: 1.5.6
-
-Number of packages to be installed: 104
-
-The process will require 232 MiB more space.
-54 MiB to be downloaded.
-[1/104] Fetching p5-Net-SSLeay-1.94.pkg: .......... done
-[2/104] Fetching unbound-1.21.0.pkg: .......... done
-[3/104] Fetching pinentry-curses-1.3.0.pkg: ...... done
-[4/104] Fetching p5-IO-Socket-IP-0.42.pkg: ..... done
-[5/104] Fetching p5-URI-5.28.pkg: .......... done
-[6/104] Fetching p5-Crypt-OpenSSL-RSA-0.33.pkg: ... done
-[7/104] Fetching libidn2-2.3.7.pkg: ......... done
-[8/104] Fetching p5-Crypt-OpenSSL-Random-0.17.pkg: .... done
-[9/104] Fetching spamassassin-dqs-1.5.1_1.pkg: .. done
-[10/104] Fetching spamassassin-4.0.1_1.pkg: ......... done
-[11/104] Fetching nettle-3.10_1.pkg: .......... done
-[12/104] Fetching lzo2-2.10_1.pkg: .......... done
-[13/104] Fetching lua54-5.4.6_1.pkg: .......... done
-[14/104] Fetching libunistring-1.2.pkg: .......... done
-[15/104] Fetching p5-NetAddr-IP-4.079.pkg: ...... done
-[16/104] Fetching p5-Unix-Syslog-1.1_1.pkg: .... done
-[17/104] Fetching p5-TimeDate-2.33,1.pkg: ... done
-[18/104] Fetching npth-1.7.pkg: ... done
-[19/104] Fetching json-c-0.17.pkg: ..... done
-[20/104] Fetching p5-Error-0.17029.pkg: .. done
-[21/104] Fetching libmspack-0.11alpha.pkg: ...... done
-[22/104] Fetching libidn-1.42.pkg: .......... done
-[23/104] Fetching p5-Convert-TNEF-0.18_2.pkg: .... done
-[24/104] Fetching libtasn1-4.19.0_1.pkg: .......... done
-[25/104] Fetching amavisd-milter-1.7.0_1.pkg: ..... done
-[26/104] Fetching gnupg1-1.4.23_4.pkg: .......... done
-[27/104] Fetching spamass-milter-0.4.0_5.pkg: ......... done
-[28/104] Fetching zoo-2.10.1_5.pkg: ........ done
-[29/104] Fetching libnghttp2-1.62.1.pkg: .......... done
-[30/104] Fetching p5-HTTP-Date-6.06.pkg: .. done
-[31/104] Fetching p5-Mail-DKIM-1.20240619.pkg: ......... done
-[32/104] Fetching libksba-1.6.6.pkg: .......... done
-[33/104] Fetching lzop-1.04_1.pkg: ........ done
-[34/104] Fetching db5-5.3.28_9.pkg: .......... done
-[35/104] Fetching gnutls-3.8.5_3.pkg: .......... done
-[36/104] Fetching p5-IO-Socket-INET6-2.73.pkg: ... done
-[37/104] Fetching p5-Net-DNS-1.45,1.pkg: .......... done
-[38/104] Fetching pinentry-1.3.0.pkg: ..... done
-[39/104] Fetching p5-Encode-Locale-1.05.pkg: ... done
-[40/104] Fetching p5-HTML-Parser-3.82.pkg: .......... done
-[41/104] Fetching cabextract-1.11_1.pkg: .... done
-[42/104] Fetching p5-LWP-MediaTypes-6.04.pkg: ..... done
-[43/104] Fetching xxhash-0.8.2_1.pkg: ......... done
-[44/104] Fetching p5-IO-HTML-1.004.pkg: ...... done
-[45/104] Fetching p5-Digest-HMAC-1.04.pkg: ..... done
-[46/104] Fetching libpsl-0.21.5_1.pkg: .......... done
-[47/104] Fetching bash-5.2.26_1.pkg: .......... done
-[48/104] Fetching clamav-1.3.2,1.pkg: .......... done
-[49/104] Fetching arj-3.10.22_12.pkg: ......... done
-[50/104] Fetching p5-HTTP-Message-6.46.pkg: ..... done
-[51/104] Fetching libevent-2.1.12.pkg: .......... done
-[52/104] Fetching arc-5.21q_1.pkg: .... done
-[53/104] Fetching unrar-7.01,6.pkg: ........ done
-[54/104] Fetching p5-Crypt-OpenSSL-Bignum-0.09.pkg: .... done
-[55/104] Fetching p5-Net-Server-2.014.pkg: ........ done
-[56/104] Fetching p5-IO-Socket-SSL-2.085_1.pkg: ...... done
-[57/104] Fetching ripole-0.2.2.pkg: ... done
-[58/104] Fetching p5-IO-Multiplex-1.16.pkg: ... done
-[59/104] Fetching libassuan-2.5.7.pkg: ..... done
-[60/104] Fetching p5-IO-Stringy-2.113.pkg: ....... done
-[61/104] Fetching rsync-3.3.0.pkg: .......... done
-[62/104] Fetching liblz4-1.9.4_1,1.pkg: .......... done
-[63/104] Fetching p5-Mail-SPF-3.20240617.pkg: .... done
-[64/104] Fetching libgcrypt-1.11.0.pkg: .......... done
-[65/104] Fetching p5-Convert-BinHex-1.125.pkg: ...... done
-[66/104] Fetching amavisd-new-2.12.3_3,1.pkg: .......... done
-[67/104] Fetching p5-Net-IDN-Encode-2.500.pkg: ........ done
-[68/104] Fetching clamav-unofficial-sigs-7.2.5_3.pkg: ........ done
-[69/104] Fetching zstd-1.5.6.pkg: .......... done
-[70/104] Fetching p5-Clone-0.46.pkg: .... done
-[71/104] Fetching libgpg-error-1.50.pkg: .......... done
-[72/104] Fetching curl-8.9.1_1.pkg: .......... done
-[73/104] Fetching gmp-6.3.0.pkg: .......... done
-[74/104] Fetching p5-CryptX-0.080.pkg: .......... done
-[75/104] Fetching p5-HTML-Tagset-3.24.pkg: ... done
-[76/104] Fetching gsed-4.9.pkg: .......... done
-[77/104] Fetching p5-XString-0.005.pkg: .. done
-[78/104] Fetching p5-Mail-Tools-2.21.pkg: ........ done
-[79/104] Fetching p5-Archive-Zip-1.68.pkg: ...... done
-[80/104] Fetching gnupg-2.4.5.pkg: .......... done
-[81/104] Fetching file-5.39_1.pkg: .......... done
-[82/104] Fetching p5-Encode-Detect-1.01_1.pkg: ........ done
-[83/104] Fetching p5-MIME-Tools-5.515,2.pkg: ........ done
-[84/104] Fetching p11-kit-0.25.3_2.pkg: .......... done
-[85/104] Fetching p5-Mail-AuthenticationResults-2.20231031.pkg: ....... done
-[86/104] Fetching libsysinfo-0.0.3_3.pkg: ...... done
-[87/104] Fetching re2c-3.0.pkg: ......... done
-[88/104] Fetching p5-BerkeleyDB-0.65.pkg: ....... done
-[89/104] Fetching p5-Socket6-0.29.pkg: .. done
-[90/104] Fetching opendkim-2.10.3_20.pkg: .......... done
-[91/104] Fetching p5-Net-CIDR-Lite-0.22.pkg: . done
-[92/104] Fetching libsodium-1.0.19.pkg: ......... done
-[93/104] Fetching p5-JSON-4.10.pkg: ...... done
-[94/104] Fetching p5-Class-XSAccessor-1.19_2,1.pkg: .... done
-[95/104] Fetching p5-Mozilla-CA-20240730.pkg: ...... done
-[96/104] Fetching p5-Net-LibIDN-0.12_6.pkg: ... done
-[97/104] Fetching p5-Convert-UUlib-1.70,1.pkg: ......... done
-[98/104] Fetching libssh2-1.11.0_1,3.pkg: ......... done
-[99/104] Fetching p5-common-sense-3.75.pkg: .. done
-[100/104] Fetching unzoo-4.4_2.pkg: .... done
-[101/104] Fetching expat-2.6.2.pkg: ....... done
-[102/104] Fetching spamd-4.9.1_7.pkg: .... done
-[103/104] Fetching rpm2cpio-1.4_2.pkg: . done
-[104/104] Fetching 7-zip-24.07.pkg: .......... done
-Checking integrity... done (0 conflicting)
-[1/104] Installing libunistring-1.2...
-[1/104] Extracting libunistring-1.2: .......... done
-[2/104] Installing libidn2-2.3.7...
-[2/104] Extracting libidn2-2.3.7: .......... done
-[3/104] Installing p5-TimeDate-2.33,1...
-[3/104] Extracting p5-TimeDate-2.33,1: .......... done
-[4/104] Installing p5-URI-5.28...
-[4/104] Extracting p5-URI-5.28: .......... done
-[5/104] Installing p5-Crypt-OpenSSL-Random-0.17...
-[5/104] Extracting p5-Crypt-OpenSSL-Random-0.17: ........ done
-[6/104] Installing libnghttp2-1.62.1...
-[6/104] Extracting libnghttp2-1.62.1: .......... done
-[7/104] Installing p5-HTTP-Date-6.06...
-[7/104] Extracting p5-HTTP-Date-6.06: ....... done
-[8/104] Installing p5-Encode-Locale-1.05...
-[8/104] Extracting p5-Encode-Locale-1.05: ....... done
-[9/104] Installing p5-LWP-MediaTypes-6.04...
-[9/104] Extracting p5-LWP-MediaTypes-6.04: ........ done
-[10/104] Installing p5-IO-HTML-1.004...
-[10/104] Extracting p5-IO-HTML-1.004: ....... done
-[11/104] Installing p5-Digest-HMAC-1.04...
-[11/104] Extracting p5-Digest-HMAC-1.04: .......... done
-[12/104] Installing libpsl-0.21.5_1...
-[12/104] Extracting libpsl-0.21.5_1: .......... done
-[13/104] Installing p5-Crypt-OpenSSL-Bignum-0.09...
-[13/104] Extracting p5-Crypt-OpenSSL-Bignum-0.09: .......... done
-[14/104] Installing p5-Clone-0.46...
-[14/104] Extracting p5-Clone-0.46: ......... done
-[15/104] Installing libgpg-error-1.50...
-[15/104] Extracting libgpg-error-1.50: .......... done
-[16/104] Installing p5-JSON-4.10...
-[16/104] Extracting p5-JSON-4.10: .......... done
-[17/104] Installing libssh2-1.11.0_1,3...
-[17/104] Extracting libssh2-1.11.0_1,3: .......... done
-[18/104] Installing p5-Net-SSLeay-1.94...
-[18/104] Extracting p5-Net-SSLeay-1.94: .......... done
-[19/104] Installing p5-IO-Socket-IP-0.42...
-[19/104] Extracting p5-IO-Socket-IP-0.42: ....... done
-[20/104] Installing p5-Crypt-OpenSSL-RSA-0.33...
-[20/104] Extracting p5-Crypt-OpenSSL-RSA-0.33: .......... done
-[21/104] Installing p5-NetAddr-IP-4.079...
-[21/104] Extracting p5-NetAddr-IP-4.079: .......... done
-[22/104] Installing p5-Error-0.17029...
-[22/104] Extracting p5-Error-0.17029: ......... done
-[23/104] Installing libidn-1.42...
-[23/104] Extracting libidn-1.42: .......... done
-[24/104] Installing libtasn1-4.19.0_1...
-[24/104] Extracting libtasn1-4.19.0_1: .......... done
-[25/104] Installing p5-Net-DNS-1.45,1...
-[25/104] Extracting p5-Net-DNS-1.45,1: .......... done
-[26/104] Installing p5-HTTP-Message-6.46...
-[26/104] Extracting p5-HTTP-Message-6.46: .......... done
-[27/104] Installing libassuan-2.5.7...
-[27/104] Extracting libassuan-2.5.7: .......... done
-[28/104] Installing p5-Convert-BinHex-1.125...
-[28/104] Extracting p5-Convert-BinHex-1.125: .......... done
-[29/104] Installing curl-8.9.1_1...
-[29/104] Extracting curl-8.9.1_1: .......... done
-[30/104] Installing gmp-6.3.0...
-[30/104] Extracting gmp-6.3.0: .......... done
-[31/104] Installing p5-CryptX-0.080...
-[31/104] Extracting p5-CryptX-0.080: .......... done
-[32/104] Installing p5-HTML-Tagset-3.24...
-[32/104] Extracting p5-HTML-Tagset-3.24: ....... done
-[33/104] Installing p5-Mail-Tools-2.21...
-[33/104] Extracting p5-Mail-Tools-2.21: .......... done
-[34/104] Installing p5-Mail-AuthenticationResults-2.20231031...
-[34/104] Extracting p5-Mail-AuthenticationResults-2.20231031: .......... done
-[35/104] Installing p5-Socket6-0.29...
-[35/104] Extracting p5-Socket6-0.29: ....... done
-[36/104] Installing p5-Mozilla-CA-20240730...
-[36/104] Extracting p5-Mozilla-CA-20240730: ....... done
-[37/104] Installing pinentry-curses-1.3.0...
-[37/104] Extracting pinentry-curses-1.3.0: .... done
-[38/104] Installing nettle-3.10_1...
-[38/104] Extracting nettle-3.10_1: .......... done
-[39/104] Installing lzo2-2.10_1...
-[39/104] Extracting lzo2-2.10_1: .......... done
-[40/104] Installing gnupg1-1.4.23_4...
-[40/104] Extracting gnupg1-1.4.23_4: .......... done
-[41/104] Installing p5-Mail-DKIM-1.20240619...
-[41/104] Extracting p5-Mail-DKIM-1.20240619: .......... done
-[42/104] Installing db5-5.3.28_9...
-[42/104] Extracting db5-5.3.28_9: .......... done
-[43/104] Installing p5-IO-Socket-INET6-2.73...
-[43/104] Extracting p5-IO-Socket-INET6-2.73: ....... done
-[44/104] Installing p5-HTML-Parser-3.82...
-[44/104] Extracting p5-HTML-Parser-3.82: .......... done
-[45/104] Installing p5-IO-Socket-SSL-2.085_1...
-[45/104] Extracting p5-IO-Socket-SSL-2.085_1: .......... done
-[46/104] Installing p5-IO-Multiplex-1.16...
-[46/104] Extracting p5-IO-Multiplex-1.16: ....... done
-[47/104] Installing p5-IO-Stringy-2.113...
-[47/104] Extracting p5-IO-Stringy-2.113: .......... done
-[48/104] Installing liblz4-1.9.4_1,1...
-[48/104] Extracting liblz4-1.9.4_1,1: .......... done
-[49/104] Installing p5-Mail-SPF-3.20240617...
-[49/104] Extracting p5-Mail-SPF-3.20240617: .......... done
-[50/104] Installing p5-Net-IDN-Encode-2.500...
-[50/104] Extracting p5-Net-IDN-Encode-2.500: .......... done
-[51/104] Installing p5-XString-0.005...
-[51/104] Extracting p5-XString-0.005: ........ done
-[52/104] Installing p5-Encode-Detect-1.01_1...
-[52/104] Extracting p5-Encode-Detect-1.01_1: ......... done
-[53/104] Installing p5-MIME-Tools-5.515,2...
-[53/104] Extracting p5-MIME-Tools-5.515,2: .......... done
-[54/104] Installing p11-kit-0.25.3_2...
-[54/104] Extracting p11-kit-0.25.3_2: .......... done
-[55/104] Installing libsysinfo-0.0.3_3...
-[55/104] Extracting libsysinfo-0.0.3_3: ......... done
-[56/104] Installing re2c-3.0...
-[56/104] Extracting re2c-3.0: .......... done
-[57/104] Installing p5-Net-CIDR-Lite-0.22...
-[57/104] Extracting p5-Net-CIDR-Lite-0.22: ....... done
-[58/104] Installing p5-Class-XSAccessor-1.19_2,1...
-[58/104] Extracting p5-Class-XSAccessor-1.19_2,1: .......... done
-[59/104] Installing p5-Net-LibIDN-0.12_6...
-[59/104] Extracting p5-Net-LibIDN-0.12_6: ......... done
-[60/104] Installing p5-common-sense-3.75...
-[60/104] Extracting p5-common-sense-3.75: ........ done
-[61/104] Installing spamassassin-4.0.1_1...
-===> Creating groups
-Creating group 'spamd' with gid '58'
-===> Creating users
-Creating user 'spamd' with uid '58'
-===> Creating homedir(s)
-[61/104] Extracting spamassassin-4.0.1_1: .......... done
-[62/104] Installing p5-Unix-Syslog-1.1_1...
-[62/104] Extracting p5-Unix-Syslog-1.1_1: ....... done
-[63/104] Installing npth-1.7...
-[63/104] Extracting npth-1.7: ......... done
-[64/104] Installing json-c-0.17...
-[64/104] Extracting json-c-0.17: .......... done
-[65/104] Installing libmspack-0.11alpha...
-[65/104] Extracting libmspack-0.11alpha: ......... done
-[66/104] Installing p5-Convert-TNEF-0.18_2...
-[66/104] Extracting p5-Convert-TNEF-0.18_2: ....... done
-[67/104] Installing zoo-2.10.1_5...
-[67/104] Extracting zoo-2.10.1_5: .... done
-[68/104] Installing libksba-1.6.6...
-[68/104] Extracting libksba-1.6.6: .......... done
-[69/104] Installing lzop-1.04_1...
-[69/104] Extracting lzop-1.04_1: .......... done
-[70/104] Installing gnutls-3.8.5_3...
-[70/104] Extracting gnutls-3.8.5_3: .......... done
-[71/104] Installing pinentry-1.3.0...
-[71/104] Extracting pinentry-1.3.0: ..... done
-[72/104] Installing cabextract-1.11_1...
-[72/104] Extracting cabextract-1.11_1: .......... done
-[73/104] Installing xxhash-0.8.2_1...
-[73/104] Extracting xxhash-0.8.2_1: .......... done
-[74/104] Installing arj-3.10.22_12...
-[74/104] Extracting arj-3.10.22_12: .......... done
-[75/104] Installing libevent-2.1.12...
-[75/104] Extracting libevent-2.1.12: .......... done
-[76/104] Installing arc-5.21q_1...
-[76/104] Extracting arc-5.21q_1: ....... done
-[77/104] Installing unrar-7.01,6...
-[77/104] Extracting unrar-7.01,6: .... done
-[78/104] Installing p5-Net-Server-2.014...
-[78/104] Extracting p5-Net-Server-2.014: .......... done
-[79/104] Installing ripole-0.2.2...
-[79/104] Extracting ripole-0.2.2: . done
-[80/104] Installing libgcrypt-1.11.0...
-[80/104] Extracting libgcrypt-1.11.0: .......... done
-[81/104] Installing zstd-1.5.6...
-[81/104] Extracting zstd-1.5.6: .......... done
-[82/104] Installing p5-Archive-Zip-1.68...
-[82/104] Extracting p5-Archive-Zip-1.68: .......... done
-[83/104] Installing file-5.39_1...
-[83/104] Extracting file-5.39_1: .......... done
-[84/104] Installing p5-BerkeleyDB-0.65...
-[84/104] Extracting p5-BerkeleyDB-0.65: .......... done
-[85/104] Installing libsodium-1.0.19...
-[85/104] Extracting libsodium-1.0.19: .......... done
-[86/104] Installing p5-Convert-UUlib-1.70,1...
-[86/104] Extracting p5-Convert-UUlib-1.70,1: ........ done
-[87/104] Installing unzoo-4.4_2...
-[87/104] Extracting unzoo-4.4_2: ..... done
-[88/104] Installing expat-2.6.2...
-[88/104] Extracting expat-2.6.2: .......... done
-[89/104] Installing rpm2cpio-1.4_2...
-[89/104] Extracting rpm2cpio-1.4_2: ..... done
-[90/104] Installing 7-zip-24.07...
-[90/104] Extracting 7-zip-24.07: .......... done
-[91/104] Installing unbound-1.21.0...
-===> Creating groups
-Using existing group 'unbound'
-===> Creating users
-Using existing user 'unbound'
-[91/104] Extracting unbound-1.21.0: .......... done
-[92/104] Installing lua54-5.4.6_1...
-[92/104] Extracting lua54-5.4.6_1: .......... done
-[93/104] Installing bash-5.2.26_1...
-[93/104] Extracting bash-5.2.26_1: .......... done
-[94/104] Installing clamav-1.3.2,1...
-===> Creating groups
-Creating group 'clamav' with gid '106'
-Using existing group 'mail'
-===> Creating users
-Creating user 'clamav' with uid '106'
-Adding user 'clamav' to group 'mail'
-[94/104] Extracting clamav-1.3.2,1: .......... done
-[95/104] Installing rsync-3.3.0...
-[95/104] Extracting rsync-3.3.0: .......... done
-[96/104] Installing amavisd-new-2.12.3_3,1...
-===> Creating groups
-Creating group 'vscan' with gid '110'
-===> Creating users
-Creating user 'vscan' with uid '110'
-===> Creating homedir(s)
-[96/104] Extracting amavisd-new-2.12.3_3,1: .......... done
-[97/104] Installing gsed-4.9...
-[97/104] Extracting gsed-4.9: .......... done
-[98/104] Installing gnupg-2.4.5...
-[98/104] Extracting gnupg-2.4.5: .......... done
-[99/104] Installing spamassassin-dqs-1.5.1_1...
-[99/104] Extracting spamassassin-dqs-1.5.1_1: ...... done
-[100/104] Installing amavisd-milter-1.7.0_1...
-[100/104] Extracting amavisd-milter-1.7.0_1: ....... done
-[101/104] Installing spamass-milter-0.4.0_5...
-[101/104] Extracting spamass-milter-0.4.0_5: .......... done
-[102/104] Installing clamav-unofficial-sigs-7.2.5_3...
-[102/104] Extracting clamav-unofficial-sigs-7.2.5_3: .......... done
-[103/104] Installing opendkim-2.10.3_20...
-[103/104] Extracting opendkim-2.10.3_20: .......... done
-[104/104] Installing spamd-4.9.1_7...
-===> Creating groups
-Creating group '_spamd' with gid '132'
-===> Creating users
-Creating user '_spamd' with uid '132'
-[104/104] Extracting spamd-4.9.1_7: .......... done
-=====
-Message from db5-5.3.28_9:
-
---
-===>   NOTICE:
-
-The db5 port currently does not have a maintainer. As a result, it is
-more likely to have unresolved issues, not be up-to-date, or even be removed in
-the future. To volunteer to maintain this port, please create an issue at:
-
-https://bugs.freebsd.org/bugzilla
-
-More information about port maintainership is available at:
-
-https://docs.freebsd.org/en/articles/contributing/#ports-contributing
---
-===>   NOTICE:
-
-This port is deprecated; you may wish to reconsider installing it:
-
-EOLd, potential security issues, maybe use db18 instead.
-
-It is scheduled to be removed on or after 2022-06-30.
-=====
-Message from spamassassin-4.0.1_1:
-
---
-You should complete the following post-installation tasks:
-
-	1) Read /usr/local/share/doc/spamassassin/INSTALL
-	   and /usr/local/share/doc/spamassassin/UPGRADE
-	   BEFORE enabling SpamAssassin for important changes
-
-	2) Edit the configuration in /usr/local/etc/mail/spamassassin,
-	   in particular /usr/local/etc/mail/spamassassin/init.pre
-	   You may get lots of annoying (but harmless) error messages
-	   if you skip this step.
-
-	3) To run spamd, add the following to /etc/rc.conf:
-	   spamd_enable="YES"
-
-        4) If this is a new installation, you should run sa-update
-           and sa-compile. If this isn't a new installation, you
-           should run those commands immediately after update and
-           probably run them on a regular basis.
-
-	5) Install mail/spamass-rules if you want some third-party
-	   spam-catching rulesets
-
-        6) Remove /usr/local/etc/mail/spamassassin/sa-update-keys if this software is no
-           longer needed.
-
-SECURITY NOTE:
-By default, spamd runs as root (the AS_ROOT option). If you wish
-to change this, add the following to /etc/rc.conf:
-
-	spamd_flags="-u spamd -H /var/spool/spamd"
-=====
-Message from zoo-2.10.1_5:
-
---
-===>   NOTICE:
-
-The zoo port currently does not have a maintainer. As a result, it is
-more likely to have unresolved issues, not be up-to-date, or even be removed in
-the future. To volunteer to maintain this port, please create an issue at:
-
-https://bugs.freebsd.org/bugzilla
-
-More information about port maintainership is available at:
-
-https://docs.freebsd.org/en/articles/contributing/#ports-contributing
-=====
-Message from rsync-3.3.0:
-
---
-Some scripts provided by rsync, such as rrsync,
-require Python, which is not installed by default.
-=====
-Message from amavisd-new-2.12.3_3,1:
-
---
-To use amavisd-new, you need to install at least one virus scanner.
- The following virus scanners are available in the FreeBSD ports
- collection:
-
- /usr/ports/security/clamav	Clam Antivirus
- /usr/ports/security/f-prot	F-Prot Antivirus
-
- Enable amavisd-new in /etc/rc.conf with the following line:
-
-    amavisd_enable="YES"
-
- You can set the pidfile, if you do not use the default path:
-
-    amavisd_pidfile="/var/amavis/amavisd.pid"
-
- Optionally enable amavisd tmp ram disk with:
-
-    amavisd_ram="512m"
-
- If you have installed and want to use the amavis sendmail milter interface,
- you need the following additional line in /etc/rc.conf:
-
-    amavis_milter_enable="YES"
-
- If you have installed and want to use the p0fanalyzer interface,
- you need the following additional lines in /etc/rc.conf
- (with modifications according to your needs):
-
-    amavis_p0fanalyzer_enable="YES"
-    amavis_p0fanalyzer_p0f_filter="tcp dst port 25"
-
- You can pass another command line options to p0f daemon by setting
- amavis_p0f_daemon_flags and to p0f-analyzer.pl by setting
- amavis_p0fanalyzer_flags.
-
- Configuration templates are available in /usr/local/etc
- as amavisd.conf.sample, amavisd.conf-default and amavisd-custom.conf.sample
- Documentation is available in /usr/local/share/doc/amavisd-new.
-=====
-Message from spamassassin-dqs-1.5.1_1:
-
---
-you will need to configure the sh.cf file with your own
-DQS key.   
-
-Follow the instructions at:
-https://www.spamhaustech.com/dqs/
-to get a key, then go to:
-https://portal.spamhaustech.com/manuals/dqs/
-and note the DQS key under section "1.0 Datafeed Query Service".
-
-Once you have it, run the following as root:
-
-cd /usr/local/etc/mail/spamassassin
-sed -e 's/your_DQS_key/<your key from above>/g' sh.cf.sample >sh.cf
-
-if the HBL option is selected, issue the following as well:
-sed -e 's/your_DQS_key/<your key from above>/g' sh_hbl.cf.sample >sh_hbl.cf
-
-(for more information on HBL, see /usr/local/share/doc/spamassassin-dqs/README.md)
-
-then restart spamassassin.
-=====
-Message from amavisd-milter-1.7.0_1:
-
---
-To configure amavisd-milter, sendmail and amavisd-new point
-your browser to http://github.com/prehor/amavisd-milter
-
-Enable amavisd-milter in /etc/rc.conf with the following line:
-
-	amavisd_milter_enable="YES"
-=====
-Message from spamass-milter-0.4.0_5:
-
---
-spamass-milter has been installed, but it must be activated manually.
-Please refer to...
-
-  /usr/local/share/doc/spamass-milter/activation.txt
-
-...for details.
-
-You may also want to tweak your spamd rc.subr(8) startup flags to
-specify a username to switch credentials to when delivering mail, if
-applicable.
-=====
-Message from clamav-unofficial-sigs-7.2.5_3:
-
---
-In order to start using clamav-unofficial-sigs, you need to configure
-it first. Sample configuration files have been installed to:
-
-/usr/local/etc/clamav-unofficial-sigs
-
-All user configuration changes should go in file "user.conf". Modify
-it according to your needs and when you are done set the value of
-"user_configuration_complete" parameter to "yes".
-
-NOTE: Starting with version 5.0.0 configuration has been split into
-multiple files, which now reside in:
-
-/usr/local/etc/clamav-unofficial-sigs
-
-If you had previous version installed, you can remove the old
-obsolete configuration file:
-
-/usr/local/etc/clamav-unofficial-sigs.conf
-
-To run the script periodically by cron, you also need to add it to
-your crontab.
-=====
-Message from opendkim-2.10.3_20:
-
---
-In order to run this port, write your opendkim.conf and:
-
-if you use sendmail, add the milter socket `socketspec' in
-/etc/mail/<your_configuration>.mc:
-
-INPUT_MAIL_FILTER(`dkim-filter', `S=_YOUR_SOCKET_SPEC_, F=T, T=R:2m')
-
-or if you use postfix write your milter socket `socketspec' in
-/usr/local/etc/postfix/main.cf:
-
-smtpd_milters = _YOUR_SOCKET_SPEC_
-
-
-And to run the milter from startup, add milteropendkim_enable="YES" in
-your /etc/rc.conf.
-Extra options can be found in startup script.
-
-Note: milter sockets must be accessible from postfix/smtpd;
-  using inet sockets might be preferred.
-=====
-Message from spamd-4.9.1_7:
-
---
-To enable spamd you need:
-
-1) add required spamd entries to /etc/services, run command
-     /usr/local/sbin/add-spamd-to-etc-service
-
-2) Enable spamd in /etc/rc.conf with the following line:
-   obspamd_enable="YES"
-   obspamlogd_enable="YES"
-
-   For PF you can specify a dedicated pflog interface with parameter
-   obspamlogd_pflog_if. This interface will be created and removed
-   by the rc script of spamlogd.
-
-3) Configuration template is available in /usr/local/etc/spamd as
-   spamd.conf.sample file.  Copy then to spamd.conf file and
-   edit to suit your needs.
-
-4) mount fdescfs to /dev/fd with the following line in /etc/fstab
-	fdescfs  	/dev/fd  	fdescfs rw 	0 	0
-
-   Note for XEN users:
-   The XEN kernel ships without modules, therefore you have to add
-   the following lines to the kernel config and build a new kernel.
-	options FDESCFS
-	device	pf
-	device	pflog
-
-5) Add following lines to the pf.conf(5)
-
-  table <spamd-white> persist
-  no rdr inet proto tcp from <spamd-white> to any \
-      port smtp
-  rdr pass inet proto tcp from any to any \
-      port smtp -> 127.0.0.1 port spamd
-
-FreeBSD only features (not in OpenBSD):
-  - sync for spamdb (parameter -Y)
-    See /usr/local/share/doc/spamd/ for usage.
-Updating FreeBSD repository catalogue...
-FreeBSD repository is up to date.
-All repositories are up to date.
-The following 1 package(s) will be affected (of 0 checked):
-
-New packages to be INSTALLED:
-	sshguard: 2.4.3_2,1
-
-Number of packages to be installed: 1
-
-The process will require 4 MiB more space.
-529 KiB to be downloaded.
-[1/1] Fetching sshguard-2.4.3_2,1.pkg: .......... done
-Checking integrity... done (0 conflicting)
-[1/1] Installing sshguard-2.4.3_2,1...
-[1/1] Extracting sshguard-2.4.3_2,1: .......... done
-=====
-Message from sshguard-2.4.3_2,1:
-
---
-To enable SSHGuard at startup, add the following line to your 'rc.conf':
-sshguard_enable="YES"
-
-Starting SSHGuard through syslogd(8) is discouraged and not supported.
-
-Configure SSHGuard by editing BACKEND in '/usr/local/etc/sshguard.conf'. See
-sshguard-setup(7) for instructions on setting up your firewall.
-
-Please note that a few rc script parameters have been renamed to
-better reflect the documentation:
-
-sshguard_safety_thresh -> sshguard_danger_thresh
-sshguard_pardon_min_interval -> sshguard_release_interval
-sshguard_prescribe_interval -> sshguard_reset_interval
+... ... ... ... ... ... ... ... ... ... ... ... ... ... ... ...
 % cp /usr/share/zoneinfo/Europe/Vienna /etc/localtime
 % echo "search eurobsdcon.lab" >> /etc/resolv.conf
 % pw groupadd sshusers
@@ -1053,6 +20,9 @@ sshguard_prescribe_interval -> sshguard_reset_interval
 % sed -i '' 's@#Port 22@Port 22\
 AllowGroups sshusers\
 Ciphers "chacha20-poly1305\@openssh.com,aes128-ctr,aes192-ctr,aes256-ctr,aes128-gcm\@openssh.com,aes256-gcm\@openssh.com"@g' /etc/ssh/sshd_config
+#     
+# Ciphers "chacha20-poly1305@openssh.com,aes128-ctr,aes192-ctr,aes256-ctr,aes128-gcm@openssh.com,aes256-gcm@openssh.com"
+     
 % sed -i  s@#LoginGraceTime 2m@LoginGraceTime 2m@g /etc/ssh/sshd_config
 % sed -i  s@#PermitRootLogin no@PermitRootLogin no@g /etc/ssh/sshd_config
 % sed -i  s@#StrictModes yes@StrictModes yes@g /etc/ssh/sshd_config
@@ -1062,10 +32,80 @@ Ciphers "chacha20-poly1305\@openssh.com,aes128-ctr,aes192-ctr,aes256-ctr,aes128-
 % sed -i  s@#AllowAgentForwarding yes@AllowAgentForwarding no@g /etc/ssh/sshd_config
 % sed -i  s@#AllowTcpForwarding yes@AllowTcpForwarding no@g /etc/ssh/sshd_config
 % sed -i  s@#Banner none@Banner none@g /etc/ssh/sshd_config
+
+-- SECURITY / SYSCTL -----------------------------------------------------------
+% cat /etc/sysctl.conf
+# security hardening
+# see https://vez.mrsk.me/freebsd-defaults.html
+hw.kbd.keymap_restrict_change=4         # restrict keyboard map change
+kern.elf32.aslr.enable=1
+kern.elf32.aslr.honor_sbrk=0
+kern.elf32.aslr.pie_enable=1
+kern.elf32.allow_wx=0
+kern.elf64.aslr.enable=1
+kern.elf64.aslr.honor_sbrk=0
+kern.elf64.aslr.pie_enable=1
+kern.elf64.allow_wx=0
+kern.ipc.shm_use_phys=1
+net.inet.ip.process_options=0           # Enable if you need IGMP or multicast.
+net.inet.ip.random_id=1
+net.inet.ip.redirect=0
+net.inet.tcp.sack.enable=0
+net.inet.icmp.drop_redirect=1
+net.inet.tcp.drop_synfin=1
+net.inet.tcp.blackhole=2
+net.inet.udp.blackhole=1           # Note the blackhole options can sometimes
+                                   # make debugging network issues more difficult.
+net.inet.tcp.icmp_may_rst=0
+security.bsd.hardlink_check_gid=1  # These two options will break poudriere's
+security.bsd.hardlink_check_uid=1  # compiling privsep.
+security.bsd.stack_guard_page=1
+security.bsd.unprivileged_proc_debug=0
+security.bsd.unprivileged_read_msgbuf=0
+
+--------------------------------------------------------------------------------
+
+% cat /etc/pf.conf
+[[[ SEE /etc/pf.conf further down! ]]]
+
+ext_if="vtnet0"
+
+set block-policy drop
+set skip on lo0
+scrub in all no-df max-mss 1440 fragment reassemble
+
+### Default deny everything
+block log all
+
+### Pass loopback
+set skip on lo0
+
+### Block spooks
+antispoof for lo0
+antispoof for $ext_if inet
+block in from no-route to any
+block in from urpf-failed to any
+block in quick on $ext_if from any to 255.255.255.255
+# block in quick log on $ext_if from { 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 255.255.255.255/32 } to any
+
+### Block all IPv6
+block in quick inet6 all
+block out quick inet6 all
+
+### Block to and from port 0
+block quick proto { tcp, udp } from any port = 0 to any
+block quick proto { tcp, udp } from any to any port = 0
+
+### Block specific ports
+block in quick log on $ext_if proto tcp from any to any port $netbios_tcp
+block in quick log on $ext_if proto udp from any to any port $netbios_udp
+
+### Keep and modulate state of outbound tcp, udp and icmp traffic
+pass out on $ext_if proto { tcp, udp, icmp } from any to any modulate state
+
+--------------------------------------------------------------------------------
+
 % pw user add lclchristianm -m
-% service sendmail stop
-Cannot 'stop' sendmail. Set sendmail_enable to YES in /etc/rc.conf or use 'onestop' instead of 'stop'.
-Cannot 'stop' sendmail_msp_queue. Set sendmail_msp_queue_enable to YES in /etc/rc.conf or use 'onestop' instead of 'stop'.
 % sysrc sendmail_enable=NONE
 sendmail_enable: NONE -> NONE
 % cat /etc/periodic.conf
@@ -1075,12 +115,15 @@ daily_status_include_submit_mailq="NO"
 daily_submit_queuerun="NO"
 % mkdir -p /usr/local/etc/mail
 % install -m 0644 /usr/local/share/postfix/mailer.conf.postfix /usr/local/etc/mail/mailer.conf
+
 % service redis enable
 redis enabled in /etc/rc.conf
 % service redis start
 Starting redis.
+
 % sysrc postfix_enable=YES
 postfix_enable:  -> YES
+
 % touch /usr/local/etc/postfix/vmailbox
 % touch /usr/local/etc/postfix/virtualmap
 % sed -i  /christian.moerz@eurobsdcon.lab/d /usr/local/etc/postfix/virtualmap
@@ -1588,7 +631,7 @@ mynetworks_style = host
 #
 # Cyrus IMAP over LMTP. Specify ``lmtpunix      cmd="lmtpd"
 # listen="/var/imap/socket/lmtp" prefork=0'' in cyrus.conf.
-#mailbox_transport = lmtp:unix:/var/imap/socket/lmtp
+mailbox_transport = lmtp:unix:/var/imap/socket/lmtp
 #
 # Cyrus IMAP via command line. Uncomment the "cyrus...pipe" and
 # subsequent line in master.cf.
@@ -1824,12 +867,32 @@ Scanning /usr/share/certs/trusted for certificates...
 Scanning /usr/local/share/certs for certificates...
 % sed -i '' "s@#servername:@servername: mail2.eurobsdcon.lab\
 #servername:@g" /usr/local/etc/postfix/main.cf
+
 % sed -i  s@#tls_server_cert: <none>@tls_server_cert: /usr/local/etc/ssl/server.crt@g /usr/local/etc/imapd.conf
 % sed -i '' "s@#tls_server_key: <none>@tls_server_key: /usr/local/etc/ssl/cyrus.key\
 tls_server_dhparam: /usr/local/etc/ssl/dhparams.pem\
 tls_versions: tls1_2 tls1_3\
 debug: 1@g" /usr/local/etc/imapd.conf
 % sed -i  s@#tls_client_ca_file: <none>@tls_client_ca_file: /usr/local/etc/ssl/ca.crt@g /usr/local/etc/imapd.conf
+ext_if = "vtnet0"
+table <sshguard> {}
+table <spamd-white> persist file "/etc/pf.spamdwhite"
+
+# allow white list to go directly to smtps and smtp
+# rdr pass inet proto tcp from <spamd-white> to any port 465 -> 127.0.0.1 port 466
+#no rdr inet proto tcp from <spamd-white> to any #      port smtp
+#rdr pass inet proto tcp from any to any #      port smtp -> 127.0.0.1 port spamd
+
+set skip on lo0
+
+MAILHOSTS = "{ 10.193.167.0/24 }"
+pass in log on $ext_if inet proto tcp to $MAILHOSTS      port smtp
+pass out log on $ext_if inet proto tcp from $MAILHOSTS      to any port smtp
+
+block from <sshguard>
+block in inet proto tcp from any to any port 4190
+# no pop3
+block in inet proto tcp from any to any port 110
 % sed -i  s@#admins: <none>@admins: cyrus@g /usr/local/etc/imapd.conf
 % sed -i  s@#lmtpsocket:@lmtpsocket:@g /usr/local/etc/imapd.conf
 % sed -i  s@  pop3@#  pop3@g /usr/local/etc/cyrus.conf
@@ -1857,120 +920,6 @@ Starting saslauthd.
 Starting cyrus_imapd.
 % service postfix start
 % ... cyradm : cm lclchristianm, cm virusalert ...
-CONNECTED(00000003)
----
-Certificate chain
- 0 s:CN = mail.eurobsdcon.lab
-   i:CN = Easy-RSA CA
-   a:PKEY: rsaEncryption, 2048 (bit); sigalg: RSA-SHA256
-   v:NotBefore: Sep  8 13:46:41 2024 GMT; NotAfter: Dec 12 13:46:41 2026 GMT
- 1 s:CN = Easy-RSA CA
-   i:CN = Easy-RSA CA
-   a:PKEY: rsaEncryption, 2048 (bit); sigalg: RSA-SHA256
-   v:NotBefore: Sep  8 13:46:33 2024 GMT; NotAfter: Sep  6 13:46:33 2034 GMT
----
-Server certificate
------BEGIN CERTIFICATE-----
-MIIDgTCCAmmgAwIBAgIQHa5uYpwdKQs/GinyNfliVjANBgkqhkiG9w0BAQsFADAW
-MRQwEgYDVQQDDAtFYXN5LVJTQSBDQTAeFw0yNDA5MDgxMzQ2NDFaFw0yNjEyMTIx
-MzQ2NDFaMB4xHDAaBgNVBAMME21haWwuZXVyb2JzZGNvbi5sYWIwggEiMA0GCSqG
-SIb3DQEBAQUAA4IBDwAwggEKAoIBAQCuOF3hClDDHbdKDp+Yp6tWDu/CY6emkdDc
-4yTOc1ZEVUYvZbntOMuqsreskb0GyDFt5hbrge4nma6IqCSIKmN5NuQKRS0ueYf1
-dEAn0LV2Ra3PgrAGV5oXXsg7QToCru2l6IxG5lQc7QFA1eO9UrstR2mAgQGuBmzX
-YG2XtZnu3qtmKpjWVZ9YEkS98QAeqexBjezgbdsXeMLp5CL0UmUzY3fFc9/Q2zKi
-fVFH5q4RlXf9mYiTliYtE15BErjQ8koRlLnzd9aRpNSeGfA8hf/4KylMZP+N2GPJ
-YYfXbjyU/4UX4QMANyy0mfg1xpw0NInUQX8zVEdAyWiDW3O50QelAgMBAAGjgcIw
-gb8wCQYDVR0TBAIwADAdBgNVHQ4EFgQUVb5vMZ+icF0p1/5UMe7LJpcoszEwUQYD
-VR0jBEowSIAUDoNqduiZ4zr0RBXsf3gVwYBu5fOhGqQYMBYxFDASBgNVBAMMC0Vh
-c3ktUlNBIENBghR7Ah73VOVgXxTRZaFavunUMJ9UJDATBgNVHSUEDDAKBggrBgEF
-BQcDATALBgNVHQ8EBAMCBaAwHgYDVR0RBBcwFYITbWFpbC5ldXJvYnNkY29uLmxh
-YjANBgkqhkiG9w0BAQsFAAOCAQEAC+CSi4skE2UZ/CA3Y4hdSOTfu60Ag2YZWVud
-lUEyf6IaeKzToaDbubkNAg8X3kOfj6JSELyV6yGY03tytDncHS6XgPcNMdT4RpQN
-4WWG3ACxfvMnStWqQdaUSGB5e0WuMGKNe/9wORy5zEFqKDRRvgOsz5f/ieUfeb/j
-2vJtNflfqPnKDdVB3I+TiTKItqLHOqy4YeRAjpUm0HZUPkEyOVTue0B7umpZ8G6m
-jA5DXoJBqlMCZwQLgLAO1QhF3WyIgrqWhT9gF49nk7T9K4QeMqnwcW16pDr4ZRVB
-FL9eEoRNYBONJtLMCNyBF/LEG07uGHPD6FQmE8Knnx0Hdx5wmw==
------END CERTIFICATE-----
-subject=CN = mail.eurobsdcon.lab
-issuer=CN = Easy-RSA CA
----
-Acceptable client certificate CA names
-CN = Easy-RSA CA
-Requested Signature Algorithms: ECDSA+SHA256:ECDSA+SHA384:ECDSA+SHA512:Ed25519:Ed448:RSA-PSS+SHA256:RSA-PSS+SHA384:RSA-PSS+SHA512:RSA-PSS+SHA256:RSA-PSS+SHA384:RSA-PSS+SHA512:RSA+SHA256:RSA+SHA384:RSA+SHA512:ECDSA+SHA224:RSA+SHA224
-Shared Requested Signature Algorithms: ECDSA+SHA256:ECDSA+SHA384:ECDSA+SHA512:Ed25519:Ed448:RSA-PSS+SHA256:RSA-PSS+SHA384:RSA-PSS+SHA512:RSA-PSS+SHA256:RSA-PSS+SHA384:RSA-PSS+SHA512:RSA+SHA256:RSA+SHA384:RSA+SHA512
-Peer signing digest: SHA256
-Peer signature type: RSA-PSS
-Server Temp Key: ECDH, prime256v1, 256 bits
----
-SSL handshake has read 2534 bytes and written 737 bytes
-Verification: OK
----
-New, TLSv1.3, Cipher is TLS_AES_256_GCM_SHA384
-Server public key is 2048 bit
-Secure Renegotiation IS NOT supported
-Compression: NONE
-Expansion: NONE
-No ALPN negotiated
-Early data was not sent
-Verify return code: 0 (ok)
----
-CONNECTED(00000003)
----
-Certificate chain
- 0 s:CN = mail.eurobsdcon.lab
-   i:CN = Easy-RSA CA
-   a:PKEY: rsaEncryption, 2048 (bit); sigalg: RSA-SHA256
-   v:NotBefore: Sep  8 13:46:41 2024 GMT; NotAfter: Dec 12 13:46:41 2026 GMT
- 1 s:CN = Easy-RSA CA
-   i:CN = Easy-RSA CA
-   a:PKEY: rsaEncryption, 2048 (bit); sigalg: RSA-SHA256
-   v:NotBefore: Sep  8 13:46:33 2024 GMT; NotAfter: Sep  6 13:46:33 2034 GMT
----
-Server certificate
------BEGIN CERTIFICATE-----
-MIIDgTCCAmmgAwIBAgIQHa5uYpwdKQs/GinyNfliVjANBgkqhkiG9w0BAQsFADAW
-MRQwEgYDVQQDDAtFYXN5LVJTQSBDQTAeFw0yNDA5MDgxMzQ2NDFaFw0yNjEyMTIx
-MzQ2NDFaMB4xHDAaBgNVBAMME21haWwuZXVyb2JzZGNvbi5sYWIwggEiMA0GCSqG
-SIb3DQEBAQUAA4IBDwAwggEKAoIBAQCuOF3hClDDHbdKDp+Yp6tWDu/CY6emkdDc
-4yTOc1ZEVUYvZbntOMuqsreskb0GyDFt5hbrge4nma6IqCSIKmN5NuQKRS0ueYf1
-dEAn0LV2Ra3PgrAGV5oXXsg7QToCru2l6IxG5lQc7QFA1eO9UrstR2mAgQGuBmzX
-YG2XtZnu3qtmKpjWVZ9YEkS98QAeqexBjezgbdsXeMLp5CL0UmUzY3fFc9/Q2zKi
-fVFH5q4RlXf9mYiTliYtE15BErjQ8koRlLnzd9aRpNSeGfA8hf/4KylMZP+N2GPJ
-YYfXbjyU/4UX4QMANyy0mfg1xpw0NInUQX8zVEdAyWiDW3O50QelAgMBAAGjgcIw
-gb8wCQYDVR0TBAIwADAdBgNVHQ4EFgQUVb5vMZ+icF0p1/5UMe7LJpcoszEwUQYD
-VR0jBEowSIAUDoNqduiZ4zr0RBXsf3gVwYBu5fOhGqQYMBYxFDASBgNVBAMMC0Vh
-c3ktUlNBIENBghR7Ah73VOVgXxTRZaFavunUMJ9UJDATBgNVHSUEDDAKBggrBgEF
-BQcDATALBgNVHQ8EBAMCBaAwHgYDVR0RBBcwFYITbWFpbC5ldXJvYnNkY29uLmxh
-YjANBgkqhkiG9w0BAQsFAAOCAQEAC+CSi4skE2UZ/CA3Y4hdSOTfu60Ag2YZWVud
-lUEyf6IaeKzToaDbubkNAg8X3kOfj6JSELyV6yGY03tytDncHS6XgPcNMdT4RpQN
-4WWG3ACxfvMnStWqQdaUSGB5e0WuMGKNe/9wORy5zEFqKDRRvgOsz5f/ieUfeb/j
-2vJtNflfqPnKDdVB3I+TiTKItqLHOqy4YeRAjpUm0HZUPkEyOVTue0B7umpZ8G6m
-jA5DXoJBqlMCZwQLgLAO1QhF3WyIgrqWhT9gF49nk7T9K4QeMqnwcW16pDr4ZRVB
-FL9eEoRNYBONJtLMCNyBF/LEG07uGHPD6FQmE8Knnx0Hdx5wmw==
------END CERTIFICATE-----
-subject=CN = mail.eurobsdcon.lab
-issuer=CN = Easy-RSA CA
----
-Acceptable client certificate CA names
-CN = Easy-RSA CA
-Requested Signature Algorithms: ECDSA+SHA256:ECDSA+SHA384:ECDSA+SHA512:Ed25519:Ed448:RSA-PSS+SHA256:RSA-PSS+SHA384:RSA-PSS+SHA512:RSA-PSS+SHA256:RSA-PSS+SHA384:RSA-PSS+SHA512:RSA+SHA256:RSA+SHA384:RSA+SHA512:ECDSA+SHA224:RSA+SHA224
-Shared Requested Signature Algorithms: ECDSA+SHA256:ECDSA+SHA384:ECDSA+SHA512:Ed25519:Ed448:RSA-PSS+SHA256:RSA-PSS+SHA384:RSA-PSS+SHA512:RSA-PSS+SHA256:RSA-PSS+SHA384:RSA-PSS+SHA512:RSA+SHA256:RSA+SHA384:RSA+SHA512
-Peer signing digest: SHA256
-Peer signature type: RSA-PSS
-Server Temp Key: ECDH, prime256v1, 256 bits
----
-SSL handshake has read 2534 bytes and written 737 bytes
-Verification: OK
----
-New, TLSv1.3, Cipher is TLS_AES_256_GCM_SHA384
-Server public key is 2048 bit
-Secure Renegotiation IS NOT supported
-Compression: NONE
-Expansion: NONE
-No ALPN negotiated
-Early data was not sent
-Verify return code: 0 (ok)
----
 % newaliases
 % service postfix restart
 % sysrc spamd_enable=YES
@@ -2900,6 +1849,7 @@ virtual_mailbox_domains = eurobsdcon.lab
 virtual_transport = lmtp:unix:/var/imap/socket/lmtp
 virtual_mailbox_maps = hash:/usr/local/etc/postfix/vmailbox
 virtual_alias_maps = hash:/usr/local/etc/postfix/virtualmap
+
 smtpd_recipient_restrictions =
         permit_sasl_authenticated,
         reject_rbl_client bl.spamcop.net,
