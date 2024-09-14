@@ -19,3 +19,4 @@ dhparams.pem
 *.xz
 *.dns
 src.tar
+backup
