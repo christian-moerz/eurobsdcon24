@@ -1980,3 +1980,11 @@ milteropendkim enabled in /etc/rc.conf
 % service milter-opendkim start
 Starting milteropendkim.
  // Setup completed.
+
+##
+################################################################################
+
+To test access of remote folders in alpine, go to setup /
+collectionLists (L)
+And add a remote collection with no path specified
+(mail.eurobsdcon.lab:993/user=lclchristianm/ssl)
