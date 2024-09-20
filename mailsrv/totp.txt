@@ -1,0 +1,46 @@
+Setting up oath on BSD is basically almost the same as on Arch Linux [1].
+Prepare user secrets
+
+    Install oath-toolkit
+    Create a secret with head -10 /dev/urandom | sha512 | cut -b 1-32
+    touch /usr/local/etc/oath.conf
+    chmod 600 /usr/local/etc/oath.conf
+    Put in secrets (be careful about the length; too long a secret breaks this)
+
+# Option User Prefix Seed
+HOTP/T30/6 user - 1ab4321412aebcw
+
+Enable PAM module
+
+Set up /etc/pam.d/sshd:
+
+# auth
+auth            requisite       /usr/local/lib/security/pam_oath.so usersfile=/usr/local/etc/oath.conf window=30 digits=6
+#auth           sufficient      pam_opie.so             no_warn no_fake_prompts
+#auth           requisite       pam_opieaccess.so       no_warn allow_local
+#auth           sufficient      pam_krb5.so             no_warn try_first_pass
+#auth           sufficient      pam_ssh.so              no_warn try_first_pass
+auth            required        pam_unix.so             no_warn
+
+Add to sshd_config
+
+AuthenticationMethods publickey,keyboard-interactive
+
+Generate QR code for user
+
+oathtool -v --totp -d6 1ab4321412aebcw
+
+Get the base32 result:
+
+Hex secret: 1ab4321412aebc
+Base32 secret: DK2DEFASV26A====
+Digits: 6
+Window size: 0
+Start counter: 0x0 (0)
+
+820170
+
+and use qrencode to generate PNG file:
+
+qrencode -o user.png 'otpauth://totp/user@machine?secret=DK2DEFASV26A===='
+
