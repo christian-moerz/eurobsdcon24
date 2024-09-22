@@ -217,7 +217,6 @@ ifconfig bridge0 addm \${TAP}
 while [ "0" == "\${RESULT}" ]; do
       bhyvectl --create --vm=${JAILNAME}
 
-	/usr/bin/cpuset -l 8-11 \\
             /usr/sbin/bhyve \\
       		      -H -c 2 -D -l com1,stdio \\
 		      -l bootrom,/usr/local/share/uefi-firmware/BHYVE_UEFI.fd \\
